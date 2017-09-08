@@ -23,6 +23,7 @@ public:
 
 private:
 	void OnLoad(bool);
+	void Go();
 
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;

@@ -18,16 +18,15 @@ MainWindow::MainWindow()
 	m_ui.setupUi(this);
 	
 	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoad);
+	connect(m_ui.m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
 	m_ui.m_page->load({"https://google.com"});
-	
-	// no title bar
-//	setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
 
 void MainWindow::OnLoad(bool val)
 {
 	m_ui.m_location->setText(m_ui.m_page->url().url());
+	setWindowTitle(m_ui.m_page->title() + " - webhama");
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -46,6 +45,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 		window()->move(event->globalPos() - m_last_cursor);
 		event->accept();
 	}
+}
+
+void MainWindow::Go()
+{
+	m_ui.m_page->load(QUrl{m_ui.m_location->text()});
 }
 
 } // end of namespace
