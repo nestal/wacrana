@@ -12,9 +12,11 @@
 #include <QMainWindow>
 #include "ui_MainWindow.h"
 
+namespace WebHama {
+
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT
+Q_OBJECT
 
 public:
 	MainWindow();
@@ -25,3 +27,5 @@ private:
 private:
 	Ui::MainWindow m_ui;
 };
+
+} // end of namespace

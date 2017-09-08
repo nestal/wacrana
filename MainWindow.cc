@@ -9,7 +9,7 @@
 
 #include "MainWindow.hh"
 
-#include <iostream>
+namespace WebHama {
 
 MainWindow::MainWindow()
 {
@@ -18,9 +18,14 @@ MainWindow::MainWindow()
 	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoad);
 	
 	m_ui.m_page->load({"https://google.com"});
+	
+	// no title bar
+	setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
 
 void MainWindow::OnLoad(bool val)
 {
-	std::cout << "OnLoad() " << val << std::endl;
+	m_ui.m_location->setText(m_ui.m_page->url().url());
 }
+
+} // end of namespace

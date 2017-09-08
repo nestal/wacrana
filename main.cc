@@ -3,6 +3,8 @@
 
 #include "MainWindow.hh"
 
+using namespace WebHama;
+
 int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
