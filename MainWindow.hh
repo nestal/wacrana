@@ -24,8 +24,12 @@ public:
 private:
 	void OnLoad(bool);
 
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	
 private:
 	Ui::MainWindow m_ui;
+	QPoint m_last_cursor;
 };
 
 } // end of namespace

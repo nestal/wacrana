@@ -23,7 +23,11 @@
       <item>
        <widget class="QToolButton" name="m_back">
         <property name="text">
-         <string>&lt;</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="webhama.qrc">
+          <normaloff>:/icon/icon/ic_arrow_back_black_24px.svg</normaloff>:/icon/icon/ic_arrow_back_black_24px.svg</iconset>
         </property>
        </widget>
       </item>
@@ -33,15 +37,38 @@
      </layout>
     </item>
     <item>
-     <widget class="QWebEngineView" name="m_page">
-      <property name="url">
-       <url>
-        <string>about:blank</string>
-       </url>
-      </property>
+     <widget class="QTabWidget" name="m_tabs">
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QWebEngineView" name="m_page">
+          <property name="url">
+           <url>
+            <string>about:blank</string>
+           </url>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>
+   <zorder>m_back</zorder>
+   <zorder>m_location</zorder>
+   <zorder>m_location</zorder>
+   <zorder>m_tabs</zorder>
+   <zorder>m_location</zorder>
+   <zorder></zorder>
+   <zorder>m_close_btn</zorder>
   </widget>
   <widget class="QStatusBar" name="m_statusbar"/>
  </widget>
@@ -52,7 +79,9 @@
    <header location="global">QtWebEngineWidgets/QWebEngineView</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="webhama.qrc"/>
+ </resources>
  <connections/>
  <slots>
   <slot>OnLoad(bool)</slot>
