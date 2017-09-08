@@ -49,7 +49,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::Go()
 {
-	m_ui.m_page->load(QUrl{m_ui.m_location->text()});
+	QUrl url{m_ui.m_location->text()};
+	if (url.isRelative())
+	{
+		url.setScheme("http");
+		m_ui.m_page->load(url);
+	}
+	
 }
 
 } // end of namespace
