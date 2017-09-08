@@ -6,20 +6,21 @@
 // the express written permission of Thomson Reuters Limited.
 //
 /////////////////////////////////////////////////////////////////////////
+
 #include "MainWindow.hh"
 
-#include <QWebEngineView>
+#include <iostream>
 
-MainWindow::MainWindow() :
-	m_page{new QWebEngineView{this}}
+MainWindow::MainWindow()
 {
-	m_page->load({"http://en.cppreference.com/"});
-	setCentralWidget(m_page);
-
-	connect(m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoadFinished);
+	m_ui.setupUi(this);
+	
+	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoad);
+	
+	m_ui.m_page->load({"https://google.com"});
 }
 
-void MainWindow::OnLoadFinished(bool)
+void MainWindow::OnLoad(bool val)
 {
-	setWindowIcon(m_page->icon());
+	std::cout << "OnLoad() " << val << std::endl;
 }

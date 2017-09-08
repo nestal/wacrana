@@ -10,8 +10,7 @@
 #pragma once
 
 #include <QMainWindow>
-
-class QWebEngineView;
+#include "ui_MainWindow.h"
 
 class MainWindow : public QMainWindow
 {
@@ -21,8 +20,8 @@ public:
 	MainWindow();
 
 private:
-	void OnLoadFinished(bool);
+	void OnLoad(bool);
 
 private:
-	QWebEngineView *m_page{};
+	Ui::MainWindow m_ui;
 };
