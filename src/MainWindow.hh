@@ -10,13 +10,15 @@
 #pragma once
 
 #include <QMainWindow>
+#include "include/MainWindow.hpp"
+
 #include "ui_MainWindow.h"
 
 namespace WebHama {
 
 class BrowserTab;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public V1::MainWindow
 {
 	Q_OBJECT
 
@@ -24,6 +26,9 @@ public:
 	MainWindow();
 
 	BrowserTab* NewTab();
+	
+	V1::BrowserTab* Current() override;
+	V1::BrowserTab* Tab(int index) override;
 	
 private:
 	void OnLoad(bool);

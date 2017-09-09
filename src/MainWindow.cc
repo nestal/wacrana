@@ -83,9 +83,19 @@ void MainWindow::Go()
 	{
 		url.setScheme("http");
 		
-		if (auto tab = dynamic_cast<V1::BrowserTab*>(m_ui.m_tabs->currentWidget()))
+		if (auto tab = Current())
 			tab->Load(url);
 	}
+}
+
+V1::BrowserTab *MainWindow::Current()
+{
+	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->currentWidget());
+}
+
+V1::BrowserTab *MainWindow::Tab(int index)
+{
+	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->widget(index));
 }
 
 } // end of namespace
