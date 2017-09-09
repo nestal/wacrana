@@ -23,10 +23,17 @@ MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 	
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
+	// setup "new tab" button in the corner of the tab
 	auto add_btn = new QToolButton{m_ui.m_tabs};
 	add_btn->setDefaultAction(m_ui.m_action_addtab);
 	m_ui.m_tabs->setCornerWidget(add_btn);
 	connect(add_btn, &QToolButton::clicked, this, &MainWindow::NewTab);
+	
+	// upload location bar when switching tabs
+	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
+	{
+		m_location->setText(Tab(tab)->Location().url());
+	});
 	
 	// load home page
 	NewTab()->Load({"https://google.com"});
