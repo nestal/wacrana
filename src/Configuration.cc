@@ -24,36 +24,31 @@
 
 namespace wacrana {
 
-Configuration::Configuration(const QString& path)
+Configuration::Configuration(const QString& path, std::function<void(Configuration&)> onfinish)
 {
 	Q_ASSERT(!m_home_page);
 	
 	// spawn a thread to load the configuration file
-	m_thread = std::thread([this, path]{
+	m_loaded = std::async(std::launch::async, [this, path, onfinish]
+	{
+		QFile file(path);
+        file.open(QFile::ReadOnly);
+        auto doc = QJsonDocument::fromJson(file.readAll());
 		
-		try
-		{
-			QFile file(path);
-	        file.open(QFile::ReadOnly);
-	        auto doc = QJsonDocument::fromJson(file.readAll());
-			
-			if (doc.isNull())
-				throw std::runtime_error("can't read " + path.toUtf8());
-			
-			// home page configuration
-			auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
-			m_home_page.store(home_page.release());
-		}
-		catch (std::exception& e)
-		{
-			std::cerr << e.what() << std::endl;
-		}
+		if (doc.isNull())
+			throw std::runtime_error("can't read " + path.toUtf8());
+		
+		// home page configuration
+		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
+		m_home_page.store(home_page.release());
+		
+		onfinish(*this);
 	});
 }
 
 Configuration::~Configuration()
 {
-	m_thread.join();
+	m_loaded.wait();
 	
 	delete m_home_page.exchange(nullptr);
 }

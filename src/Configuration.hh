@@ -12,8 +12,9 @@
 
 #pragma once
 
-#include <thread>
+#include <future>
 #include <atomic>
+#include <functional>
 
 class QString;
 class QJsonObject;
@@ -33,7 +34,7 @@ class Plugin;
 class Configuration
 {
 public:
-	Configuration(const QString& path);
+	Configuration(const QString& path, std::function<void(Configuration&)> onfinish);
 	~Configuration();
 	
 	V1::Plugin* HomePage() const;
@@ -42,10 +43,12 @@ private:
 	static std::unique_ptr<V1::Plugin> LoadPlugin(const QJsonObject& config);
 	
 private:
-	std::thread                 m_thread;
+	std::future<void>           m_loaded;
 	
 	// Unfortunately C++ does not support atomic smart pointer yet
-	std::atomic<V1::Plugin*> m_home_page{};
+	std::atomic<V1::Plugin*>    m_home_page{};
+	
+	std::function<void(Configuration&)> m_onfinish;
 };
 
 } // end of namespace

@@ -23,7 +23,7 @@
 namespace wacrana {
 
 MainWindow::MainWindow() :
-	m_config{"wacrana.json"},
+	m_config{"wacrana.json", [](Configuration&){}},
 	m_location{new QLineEdit(this)}
 {
 	m_ui.setupUi(this);
