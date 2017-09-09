@@ -22,7 +22,9 @@
 
 namespace wacrana {
 
-MainWindow::MainWindow() : m_location{new QLineEdit(this)}
+MainWindow::MainWindow() :
+	m_config{"wacrana.json"},
+	m_location{new QLineEdit(this)}
 {
 	m_ui.setupUi(this);
 	m_ui.m_toolbar->addWidget(m_location);
@@ -38,17 +40,8 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	connect(m_ui.m_action_home,     &QAction::triggered, [this]
 	{
 	//	Current().Load({"https://google.com"});
-		if (!m_home)
-		{
-			auto func = QLibrary::resolve("SimpleHome", "Load");
-			if (func)
-			{
-				auto factory = reinterpret_cast<V1::Factory>(func);
-				m_home = (*factory)();
-			}
-		}
-		if (m_home)
-			m_home->OnAction(*this, {});
+		if (m_config.HomePage())
+			m_config.HomePage()->OnAction(*this, {});
 	});
 	
 	// setup "new tab" button in the corner of the tab

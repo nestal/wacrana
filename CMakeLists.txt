@@ -9,10 +9,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5Core)
-find_package(Qt5Widgets)
-find_package(Qt5WebEngine)
-find_package(Qt5WebEngineWidgets)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5WebEngine REQUIRED)
+find_package(Qt5WebEngineWidgets REQUIRED)
+find_package(Threads REQUIRED)
 
 # Require dot, treat the other components as optional
 find_package(Doxygen
@@ -25,7 +26,15 @@ include_directories(${Qt5Core_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
 add_executable(wacrana WIN32 ${SOURCE_FILES})
 
-target_link_libraries(wacrana Qt5::Widgets Qt5::WebEngine Qt5::WebEngineWidgets)
+target_link_libraries(
+	wacrana
+	Threads::Threads
+	Qt5::Widgets
+	Qt5::WebEngine
+	Qt5::WebEngineWidgets
+)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wacrana.json.in ${CMAKE_CURRENT_BINARY_DIR}/wacrana.json @ONLY)
 
 # documentations
 if (DOXYGEN_FOUND)

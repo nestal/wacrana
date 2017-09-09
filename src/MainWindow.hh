@@ -15,6 +15,7 @@
 // dependencies
 #include "BrowserTab.hh"
 #include "ui_MainWindow.h"
+#include "Configuration.hh"
 
 #include <memory>
 
@@ -22,10 +23,6 @@ class QLineEdit;
 class QToolButton;
 
 namespace wacrana {
-
-namespace V1 {
-class Plugin;
-}
 
 class BrowserTab;
 
@@ -51,11 +48,11 @@ private:
 	void InitMenu();
 	
 private:
+	Configuration  m_config;
+	
 	Ui::MainWindow m_ui;
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
-	
-	std::unique_ptr<V1::Plugin> m_home;
 };
 
 } // end of namespace
