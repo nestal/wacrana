@@ -37,6 +37,7 @@ private:
 	void OnLoad(bool);
 	void OnIconChanged(const QIcon& icon);
 	void Go();
+	void Back();
 
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;

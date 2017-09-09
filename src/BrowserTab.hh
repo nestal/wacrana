@@ -32,6 +32,7 @@ public :
 	QUrl Location() const override;
 	QString Title() const override;
 	QIcon Icon() const override;
+	void Back() override;
 	
 Q_SIGNALS:
 	void LoadFinished(bool);

@@ -26,6 +26,7 @@ public:
 	virtual QIcon Icon() const = 0;
 	virtual QUrl Location() const = 0;
 	virtual QString Title() const = 0;
+	virtual void Back() = 0;
 };
 
 }} // end of namespace

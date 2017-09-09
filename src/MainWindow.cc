@@ -13,6 +13,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtGlobal>
+#include <iostream>
 
 namespace WebHama {
 
@@ -23,11 +24,14 @@ MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 	
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
+	// actions
+	connect(m_ui.m_action_addtab, &QAction::triggered, this, &MainWindow::NewTab);
+	connect(m_ui.m_action_back,   &QAction::triggered, this, &MainWindow::Back);
+	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = new QToolButton{m_ui.m_tabs};
 	add_btn->setDefaultAction(m_ui.m_action_addtab);
 	m_ui.m_tabs->setCornerWidget(add_btn);
-	connect(add_btn, &QToolButton::clicked, this, &MainWindow::NewTab);
 	
 	// upload location bar when switching tabs
 	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
@@ -102,12 +106,10 @@ void MainWindow::Go()
 {
 	QUrl url{m_location->text()};
 	if (url.isRelative())
-	{
 		url.setScheme("http");
 		
-		if (auto tab = Current())
-			tab->Load(url);
-	}
+	if (auto tab = Current())
+		tab->Load(url);
 }
 
 BrowserTab *MainWindow::Current()
@@ -119,6 +121,11 @@ BrowserTab *MainWindow::Tab(int index)
 {
 	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
 	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->widget(index));
+}
+
+void MainWindow::Back()
+{
+
 }
 
 } // end of namespace

@@ -48,4 +48,9 @@ QIcon BrowserTab::Icon() const
 	return m_ui.m_page->icon();
 }
 
+void BrowserTab::Back()
+{
+	m_ui.m_page->back();
+}
+
 } // end of namespace
