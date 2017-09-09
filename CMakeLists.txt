@@ -14,7 +14,7 @@ find_package(Qt5Widgets)
 find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 
-file(GLOB SOURCE_FILES *.cc *.hh *.qrc)
+file(GLOB SOURCE_FILES *.cc *.hh *.qrc include/*.hpp)
 add_executable(webhama WIN32 ${SOURCE_FILES})
 
 target_link_libraries(webhama Qt5::Widgets Qt5::WebEngine Qt5::WebEngineWidgets)

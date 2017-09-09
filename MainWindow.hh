@@ -14,13 +14,17 @@
 
 namespace WebHama {
 
+class BrowserTab;
+
 class MainWindow : public QMainWindow
 {
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	MainWindow();
 
+	BrowserTab* NewTab();
+	
 private:
 	void OnLoad(bool);
 	void OnIconChanged(const QIcon& icon);

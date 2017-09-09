@@ -8,8 +8,11 @@
 /////////////////////////////////////////////////////////////////////////
 
 #include "MainWindow.hh"
+#include "BrowserTab.hh"
 
 #include <QtGui/QMouseEvent>
+
+#include <QtGlobal>
 
 namespace WebHama {
 
@@ -17,19 +20,11 @@ MainWindow::MainWindow()
 {
 	m_ui.setupUi(this);
 	
-	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoad);
-	connect(m_ui.m_page, &QWebEngineView::iconChanged,  this, &MainWindow::OnIconChanged);
 	connect(m_ui.m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
-	
-	m_ui.m_page->load({"https://google.com"});
+
+	NewTab()->Load({"https://google.com"});
 }
 
-void MainWindow::OnLoad(bool val)
-{
-	m_ui.m_location->setText(m_ui.m_page->url().url());
-	
-	setWindowTitle(m_ui.m_page->title() + " - webhama");
-}
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
@@ -49,20 +44,48 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 	}
 }
 
+BrowserTab* MainWindow::NewTab()
+{
+	auto tab = new BrowserTab{m_ui.m_tabs};
+	connect(tab, &BrowserTab::LoadFinished, this, &MainWindow::OnLoad);
+	connect(tab, &BrowserTab::IconChanged,  this, &MainWindow::OnIconChanged);
+	m_ui.m_tabs->addTab(tab, "New Tab");
+	return tab;
+}
+
+void MainWindow::OnLoad(bool)
+{
+	if (auto tab = dynamic_cast<BrowserTab*>(sender()))
+	{
+		auto index = m_ui.m_tabs->indexOf(tab);
+		Q_ASSERT(index != -1);
+		
+		m_ui.m_location->setText(tab->Location().url());
+		m_ui.m_tabs->setTabText(index, tab->Title());
+	}
+}
+
+void MainWindow::OnIconChanged(const QIcon& icon)
+{
+	if (auto tab = dynamic_cast<BrowserTab*>(sender()))
+	{
+		auto index = m_ui.m_tabs->indexOf(tab);
+		Q_ASSERT(index != -1);
+		
+		m_ui.m_tabs->setTabIcon(index, tab->Icon());
+	}
+}
+
 void MainWindow::Go()
 {
 	QUrl url{m_ui.m_location->text()};
 	if (url.isRelative())
 	{
 		url.setScheme("http");
-		m_ui.m_page->load(url);
+		
+		if (auto tab = dynamic_cast<V1::BrowserTab*>(m_ui.m_tabs->currentWidget()))
+			tab->Load(url);
 	}
-	
-}
-
-void MainWindow::OnIconChanged(const QIcon& icon)
-{
-	m_ui.m_tabs->setTabIcon(0, m_ui.m_page->icon());
 }
 
 } // end of namespace
