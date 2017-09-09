@@ -14,6 +14,8 @@
 
 #include "ui_MainWindow.h"
 
+class QLineEdit;
+
 namespace WebHama {
 
 class BrowserTab;
@@ -40,6 +42,7 @@ private:
 	
 private:
 	Ui::MainWindow m_ui;
+	QLineEdit *m_location{};
 	QPoint m_last_cursor;
 };
 

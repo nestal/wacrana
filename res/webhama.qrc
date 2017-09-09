@@ -1,10 +1,10 @@
 <RCC>
   <qresource prefix="icon">
-    <file>icon/ic_arrow_back_black_24px.svg</file>
-    <file>icon/ic_clear_black_24px.svg</file>
-    <file>icon/ic_close_black_24px.svg</file>
-    <file>icon/ic_filter_none_black_24px.svg</file>
-    <file>icon/ic_fullscreen_black_24px.svg</file>
-    <file>icon/ic_fullscreen_exit_black_24px.svg</file>
+    <file>ic_add_black_24px.svg</file>
+    <file>ic_arrow_back_black_24px.svg</file>
+    <file>ic_arrow_forward_black_24px.svg</file>
+    <file>ic_close_black_24px.svg</file>
+    <file>ic_menu_black_24px.svg</file>
+    <file>ic_refresh_black_24px.svg</file>
   </qresource>
 </RCC>

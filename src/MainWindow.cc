@@ -11,16 +11,18 @@
 #include "BrowserTab.hh"
 
 #include <QtGui/QMouseEvent>
+#include <QtWidgets/QLineEdit>
 
 #include <QtGlobal>
 
 namespace WebHama {
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 {
 	m_ui.setupUi(this);
+	m_ui.m_toolbar->addWidget(m_location);
 	
-	connect(m_ui.m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
+	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 
 	NewTab()->Load({"https://google.com"});
 }
@@ -60,7 +62,7 @@ void MainWindow::OnLoad(bool)
 		auto index = m_ui.m_tabs->indexOf(tab);
 		Q_ASSERT(index != -1);
 		
-		m_ui.m_location->setText(tab->Location().url());
+		m_location->setText(tab->Location().url());
 		m_ui.m_tabs->setTabText(index, tab->Title());
 	}
 }
@@ -78,7 +80,7 @@ void MainWindow::OnIconChanged(const QIcon& icon)
 
 void MainWindow::Go()
 {
-	QUrl url{m_ui.m_location->text()};
+	QUrl url{m_location->text()};
 	if (url.isRelative())
 	{
 		url.setScheme("http");
