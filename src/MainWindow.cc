@@ -26,8 +26,11 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
 	// actions
-	connect(m_ui.m_action_addtab, &QAction::triggered, [this]{NewTab();});
-	connect(m_ui.m_action_back,   &QAction::triggered, [this]{Back();});
+	connect(m_ui.m_action_addtab,   &QAction::triggered, [this]{NewTab();});
+	connect(m_ui.m_action_back,     &QAction::triggered, [this]{Back();});
+	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
+	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomIn();});
+	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomOut();});
 	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
@@ -135,6 +138,9 @@ void MainWindow::InitMenu()
 {
 	auto menu = std::make_unique<QMenu>();
 	menu->addAction(m_ui.m_action_addtab);
+	menu->addAction(m_ui.m_action_exit);
+	menu->addAction(m_ui.m_action_zoom_in);
+	menu->addAction(m_ui.m_action_zoom_out);
 	
 	auto button = std::make_unique<QToolButton>();
 	button->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});

@@ -73,6 +73,39 @@
     <string>Add Tab</string>
    </property>
   </action>
+  <action name="m_action_exit">
+   <property name="icon">
+    <iconset resource="../res/webhama.qrc">
+     <normaloff>:/icon/ic_close_black_24px.svg</normaloff>:/icon/ic_close_black_24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="m_action_zoom_in">
+   <property name="icon">
+    <iconset resource="../res/webhama.qrc">
+     <normaloff>:/icon/ic_zoom_in_black_24px.svg</normaloff>:/icon/ic_zoom_in_black_24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom in</string>
+   </property>
+  </action>
+  <action name="m_action_zoom_out">
+   <property name="icon">
+    <iconset resource="../res/webhama.qrc">
+     <normaloff>:/icon/ic_zoom_out_black_24px.svg</normaloff>:/icon/ic_zoom_out_black_24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom Out</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../res/webhama.qrc"/>

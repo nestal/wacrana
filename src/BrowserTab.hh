@@ -34,6 +34,8 @@ public :
 	QString Title() const override;
 	QIcon Icon() const override;
 	void Back() override;
+	void ZoomIn() override;
+	void ZoomOut() override;
 	
 	QWebEnginePage* Page();
 	
