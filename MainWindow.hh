@@ -23,6 +23,7 @@ public:
 
 private:
 	void OnLoad(bool);
+	void OnIconChanged(const QIcon& icon);
 	void Go();
 
 	void mousePressEvent(QMouseEvent *event) override;

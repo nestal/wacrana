@@ -18,6 +18,7 @@ MainWindow::MainWindow()
 	m_ui.setupUi(this);
 	
 	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &MainWindow::OnLoad);
+	connect(m_ui.m_page, &QWebEngineView::iconChanged,  this, &MainWindow::OnIconChanged);
 	connect(m_ui.m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
 	m_ui.m_page->load({"https://google.com"});
@@ -26,6 +27,7 @@ MainWindow::MainWindow()
 void MainWindow::OnLoad(bool val)
 {
 	m_ui.m_location->setText(m_ui.m_page->url().url());
+	
 	setWindowTitle(m_ui.m_page->title() + " - webhama");
 }
 
@@ -56,6 +58,11 @@ void MainWindow::Go()
 		m_ui.m_page->load(url);
 	}
 	
+}
+
+void MainWindow::OnIconChanged(const QIcon& icon)
+{
+	m_ui.m_tabs->setTabIcon(0, m_ui.m_page->icon());
 }
 
 } // end of namespace
