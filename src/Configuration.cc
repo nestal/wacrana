@@ -24,16 +24,25 @@
 
 namespace wacrana {
 
-Configuration::Configuration(const QString& path, std::function<void(Configuration&)> onfinish)
+Configuration::Configuration()
 {
 	Q_ASSERT(!m_home_page);
-	
+}
+
+void Configuration::Load(const QString& path)
+{
 	// spawn a thread to load the configuration file
-	m_loaded = std::async(std::launch::async, [this, path, onfinish]
+	m_loaded = std::async(std::launch::async, [this, path]
 	{
+		// Emit Finish() at the end of this function even when exception is thrown.
+		// Note that need to put a non-null pointer in unique_ptr, otherwise the
+		// custom deleter will not be called.
+		auto finale = [this](void*){Q_EMIT Finish();};
+		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
+		
 		QFile file(path);
-        file.open(QFile::ReadOnly);
-        auto doc = QJsonDocument::fromJson(file.readAll());
+		file.open(QFile::ReadOnly);
+		auto doc = QJsonDocument::fromJson(file.readAll());
 		
 		if (doc.isNull())
 			throw std::runtime_error("can't read " + path.toUtf8());
@@ -41,14 +50,13 @@ Configuration::Configuration(const QString& path, std::function<void(Configurati
 		// home page configuration
 		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
 		m_home_page.store(home_page.release());
-		
-		onfinish(*this);
 	});
 }
 
 Configuration::~Configuration()
 {
-	m_loaded.wait();
+	if (m_loaded.valid())
+		m_loaded.wait();
 	
 	delete m_home_page.exchange(nullptr);
 }
@@ -72,6 +80,12 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 V1::Plugin *Configuration::HomePage() const
 {
 	return m_home_page;
+}
+
+void Configuration::Throw()
+{
+	if (m_loaded.valid())
+		m_loaded.get();
 }
 
 } // end of namespace

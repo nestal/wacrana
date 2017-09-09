@@ -15,6 +15,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
 
 #include <QtCore/QLibrary>
 
@@ -23,7 +24,6 @@
 namespace wacrana {
 
 MainWindow::MainWindow() :
-	m_config{"wacrana.json", [](Configuration&){}},
 	m_location{new QLineEdit(this)}
 {
 	m_ui.setupUi(this);
@@ -43,6 +43,9 @@ MainWindow::MainWindow() :
 		if (m_config.HomePage())
 			m_config.HomePage()->OnAction(*this, {});
 	});
+	
+	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigLoaded, Qt::QueuedConnection);
+	m_config.Load("wacrana.json");
 	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
@@ -76,6 +79,19 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow() = default;
+
+void MainWindow::OnConfigLoaded()
+{
+	try
+	{
+		m_config.Throw();
+		QMessageBox::information(this, tr("Configuration"), "Everything OK!");
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox::critical(this, tr("Exception"), e.what());
+	}
+}
 
 BrowserTab& MainWindow::NewTab()
 {

@@ -42,6 +42,7 @@ public:
 	int Count() const override;
 	
 private:
+	void OnConfigLoaded();
 	void Go();
 	void Back();
 	int IndexOf(const BrowserTab& tab) const ;

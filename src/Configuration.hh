@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <QObject>
+
 #include <future>
 #include <atomic>
 #include <functional>
@@ -31,13 +33,21 @@ class Plugin;
  * specified in the configuration. The plugins will be loaded asynchronously
  * to reduce startup time.
  */
-class Configuration
+class Configuration : public QObject
 {
+	Q_OBJECT
+	
 public:
-	Configuration(const QString& path, std::function<void(Configuration&)> onfinish);
+	Configuration();
 	~Configuration();
 	
+	void Load(const QString& path);
+	
 	V1::Plugin* HomePage() const;
+	void Throw();
+	
+Q_SIGNALS:
+	void Finish();
 	
 private:
 	static std::unique_ptr<V1::Plugin> LoadPlugin(const QJsonObject& config);
@@ -47,8 +57,6 @@ private:
 	
 	// Unfortunately C++ does not support atomic smart pointer yet
 	std::atomic<V1::Plugin*>    m_home_page{};
-	
-	std::function<void(Configuration&)> m_onfinish;
 };
 
 } // end of namespace
