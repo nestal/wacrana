@@ -11,8 +11,9 @@
 
 #include <QMainWindow>
 #include "include/MainWindow.hpp"
-#include "BrowserTab.hh"
 
+// dependencies
+#include "BrowserTab.hh"
 #include "ui_MainWindow.h"
 
 class QLineEdit;

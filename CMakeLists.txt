@@ -14,7 +14,23 @@ find_package(Qt5Widgets)
 find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 
+# Require dot, treat the other components as optional
+find_package(Doxygen
+    REQUIRED dot
+    OPTIONAL_COMPONENTS mscgen dia
+)
+
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
 add_executable(wacrana WIN32 ${SOURCE_FILES})
 
 target_link_libraries(wacrana Qt5::Widgets Qt5::WebEngine Qt5::WebEngineWidgets)
+
+# documentations
+if (DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	add_custom_target(doc
+		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Generating API documentation with Doxygen" VERBATIM
+	)
+endif()
