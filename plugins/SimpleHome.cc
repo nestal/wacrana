@@ -20,7 +20,7 @@
 namespace wacrana {
 
 
-void SimpleHome::OnPluginLoaded(V1::MainWindow&)
+void SimpleHome::OnPluginLoaded(const QJsonObject&)
 {
 
 }
@@ -33,6 +33,16 @@ void SimpleHome::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&)
 void SimpleHome::OnAction(V1::MainWindow& browser, const QString& arg)
 {
 	browser.Current().Load({"http://cppreference.com"});
+}
+
+QString SimpleHome::Name() const
+{
+	return "Simple Home";
+}
+
+QString SimpleHome::Version() const
+{
+	return "1.0";
 }
 
 extern "C" std::unique_ptr<V1::Plugin> Load()
