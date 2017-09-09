@@ -11,8 +11,8 @@
 //
 
 #include "SimpleHome.hh"
-#include "include/MainWindow.hpp"
-#include "include/BrowserTab.hpp"
+#include "MainWindow.hpp"
+#include "BrowserTab.hpp"
 
 #include <QtCore/QString>
 #include <QtCore/QUrl>

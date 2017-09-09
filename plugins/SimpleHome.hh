@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "include/Plugin.hpp"
+#include "Plugin.hpp"
 
 namespace wacrana {
 

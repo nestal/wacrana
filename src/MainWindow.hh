@@ -10,7 +10,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include "include/MainWindow.hpp"
+#include "MainWindow.hpp"
 
 // dependencies
 #include "BrowserTab.hh"

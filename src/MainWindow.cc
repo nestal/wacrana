@@ -9,7 +9,7 @@
 
 #include "MainWindow.hh"
 
-#include "include/Plugin.hpp"
+#include "Plugin.hpp"
 
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>

@@ -20,7 +20,7 @@ find_package(Doxygen
     OPTIONAL_COMPONENTS mscgen dia
 )
 
-include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Core_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
 add_executable(wacrana WIN32 ${SOURCE_FILES})
