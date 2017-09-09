@@ -11,6 +11,7 @@
 
 #include <QMainWindow>
 #include "include/MainWindow.hpp"
+#include "BrowserTab.hh"
 
 #include "ui_MainWindow.h"
 
@@ -27,10 +28,10 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 public:
 	MainWindow();
 
-	BrowserTab* NewTab();
+	BrowserTab* NewTab() override;
 	
-	V1::BrowserTab* Current() override;
-	V1::BrowserTab* Tab(int index) override;
+	BrowserTab* Current() override;
+	BrowserTab* Tab(int index) override;
 	
 private:
 	void OnLoad(bool);

@@ -22,6 +22,7 @@ class MainWindow
 public:
 	virtual BrowserTab* Current() = 0;
 	virtual BrowserTab* Tab(int index) = 0;
+	virtual BrowserTab* NewTab() = 0;
 };
 
 }} // end of namespaces

@@ -8,11 +8,10 @@
 /////////////////////////////////////////////////////////////////////////
 
 #include "MainWindow.hh"
-#include "BrowserTab.hh"
 
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>
-
+#include <QtWidgets/QToolButton>
 #include <QtGlobal>
 
 namespace WebHama {
@@ -23,7 +22,13 @@ MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 	m_ui.m_toolbar->addWidget(m_location);
 	
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
-
+	
+	auto add_btn = new QToolButton{m_ui.m_tabs};
+	add_btn->setDefaultAction(m_ui.m_action_addtab);
+	m_ui.m_tabs->setCornerWidget(add_btn);
+	connect(add_btn, &QToolButton::clicked, this, &MainWindow::NewTab);
+	
+	// load home page
 	NewTab()->Load({"https://google.com"});
 }
 
@@ -51,7 +56,7 @@ BrowserTab* MainWindow::NewTab()
 	auto tab = new BrowserTab{m_ui.m_tabs};
 	connect(tab, &BrowserTab::LoadFinished, this, &MainWindow::OnLoad);
 	connect(tab, &BrowserTab::IconChanged,  this, &MainWindow::OnIconChanged);
-	m_ui.m_tabs->addTab(tab, "New Tab");
+	m_ui.m_tabs->setCurrentIndex(m_ui.m_tabs->addTab(tab, "New Tab"));
 	return tab;
 }
 
@@ -90,12 +95,12 @@ void MainWindow::Go()
 	}
 }
 
-V1::BrowserTab *MainWindow::Current()
+BrowserTab *MainWindow::Current()
 {
 	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->currentWidget());
 }
 
-V1::BrowserTab *MainWindow::Tab(int index)
+BrowserTab *MainWindow::Tab(int index)
 {
 	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->widget(index));
 }
