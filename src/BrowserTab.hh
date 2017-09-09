@@ -26,7 +26,7 @@ class BrowserTab : public QWidget, public V1::BrowserTab
 	Q_OBJECT
 
 public :
-	BrowserTab(QWidget *parent);
+	explicit BrowserTab(QWidget *parent);
 
 	void Load(const QUrl& url) override;
 	QUrl Location() const override;

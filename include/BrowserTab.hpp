@@ -21,6 +21,9 @@ namespace V1 {
 
 class BrowserTab
 {
+protected:
+	~BrowserTab() = default;
+	
 public:
 	virtual void Load(const QUrl& url) = 0;
 	virtual QIcon Icon() const = 0;

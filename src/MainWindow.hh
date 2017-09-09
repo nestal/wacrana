@@ -32,12 +32,14 @@ public:
 	
 	BrowserTab* Current() override;
 	BrowserTab* Tab(int index) override;
+	int IndexOf(V1::BrowserTab *tab) const override;
 	
 private:
 	void OnLoad(bool);
 	void OnIconChanged(const QIcon& icon);
 	void Go();
 	void Back();
+	int IndexOf(BrowserTab *tab) const ;
 
 	void mousePressEvent(QMouseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;

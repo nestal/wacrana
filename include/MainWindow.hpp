@@ -19,10 +19,14 @@ class BrowserTab;
 
 class MainWindow
 {
+protected:
+	~MainWindow() = default;
+
 public:
 	virtual BrowserTab* Current() = 0;
 	virtual BrowserTab* Tab(int index) = 0;
 	virtual BrowserTab* NewTab() = 0;
+	virtual int IndexOf(BrowserTab *tab) const = 0;
 };
 
 }} // end of namespaces

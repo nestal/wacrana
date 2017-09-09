@@ -36,21 +36,25 @@ MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 	// upload location bar when switching tabs
 	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
 	{
-		if (tab >= 0 && tab < m_ui.m_tabs->count())
-			m_location->setText(Tab(tab)->Location().url());
+		Q_ASSERT(tab >= 0 && tab < m_ui.m_tabs->count());
+		m_location->setText(Tab(tab)->Location().url());
 	});
 	
 	// close tab when "x" button is pressed
 	connect(m_ui.m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
 	{
-		m_ui.m_tabs->widget(tab)->deleteLater();
-		m_ui.m_tabs->removeTab(tab);
+		if (m_ui.m_tabs->count() == 1)
+			close();
+		else
+		{
+			Tab(tab)->deleteLater();
+			m_ui.m_tabs->removeTab(tab);
+		}
 	});
 	
 	// load home page
 	NewTab()->Load({"https://google.com"});
 }
-
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
@@ -75,31 +79,24 @@ BrowserTab* MainWindow::NewTab()
 	auto tab = new BrowserTab{m_ui.m_tabs};
 	connect(tab, &BrowserTab::LoadFinished, this, &MainWindow::OnLoad);
 	connect(tab, &BrowserTab::IconChanged,  this, &MainWindow::OnIconChanged);
-	m_ui.m_tabs->setCurrentIndex(m_ui.m_tabs->addTab(tab, "New Tab"));
+	m_ui.m_tabs->setCurrentIndex(m_ui.m_tabs->addTab(tab, tr("New Tab")));
 	return tab;
 }
 
-void MainWindow::OnLoad(bool)
+void MainWindow::OnLoad(bool ok)
 {
-	if (auto tab = dynamic_cast<BrowserTab*>(sender()))
-	{
-		auto index = m_ui.m_tabs->indexOf(tab);
-		Q_ASSERT(index != -1);
-		
-		m_location->setText(tab->Location().url());
-		m_ui.m_tabs->setTabText(index, tab->Title());
-	}
+	auto tab = &dynamic_cast<BrowserTab&>(*sender());
+	m_location->setText(tab->Location().url());
+	m_ui.m_tabs->setTabText(IndexOf(tab), tab->Title());
+	
+	if (ok)
+		statusBar()->hide();
 }
 
 void MainWindow::OnIconChanged(const QIcon& icon)
 {
-	if (auto tab = dynamic_cast<BrowserTab*>(sender()))
-	{
-		auto index = m_ui.m_tabs->indexOf(tab);
-		Q_ASSERT(index != -1);
-		
-		m_ui.m_tabs->setTabIcon(index, tab->Icon());
-	}
+	auto tab = &dynamic_cast<BrowserTab&>(*sender());
+	m_ui.m_tabs->setTabIcon(IndexOf(tab), tab->Icon());
 }
 
 void MainWindow::Go()
@@ -108,24 +105,39 @@ void MainWindow::Go()
 	if (url.isRelative())
 		url.setScheme("http");
 		
-	if (auto tab = Current())
-		tab->Load(url);
+	Current()->Load(url);
 }
 
 BrowserTab *MainWindow::Current()
 {
-	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->currentWidget());
+	auto tab = m_ui.m_tabs->currentWidget();
+	Q_ASSERT(tab);
+	return &dynamic_cast<BrowserTab&>(*tab);
 }
 
 BrowserTab *MainWindow::Tab(int index)
 {
 	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
-	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->widget(index));
+	auto tab = m_ui.m_tabs->widget(index);
+	Q_ASSERT(tab);
+	return &dynamic_cast<BrowserTab&>(*tab);
 }
 
 void MainWindow::Back()
 {
+	Current()->Back();
+}
 
+int MainWindow::IndexOf(V1::BrowserTab *tab) const
+{
+	return IndexOf(&dynamic_cast<BrowserTab&>(*tab));
+}
+
+int MainWindow::IndexOf(BrowserTab *tab) const
+{
+	auto index = m_ui.m_tabs->indexOf(tab);
+	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
+	return index;
 }
 
 } // end of namespace
