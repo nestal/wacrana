@@ -32,7 +32,15 @@ MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 	// upload location bar when switching tabs
 	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
 	{
-		m_location->setText(Tab(tab)->Location().url());
+		if (tab >= 0 && tab < m_ui.m_tabs->count())
+			m_location->setText(Tab(tab)->Location().url());
+	});
+	
+	// close tab when "x" button is pressed
+	connect(m_ui.m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
+	{
+		m_ui.m_tabs->widget(tab)->deleteLater();
+		m_ui.m_tabs->removeTab(tab);
 	});
 	
 	// load home page
@@ -109,6 +117,7 @@ BrowserTab *MainWindow::Current()
 
 BrowserTab *MainWindow::Tab(int index)
 {
+	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
 	return dynamic_cast<BrowserTab*>(m_ui.m_tabs->widget(index));
 }
 
