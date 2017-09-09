@@ -31,6 +31,7 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
 	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomIn();});
 	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomOut();});
+	connect(m_ui.m_action_home,     &QAction::triggered, [this]{Current().Load({"https://google.com"});});
 	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
@@ -136,9 +137,10 @@ void MainWindow::InitMenu()
 {
 	auto menu = std::make_unique<QMenu>();
 	menu->addAction(m_ui.m_action_addtab);
-	menu->addAction(m_ui.m_action_exit);
 	menu->addAction(m_ui.m_action_zoom_in);
 	menu->addAction(m_ui.m_action_zoom_out);
+	menu->addSeparator();
+	menu->addAction(m_ui.m_action_exit);
 	
 	auto button = std::make_unique<QToolButton>();
 	button->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});
