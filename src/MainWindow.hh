@@ -16,10 +16,16 @@
 #include "BrowserTab.hh"
 #include "ui_MainWindow.h"
 
+#include <memory>
+
 class QLineEdit;
 class QToolButton;
 
 namespace wacrana {
+
+namespace V1 {
+class Plugin;
+}
 
 class BrowserTab;
 
@@ -29,6 +35,7 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 
 public:
 	MainWindow();
+	~MainWindow();
 
 	BrowserTab& NewTab() override;
 	
@@ -47,6 +54,8 @@ private:
 	Ui::MainWindow m_ui;
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
+	
+	std::unique_ptr<V1::Plugin> m_home;
 };
 
 } // end of namespace

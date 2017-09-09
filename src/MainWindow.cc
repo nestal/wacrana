@@ -9,10 +9,14 @@
 
 #include "MainWindow.hh"
 
+#include "include/Plugin.hpp"
+
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMenu>
+
+#include <QtCore/QLibrary>
 
 #include <memory>
 
@@ -31,7 +35,21 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
 	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomIn();});
 	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomOut();});
-	connect(m_ui.m_action_home,     &QAction::triggered, [this]{Current().Load({"https://google.com"});});
+	connect(m_ui.m_action_home,     &QAction::triggered, [this]
+	{
+	//	Current().Load({"https://google.com"});
+		if (!m_home)
+		{
+			auto func = QLibrary::resolve("SimpleHome", "Load");
+			if (func)
+			{
+				auto factory = reinterpret_cast<V1::Factory>(func);
+				m_home = (*factory)();
+			}
+		}
+		if (m_home)
+			m_home->OnAction(*this, {});
+	});
 	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
@@ -63,6 +81,8 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	// load home page
 	NewTab().Load({"https://google.com"});
 }
+
+MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {

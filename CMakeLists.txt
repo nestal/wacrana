@@ -20,6 +20,8 @@ find_package(Doxygen
     OPTIONAL_COMPONENTS mscgen dia
 )
 
+include_directories(${Qt5Core_INCLUDE_DIRS})
+
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
 add_executable(wacrana WIN32 ${SOURCE_FILES})
 
@@ -34,3 +36,7 @@ if (DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen" VERBATIM
 	)
 endif()
+
+# plugins
+add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc)
+target_link_libraries(wacrana Qt5::Core)
