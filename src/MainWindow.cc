@@ -44,7 +44,19 @@ MainWindow::MainWindow() :
 			m_config.HomePage()->OnAction(*this, {});
 	});
 	
-	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigLoaded, Qt::QueuedConnection);
+	// Must connect the signal before calling Configuration::Load(), otherwise the signal
+	// may be missed.
+	connect(&m_config, &Configuration::Finish, this, [this]
+	{
+		try
+		{
+			m_config.GetResult();
+		}
+		catch (std::exception& e)
+		{
+			QMessageBox::critical(this, tr("Exception"), e.what());
+		}
+	}, Qt::QueuedConnection);
 	m_config.Load("wacrana.json");
 	
 	// setup "new tab" button in the corner of the tab
@@ -79,19 +91,6 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow() = default;
-
-void MainWindow::OnConfigLoaded()
-{
-	try
-	{
-		m_config.Throw();
-		QMessageBox::information(this, tr("Configuration"), "Everything OK!");
-	}
-	catch (std::exception& e)
-	{
-		QMessageBox::critical(this, tr("Exception"), e.what());
-	}
-}
 
 BrowserTab& MainWindow::NewTab()
 {

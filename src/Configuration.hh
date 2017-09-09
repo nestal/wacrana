@@ -28,10 +28,15 @@ class Plugin;
 }
 
 /**
- * \brief Application configuration
+ * \brief Application configuration.
+ *
  * This class loads configuration in JSON file. It will also load the plugins
  * specified in the configuration. The plugins will be loaded asynchronously
- * to reduce startup time.
+ * to reduce startup time. After it finished loading, the Finish() signal
+ * will be emitted. Since the configuration is loaded asynchronously in
+ * a different thread, the Finish() signal is emitted by that thread and should
+ * be connect()'ed using Qt::QueuedConnection. You can call GetResult() to
+ * check if the configuration is loaded successfully.
  */
 class Configuration : public QObject
 {
@@ -44,9 +49,17 @@ public:
 	void Load(const QString& path);
 	
 	V1::Plugin* HomePage() const;
-	void Throw();
+	void GetResult();
 	
 Q_SIGNALS:
+	/**
+	 * \brief   Signal emitted after the configuration finishes loading
+	 *          asynchronouosly.
+	 *
+	 * This signal is emitted by the thread that loads the configuration, and
+	 * it's different from the thread that calls Load(). Therefore it should
+	 * be connected using Qt::QueuedConnection.
+	 */
 	void Finish();
 	
 private:

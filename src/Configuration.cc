@@ -82,7 +82,16 @@ V1::Plugin *Configuration::HomePage() const
 	return m_home_page;
 }
 
-void Configuration::Throw()
+/**
+ * \brief Check if there is any exception thrown when loading the configuration.
+ * If an exception was thrown when the configuration was loaded asynchronously in a different
+ * thread, those exception will be thrown by this function.
+ *
+ * If the configuration has not been finished loading, this function will block until it
+ * does. Typically this function is called in the slot that connects to Finish() or any
+ * time afterwards.
+ */
+void Configuration::GetResult()
 {
 	if (m_loaded.valid())
 		m_loaded.get();
