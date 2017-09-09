@@ -42,6 +42,7 @@ public :
 Q_SIGNALS:
 	void LoadFinished(bool);
 	void IconChanged(const QIcon& icon);
+	void TitleChanged(const QString& title);
 	
 private:
 	void OnLoad(bool);

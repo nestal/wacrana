@@ -66,26 +66,24 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 BrowserTab& MainWindow::NewTab()
 {
 	auto tab = new BrowserTab{m_ui.m_tabs};
-	connect(tab, &BrowserTab::LoadFinished, this, &MainWindow::OnLoad);
-	connect(tab, &BrowserTab::IconChanged,  this, &MainWindow::OnIconChanged);
+	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
+	{
+		m_location->setText(tab->Location().url());
+		m_ui.m_tabs->setTabText(IndexOf(*tab), tab->Title());
+		
+		if (ok)
+			statusBar()->hide();
+	});
+	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
+	{
+		m_ui.m_tabs->setTabIcon(IndexOf(*tab), icon);
+	});
+	connect(tab, &BrowserTab::TitleChanged, [this, tab](const QString& title)
+	{
+		m_ui.m_tabs->setTabText(IndexOf(*tab), title);
+	});
 	m_ui.m_tabs->setCurrentIndex(m_ui.m_tabs->addTab(tab, tr("New Tab")));
 	return *tab;
-}
-
-void MainWindow::OnLoad(bool ok)
-{
-	auto& tab = dynamic_cast<BrowserTab&>(*sender());
-	m_location->setText(tab.Location().url());
-	m_ui.m_tabs->setTabText(IndexOf(tab), tab.Title());
-	
-	if (ok)
-		statusBar()->hide();
-}
-
-void MainWindow::OnIconChanged(const QIcon& icon)
-{
-	auto& tab = dynamic_cast<BrowserTab&>(*sender());
-	m_ui.m_tabs->setTabIcon(IndexOf(tab), tab.Icon());
 }
 
 void MainWindow::Go()

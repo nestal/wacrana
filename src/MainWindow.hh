@@ -38,8 +38,6 @@ public:
 	int Count() const override;
 	
 private:
-	void OnLoad(bool);
-	void OnIconChanged(const QIcon& icon);
 	void Go();
 	void Back();
 	int IndexOf(const BrowserTab& tab) const ;
