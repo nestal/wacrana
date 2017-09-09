@@ -48,8 +48,14 @@ Configuration::Configuration(const QString& path)
 		{
 			std::cerr << e.what() << std::endl;
 		}
-		
 	});
+}
+
+Configuration::~Configuration()
+{
+	m_thread.join();
+	
+	delete m_home_page.exchange(nullptr);
 }
 
 std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
@@ -62,14 +68,10 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 	if (!factory)
 		throw std::runtime_error("cannot load library");
 	
-	return (*factory)();
-}
-
-Configuration::~Configuration()
-{
-	m_thread.join();
+	auto plugin = (*factory)();
+	plugin->OnPluginLoaded(config);
 	
-	delete m_home_page.exchange(nullptr);
+	return plugin;
 }
 
 V1::Plugin *Configuration::HomePage() const

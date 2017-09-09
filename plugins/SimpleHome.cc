@@ -15,14 +15,14 @@
 #include "BrowserTab.hpp"
 
 #include <QtCore/QString>
-#include <QtCore/QUrl>
+#include <QtCore/QJsonObject>
 
 namespace wacrana {
 
 
-void SimpleHome::OnPluginLoaded(const QJsonObject&)
+void SimpleHome::OnPluginLoaded(const QJsonObject& config)
 {
-
+	m_home = config["homepage"].toString();
 }
 
 void SimpleHome::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&)
@@ -32,7 +32,7 @@ void SimpleHome::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&)
 
 void SimpleHome::OnAction(V1::MainWindow& browser, const QString& arg)
 {
-	browser.Current().Load({"http://cppreference.com"});
+	browser.Current().Load(m_home);
 }
 
 QString SimpleHome::Name() const

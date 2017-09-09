@@ -14,17 +14,24 @@
 
 #include "Plugin.hpp"
 
+#include <QtCore/QUrl>
+
 namespace wacrana {
 
 class SimpleHome : public V1::Plugin
 {
 public:
+	SimpleHome() = default;
+	
 	QString Name() const override;
 	QString Version() const override;
 	
 	void OnPluginLoaded(const QJsonObject&) override;
 	void OnPageLoaded(V1::MainWindow&, V1::BrowserTab&) override ;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
+
+private:
+	QUrl    m_home{"http://localhost"};
 };
 
 } // end of namespace
