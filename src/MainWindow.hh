@@ -17,6 +17,7 @@
 #include "ui_MainWindow.h"
 
 class QLineEdit;
+class QToolButton;
 
 namespace wacrana {
 
@@ -42,10 +43,12 @@ private:
 	void Go();
 	void Back();
 	int IndexOf(const BrowserTab& tab) const ;
+	void InitMenu();
 	
 private:
 	Ui::MainWindow m_ui;
-	QLineEdit *m_location;
+	QLineEdit   *m_location{};
+	QToolButton *m_menu_btn{};
 };
 
 } // end of namespace

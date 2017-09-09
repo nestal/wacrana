@@ -18,6 +18,7 @@
 #include "ui_BrowserTab.h"
 
 class QUrl;
+class QWebEnginePage;
 
 namespace wacrana {
 
@@ -33,6 +34,8 @@ public :
 	QString Title() const override;
 	QIcon Icon() const override;
 	void Back() override;
+	
+	QWebEnginePage* Page();
 	
 Q_SIGNALS:
 	void LoadFinished(bool);

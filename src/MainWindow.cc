@@ -12,6 +12,7 @@
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
+#include <QtWidgets/QMenu>
 
 #include <memory>
 
@@ -32,6 +33,8 @@ MainWindow::MainWindow() : m_location{new QLineEdit(this)}
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
 	add_btn->setDefaultAction(m_ui.m_action_addtab);
 	m_ui.m_tabs->setCornerWidget(add_btn.release());
+	
+	InitMenu();
 	
 	// upload location bar when switching tabs
 	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
@@ -126,6 +129,18 @@ int MainWindow::IndexOf(const BrowserTab& tab) const
 int MainWindow::Count() const
 {
 	return m_ui.m_tabs->count();
+}
+
+void MainWindow::InitMenu()
+{
+	auto menu = std::make_unique<QMenu>();
+	menu->addAction(m_ui.m_action_addtab);
+	
+	auto button = std::make_unique<QToolButton>();
+	button->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});
+	button->setMenu(menu.release());
+	button->setPopupMode(QToolButton::InstantPopup);
+	m_ui.m_toolbar->addWidget(button.release());
 }
 
 } // end of namespace

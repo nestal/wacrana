@@ -53,4 +53,9 @@ void BrowserTab::Back()
 	m_ui.m_page->back();
 }
 
+QWebEnginePage *BrowserTab::Page()
+{
+	return m_ui.m_page->page();
+}
+
 } // end of namespace
