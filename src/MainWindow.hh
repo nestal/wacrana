@@ -29,26 +29,23 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 public:
 	MainWindow();
 
-	BrowserTab* NewTab() override;
+	BrowserTab& NewTab() override;
 	
-	BrowserTab* Current() override;
-	BrowserTab* Tab(int index) override;
-	int IndexOf(V1::BrowserTab *tab) const override;
+	BrowserTab& Current() override;
+	BrowserTab& Tab(int index) override;
+	int IndexOf(const V1::BrowserTab& tab) const override;
+	int Count() const override;
 	
 private:
 	void OnLoad(bool);
 	void OnIconChanged(const QIcon& icon);
 	void Go();
 	void Back();
-	int IndexOf(BrowserTab *tab) const ;
-
-	void mousePressEvent(QMouseEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
+	int IndexOf(const BrowserTab& tab) const ;
 	
 private:
 	Ui::MainWindow m_ui;
-	QLineEdit *m_location{};
-	QPoint m_last_cursor;
+	QLineEdit *m_location;
 };
 
 } // end of namespace
