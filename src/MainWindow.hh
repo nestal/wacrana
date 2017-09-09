@@ -17,7 +17,7 @@
 
 class QLineEdit;
 
-namespace WebHama {
+namespace wacrana {
 
 class BrowserTab;
 

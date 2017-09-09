@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(webhama)
+project(wacrana)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -15,6 +15,6 @@ find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
-add_executable(webhama WIN32 ${SOURCE_FILES})
+add_executable(wacrana WIN32 ${SOURCE_FILES})
 
-target_link_libraries(webhama Qt5::Widgets Qt5::WebEngine Qt5::WebEngineWidgets)
+target_link_libraries(wacrana Qt5::Widgets Qt5::WebEngine Qt5::WebEngineWidgets)

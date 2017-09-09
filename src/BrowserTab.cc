@@ -12,7 +12,7 @@
 
 #include "BrowserTab.hh"
 
-namespace WebHama {
+namespace wacrana {
 
 BrowserTab::BrowserTab(QWidget *parent) : QWidget{parent}
 {

@@ -19,7 +19,7 @@
 
 class QUrl;
 
-namespace WebHama {
+namespace wacrana {
 
 class BrowserTab : public QWidget, public V1::BrowserTab
 {

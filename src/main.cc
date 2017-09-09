@@ -3,7 +3,7 @@
 
 #include "MainWindow.hh"
 
-using namespace WebHama;
+using namespace wacrana;
 
 int main(int argc, char **argv)
 {

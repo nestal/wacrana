@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WebHama::MainWindow</class>
- <widget class="QMainWindow" name="WebHama::MainWindow">
+ <class>wacrana::MainWindow</class>
+ <widget class="QMainWindow" name="wacrana::MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -38,8 +38,6 @@
      </widget>
     </item>
    </layout>
-   <zorder>m_tabs</zorder>
-   <zorder></zorder>
   </widget>
   <widget class="QStatusBar" name="m_statusbar"/>
   <widget class="QToolBar" name="m_toolbar">
@@ -50,7 +48,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="m_action_back"/>
   </widget>

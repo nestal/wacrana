@@ -12,7 +12,7 @@
 
 #pragma once
 
-namespace WebHama {
+namespace wacrana {
 namespace V1 {
 
 class BrowserTab;

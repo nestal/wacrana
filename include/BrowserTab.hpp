@@ -16,7 +16,7 @@ class QUrl;
 class QIcon;
 class QString;
 
-namespace WebHama {
+namespace wacrana {
 namespace V1 {
 
 class BrowserTab

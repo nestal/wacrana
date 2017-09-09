@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WebHama::BrowserTab</class>
- <widget class="QWidget" name="WebHama::BrowserTab">
+ <class>wacrana::BrowserTab</class>
+ <widget class="QWidget" name="wacrana::BrowserTab">
   <property name="geometry">
    <rect>
     <x>0</x>

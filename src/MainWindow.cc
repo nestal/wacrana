@@ -15,7 +15,7 @@
 #include <QtGlobal>
 #include <iostream>
 
-namespace WebHama {
+namespace wacrana {
 
 MainWindow::MainWindow() : m_location{new QLineEdit{this}}
 {
