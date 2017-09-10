@@ -16,6 +16,8 @@ namespace wacrana {
 
 BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
 {
+	qDebug() << "creating tab" ;
+	
 	m_ui.setupUi(this);
 	
 	m_ui.m_page->setZoomFactor(zoom);
@@ -80,6 +82,11 @@ void BrowserTab::ZoomFactor(double zoom)
 void BrowserTab::Reload()
 {
 	m_ui.m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
+}
+
+BrowserTab::~BrowserTab()
+{
+	qDebug() << "destroying tab" ;
 }
 
 } // end of namespace

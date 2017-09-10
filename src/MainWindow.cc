@@ -9,7 +9,9 @@
 
 #include "MainWindow.hh"
 
+#include "Configuration.hh"
 #include "Plugin.hpp"
+#include "ui_MainWindow.h"
 
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>
@@ -21,51 +23,54 @@ namespace wacrana {
 
 MainWindow::MainWindow(Configuration& config) :
 	m_config{config},
+	m_ui{std::make_unique<Ui::MainWindow>()},
 	m_location{new QLineEdit(this)}
 {
-	m_ui.setupUi(this);
-	m_ui.m_toolbar->addWidget(m_location);
+	m_ui->setupUi(this);
+	m_ui->m_toolbar->addWidget(m_location);
 	
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
 	// actions
-	connect(m_ui.m_action_addtab,   &QAction::triggered, [this]{NewTab();});
-	connect(m_ui.m_action_back,     &QAction::triggered, [this]{Current().Back();});
-	connect(m_ui.m_action_forward,  &QAction::triggered, [this]{Current().Forward();});
-	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
-	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
-	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
-	connect(m_ui.m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_config.DefaultZoom());});
-	connect(m_ui.m_action_home,     &QAction::triggered, [this]
+	connect(m_ui->m_action_addtab,   &QAction::triggered, [this]{NewTab();});
+	connect(m_ui->m_action_back,     &QAction::triggered, [this]{Current().Back();});
+	connect(m_ui->m_action_forward,  &QAction::triggered, [this]{Current().Forward();});
+	connect(m_ui->m_action_exit,     &QAction::triggered, [this]{close();});
+	connect(m_ui->m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
+	connect(m_ui->m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
+	connect(m_ui->m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_config.DefaultZoom());});
+	connect(m_ui->m_action_home,     &QAction::triggered, [this]
 	{
 		m_config.HomePage()->OnAction(*this, {});
 	});
-	connect(m_ui.m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
+	connect(m_ui->m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
 	
 	// setup "new tab" button in the corner of the tab
-	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);
-	add_btn->setDefaultAction(m_ui.m_action_addtab);
-	m_ui.m_tabs->setCornerWidget(add_btn.release());
+	auto add_btn = std::make_unique<QToolButton>(m_ui->m_tabs);
+	add_btn->setDefaultAction(m_ui->m_action_addtab);
+	m_ui->m_tabs->setCornerWidget(add_btn.release());
 	
 	InitMenu();
 	
 	// upload location bar when switching tabs
-	connect(m_ui.m_tabs, &QTabWidget::currentChanged, [this](int tab)
+	connect(m_ui->m_tabs, &QTabWidget::currentChanged, [this](int tab)
 	{
-		Q_ASSERT(tab >= 0 && tab < m_ui.m_tabs->count());
+		Q_ASSERT(tab >= 0 && tab < m_ui->m_tabs->count());
 		m_location->setText(Tab(tab).Location().url());
 	});
 	
 	// close tab when "x" button is pressed
-	connect(m_ui.m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
+	connect(m_ui->m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
 	{
 		// close the main window when the last tab is closed
-		if (m_ui.m_tabs->count() == 1)
+		if (m_ui->m_tabs->count() == 1)
 			close();
 		else
 		{
+			// the tab widget will not delete the tabs, so we need to delete them ourselves.
+			// note that deleting them right here will crash.
 			Tab(tab).deleteLater();
-			m_ui.m_tabs->removeTab(tab);
+			m_ui->m_tabs->removeTab(tab);
 		}
 	});
 	
@@ -78,11 +83,11 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto tab = new BrowserTab{m_ui.m_tabs, m_config.DefaultZoom()};
+	auto tab = new BrowserTab{m_ui->m_tabs, m_config.DefaultZoom()};
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		m_location->setText(tab->Location().url());
-		m_ui.m_tabs->setTabText(IndexOf(*tab), tab->Title());
+		m_ui->m_tabs->setTabText(IndexOf(*tab), tab->Title());
 
 		// need to reset zoom factor after loading a site
 		tab->ZoomFactor(m_config.DefaultZoom());
@@ -92,13 +97,13 @@ BrowserTab& MainWindow::NewTab()
 	});
 	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
 	{
-		m_ui.m_tabs->setTabIcon(IndexOf(*tab), icon);
+		m_ui->m_tabs->setTabIcon(IndexOf(*tab), icon);
 	});
 	connect(tab, &BrowserTab::TitleChanged, [this, tab](const QString& title)
 	{
-		m_ui.m_tabs->setTabText(IndexOf(*tab), title);
+		m_ui->m_tabs->setTabText(IndexOf(*tab), title);
 	});
-	m_ui.m_tabs->setCurrentIndex(m_ui.m_tabs->addTab(tab, tr("New Tab")));
+	m_ui->m_tabs->setCurrentIndex(m_ui->m_tabs->addTab(tab, tr("New Tab")));
 	return *tab;
 }
 
@@ -113,15 +118,15 @@ void MainWindow::Go()
 
 BrowserTab& MainWindow::Current()
 {
-	auto tab = m_ui.m_tabs->currentWidget();
+	auto tab = m_ui->m_tabs->currentWidget();
 	Q_ASSERT(tab);
 	return dynamic_cast<BrowserTab&>(*tab);
 }
 
 BrowserTab& MainWindow::Tab(int index)
 {
-	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
-	auto tab = m_ui.m_tabs->widget(index);
+	Q_ASSERT(index >= 0 && index < m_ui->m_tabs->count());
+	auto tab = m_ui->m_tabs->widget(index);
 	Q_ASSERT(tab);
 	return dynamic_cast<BrowserTab&>(*tab);
 }
@@ -133,31 +138,31 @@ int MainWindow::IndexOf(const V1::BrowserTab& tab) const
 
 int MainWindow::IndexOf(const BrowserTab& tab) const
 {
-	auto index = m_ui.m_tabs->indexOf(const_cast<BrowserTab*>(&tab));
-	Q_ASSERT(index >= 0 && index < m_ui.m_tabs->count());
+	auto index = m_ui->m_tabs->indexOf(const_cast<BrowserTab*>(&tab));
+	Q_ASSERT(index >= 0 && index < m_ui->m_tabs->count());
 	return index;
 }
 
 int MainWindow::Count() const
 {
-	return m_ui.m_tabs->count();
+	return m_ui->m_tabs->count();
 }
 
 void MainWindow::InitMenu()
 {
 	auto menu = std::make_unique<QMenu>();
-	menu->addAction(m_ui.m_action_addtab);
-	menu->addAction(m_ui.m_action_zoom_in);
-	menu->addAction(m_ui.m_action_zoom_out);
-	menu->addAction(m_ui.m_action_reset_zoom);
+	menu->addAction(m_ui->m_action_addtab);
+	menu->addAction(m_ui->m_action_zoom_in);
+	menu->addAction(m_ui->m_action_zoom_out);
+	menu->addAction(m_ui->m_action_reset_zoom);
 	menu->addSeparator();
-	menu->addAction(m_ui.m_action_exit);
+	menu->addAction(m_ui->m_action_exit);
 	
 	m_menu_btn = new QToolButton;
 	m_menu_btn->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});
 	m_menu_btn->setMenu(menu.release());
 	m_menu_btn->setPopupMode(QToolButton::InstantPopup);
-	m_ui.m_toolbar->addWidget(m_menu_btn);
+	m_ui->m_toolbar->addWidget(m_menu_btn);
 }
 
 } // end of namespace
