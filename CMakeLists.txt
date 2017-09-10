@@ -48,4 +48,4 @@ endif()
 
 # plugins
 add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc)
-target_link_libraries(wacrana Qt5::Core)
+set_target_properties(SimpleHome PROPERTIES CXX_VISIBILITY_PRESET hidden)

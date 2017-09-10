@@ -51,3 +51,9 @@ public:
 typedef std::unique_ptr<Plugin> (*Factory)();
 
 }} // end of namespace
+
+#ifdef __GNUC__
+	#define WCAPI __attribute__ ((visibility ("default")))
+#elif defined _MSC_VER
+	#define WCAPI __declspec(dllexport)
+#endif
