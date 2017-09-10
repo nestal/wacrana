@@ -57,6 +57,11 @@ void BrowserTab::Back()
 	m_ui.m_page->back();
 }
 
+void BrowserTab::Forward()
+{
+	m_ui.m_page->forward();
+}
+
 QWebEnginePage *BrowserTab::Page()
 {
 	return m_ui.m_page->page();

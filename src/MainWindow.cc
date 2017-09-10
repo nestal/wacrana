@@ -29,7 +29,8 @@ MainWindow::MainWindow() :
 	
 	// actions
 	connect(m_ui.m_action_addtab,   &QAction::triggered, [this]{NewTab();});
-	connect(m_ui.m_action_back,     &QAction::triggered, [this]{Back();});
+	connect(m_ui.m_action_back,     &QAction::triggered, [this]{Current().Back();});
+	connect(m_ui.m_action_forward,  &QAction::triggered, [this]{Current().Forward();});
 	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
 	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
 	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
@@ -137,11 +138,6 @@ BrowserTab& MainWindow::Tab(int index)
 	auto tab = m_ui.m_tabs->widget(index);
 	Q_ASSERT(tab);
 	return dynamic_cast<BrowserTab&>(*tab);
-}
-
-void MainWindow::Back()
-{
-	Current().Back();
 }
 
 int MainWindow::IndexOf(const V1::BrowserTab& tab) const

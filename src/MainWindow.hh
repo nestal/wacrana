@@ -43,7 +43,6 @@ public:
 	
 private:
 	void Go();
-	void Back();
 	int IndexOf(const BrowserTab& tab) const ;
 	void InitMenu();
 	
