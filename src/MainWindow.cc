@@ -94,11 +94,13 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto tab = new BrowserTab{m_ui.m_tabs};
+	auto tab = new BrowserTab{m_ui.m_tabs, m_config.DefaultZoom()};
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		m_location->setText(tab->Location().url());
 		m_ui.m_tabs->setTabText(IndexOf(*tab), tab->Title());
+		
+		qDebug() << "loading finished " << tab->ZoomFactor();
 		
 		if (ok)
 			statusBar()->hide();

@@ -52,6 +52,7 @@
    </attribute>
    <addaction name="m_action_back"/>
    <addaction name="m_action_home"/>
+   <addaction name="separator"/>
   </widget>
   <action name="m_action_back">
    <property name="icon">

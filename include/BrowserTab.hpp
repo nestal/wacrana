@@ -32,6 +32,7 @@ public:
 	virtual void Back() = 0;
 	virtual void ZoomIn() = 0;
 	virtual void ZoomOut() = 0;
+	virtual double ZoomFactor() const = 0;
 };
 
 }} // end of namespace

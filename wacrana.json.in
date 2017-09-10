@@ -3,5 +3,6 @@
 		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/libSimpleHome.so",
 		"factory" : "Load",
 		"homepage": "http://en.cppreference.com"
-	}
+	},
+	"default_zoom" : 2.0
 }

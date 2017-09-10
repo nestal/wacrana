@@ -27,7 +27,7 @@ class BrowserTab : public QWidget, public V1::BrowserTab
 	Q_OBJECT
 
 public :
-	explicit BrowserTab(QWidget *parent);
+	explicit BrowserTab(QWidget *parent, double zoom);
 
 	void Load(const QUrl& url) override;
 	QUrl Location() const override;
@@ -36,6 +36,7 @@ public :
 	void Back() override;
 	void ZoomIn() override;
 	void ZoomOut() override;
+	double ZoomFactor() const override ;
 	
 	QWebEnginePage* Page();
 	

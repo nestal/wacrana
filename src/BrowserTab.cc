@@ -14,9 +14,11 @@
 
 namespace wacrana {
 
-BrowserTab::BrowserTab(QWidget *parent) : QWidget{parent}
+BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
 {
 	m_ui.setupUi(this);
+	
+	m_ui.m_page->setZoomFactor(zoom);
 	
 	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoad);
 	connect(m_ui.m_page, &QWebEngineView::iconChanged,  [this](const QIcon& icon){Q_EMIT IconChanged(icon);});
@@ -70,6 +72,11 @@ void BrowserTab::ZoomOut()
 {
 	auto page = Page();
 	page->setZoomFactor(page->zoomFactor() / 1.25);
+}
+
+double BrowserTab::ZoomFactor() const
+{
+	return m_ui.m_page->zoomFactor();
 }
 
 } // end of namespace

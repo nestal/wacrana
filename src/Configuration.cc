@@ -47,6 +47,9 @@ void Configuration::Load(const QString& path)
 		if (doc.isNull())
 			throw std::runtime_error("can't read " + path.toUtf8());
 		
+		// default zoom
+		m_default_zoom.store(doc.object()["default_zoom"].toDouble(m_default_zoom));
+		
 		// home page configuration
 		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
 		m_home_page.store(home_page.release());
@@ -95,6 +98,11 @@ void Configuration::GetResult()
 {
 	if (m_loaded.valid())
 		m_loaded.get();
+}
+
+double Configuration::DefaultZoom() const
+{
+	return m_default_zoom;
 }
 
 } // end of namespace

@@ -10,6 +10,8 @@ int main(int argc, char **argv)
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
 
+	qDebug() << "init" ;
+	
 	QtWebEngine::initialize();
 	
 	MainWindow wnd;

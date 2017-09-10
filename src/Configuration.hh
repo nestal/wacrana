@@ -49,6 +49,8 @@ public:
 	void Load(const QString& path);
 	
 	V1::Plugin* HomePage() const;
+	double DefaultZoom() const;
+	
 	void GetResult();
 	
 Q_SIGNALS:
@@ -70,6 +72,8 @@ private:
 	
 	// Unfortunately C++ does not support atomic smart pointer yet
 	std::atomic<V1::Plugin*>    m_home_page{};
+	
+	std::atomic<double>         m_default_zoom{1.0};
 };
 
 } // end of namespace
