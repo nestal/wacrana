@@ -59,17 +59,27 @@ Configuration::~Configuration()
 
 std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 {
-	auto factory = reinterpret_cast<V1::Factory>(QLibrary::resolve(
-		config["lib"].toString(),
-		config["factory"].toString().toUtf8()
-	));
+	using namespace std::literals;
 	
+	auto&& json_lib      = config["lib"];
+	auto&& json_factory  = config["factory"];
+	
+	if (!json_lib.isString() || !json_factory.isString())
+		throw std::runtime_error("Invalid configuration: missing \"lib\" or \"factory\" in configuration.");
+	
+	QLibrary lib{json_lib.toString()};
+	if (!lib.load())
+		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
+	
+	auto factory = reinterpret_cast<V1::Factory>(lib.resolve(json_factory.toString().toUtf8()));
 	if (!factory)
-		throw std::runtime_error("cannot load library");
+		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
 	auto plugin = (*factory)();
-	plugin->OnPluginLoaded(config);
+	if (!plugin)
+		throw std::runtime_error("Cannot create plugin from library " + json_lib.toString().toStdString());
 	
+	plugin->OnPluginLoaded(config);
 	return plugin;
 }
 
