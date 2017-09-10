@@ -34,6 +34,7 @@ public:
 	virtual void ZoomOut() = 0;
 	virtual double ZoomFactor() const = 0;
 	virtual void ZoomFactor(double) = 0;
+	virtual void Reload() = 0;
 };
 
 }} // end of namespace

@@ -84,4 +84,9 @@ void BrowserTab::ZoomFactor(double zoom)
 	m_ui.m_page->setZoomFactor(zoom);
 }
 
+void BrowserTab::Reload()
+{
+	m_ui.m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
+}
+
 } // end of namespace

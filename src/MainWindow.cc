@@ -17,10 +17,6 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
 
-#include <QtCore/QLibrary>
-
-#include <memory>
-
 namespace wacrana {
 
 MainWindow::MainWindow() :
@@ -41,6 +37,7 @@ MainWindow::MainWindow() :
 	{
 		m_config.HomePage()->OnAction(*this, {});
 	});
+	connect(m_ui.m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
 	
 	// Must connect the signal before calling Configuration::Load(), otherwise the signal
 	// may be missed.
@@ -172,11 +169,11 @@ void MainWindow::InitMenu()
 	menu->addSeparator();
 	menu->addAction(m_ui.m_action_exit);
 	
-	auto button = std::make_unique<QToolButton>();
-	button->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});
-	button->setMenu(menu.release());
-	button->setPopupMode(QToolButton::InstantPopup);
-	m_ui.m_toolbar->addWidget(button.release());
+	m_menu_btn = new QToolButton;
+	m_menu_btn->setIcon(QIcon{":/icon/ic_menu_black_24px.svg"});
+	m_menu_btn->setMenu(menu.release());
+	m_menu_btn->setPopupMode(QToolButton::InstantPopup);
+	m_ui.m_toolbar->addWidget(m_menu_btn);
 }
 
 } // end of namespace
