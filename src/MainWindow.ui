@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1338</width>
-    <height>820</height>
+    <width>1923</width>
+    <height>1116</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,9 @@
       </property>
       <property name="currentIndex">
        <number>-1</number>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
       </property>
       <property name="tabsClosable">
        <bool>true</bool>
