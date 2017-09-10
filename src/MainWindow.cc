@@ -101,6 +101,7 @@ BrowserTab& MainWindow::NewTab()
 		m_ui.m_tabs->setTabText(IndexOf(*tab), tab->Title());
 		
 		qDebug() << "loading finished " << tab->ZoomFactor();
+		tab->ZoomFactor(m_config.DefaultZoom());
 		
 		if (ok)
 			statusBar()->hide();

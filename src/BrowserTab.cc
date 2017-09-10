@@ -79,4 +79,9 @@ double BrowserTab::ZoomFactor() const
 	return m_ui.m_page->zoomFactor();
 }
 
+void BrowserTab::ZoomFactor(double zoom)
+{
+	m_ui.m_page->setZoomFactor(zoom);
+}
+
 } // end of namespace

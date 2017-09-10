@@ -37,6 +37,7 @@ public :
 	void ZoomIn() override;
 	void ZoomOut() override;
 	double ZoomFactor() const override ;
+	void ZoomFactor(double zoom) override;
 	
 	QWebEnginePage* Page();
 	
