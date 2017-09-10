@@ -160,6 +160,11 @@
     <string>Forward</string>
    </property>
   </action>
+  <action name="m_action_about">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../res/webhama.qrc"/>

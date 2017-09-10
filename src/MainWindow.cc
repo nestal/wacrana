@@ -28,6 +28,7 @@ MainWindow::MainWindow(Configuration& config) :
 {
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
+	m_ui->m_toolbar->addSeparator();
 	
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
@@ -39,6 +40,7 @@ MainWindow::MainWindow(Configuration& config) :
 	connect(m_ui->m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
 	connect(m_ui->m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
 	connect(m_ui->m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_config.DefaultZoom());});
+	connect(m_ui->m_action_about,    &QAction::triggered, qApp, &QApplication::aboutQt);
 	connect(m_ui->m_action_home,     &QAction::triggered, [this]
 	{
 		m_config.HomePage()->OnAction(*this, {});
@@ -155,6 +157,8 @@ void MainWindow::InitMenu()
 	menu->addAction(m_ui->m_action_zoom_in);
 	menu->addAction(m_ui->m_action_zoom_out);
 	menu->addAction(m_ui->m_action_reset_zoom);
+	menu->addSeparator();
+	menu->addAction(m_ui->m_action_about);
 	menu->addSeparator();
 	menu->addAction(m_ui->m_action_exit);
 	

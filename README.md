@@ -1,7 +1,7 @@
-# Warcana
+# Wacrana
 
-This is Warcana: a simple but modular web browser base on QtWebEngine.
+This is Wacrana: a simple but modular web browser base on QtWebEngine.
 
-Waracana aims to be a neat and fast browser. Optional features like bookmarks are supported by
-plugins.
-
+Wacrana aims to be a neat and fast browser. Optional features like bookmarks
+are implemented as [plugins](@ref plugin). The user can disable these
+features if they don't need them, saving memory and CPU time.

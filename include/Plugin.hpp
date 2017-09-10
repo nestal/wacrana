@@ -17,14 +17,23 @@
 class QString;
 class QJsonObject;
 
+/**
+ * \brief Wacrana namespace.
+ *
+ * Everything in wacrana will be put inside this namespace.
+ */
 namespace wacrana {
 
 /**
- * \brief Wacana version 1.x plugin interfaces.
+ * \brief Wacrana version 1.x plugin interfaces.
  *
  * Interface classes defined in this namespace are supposed to be stable across
  * the 1.x releases of the browser. These interfaces will be supported until
  * v3.0 of the browser is released.
+ *
+ * V1.x plugins can only uses interfaces in this namespace. If a plugin uses any
+ * other classes/functions in the outer wacrana namespace, it may not work with
+ * a newer release, which may change the class/function in question.
  */
 namespace V1 {
 

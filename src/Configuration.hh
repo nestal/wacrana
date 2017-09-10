@@ -69,12 +69,10 @@ private:
 	static std::unique_ptr<V1::Plugin> LoadPlugin(const QJsonObject& config);
 	
 private:
-	std::future<void>           m_loaded;
+	std::future<void> m_loaded;
 	
-	// Unfortunately C++ does not support atomic smart pointer yet
 	OwnedFuture<std::unique_ptr<V1::Plugin>>    m_home_page;
-	
-	OwnedFuture<double>         m_default_zoom;
+	OwnedFuture<double>                         m_default_zoom;
 };
 
 } // end of namespace
