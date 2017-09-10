@@ -19,13 +19,18 @@ int main(int argc, char **argv)
 	// may be missed.
 	QObject::connect(&config, &Configuration::Finish, &app, [&config]
 	{
+		Q_ASSERT(QThread::currentThread() == config.thread());
 		try
 		{
 			config.GetResult();
 		}
 		catch (std::exception& e)
 		{
-			QMessageBox::critical(nullptr, QObject::tr("Exception"), e.what());
+			QMessageBox::critical(nullptr, QObject::tr("Configuration Error"), e.what());
+		}
+		catch (...)
+		{
+			QMessageBox::critical(nullptr, QObject::tr("Configuration Error"), "Unknown exception");
 		}
 	}, Qt::QueuedConnection);
 	config.Load("wacrana.json");

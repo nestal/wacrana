@@ -32,6 +32,12 @@ namespace wacrana {
  * a different thread, the Finish() signal is emitted by that thread and should
  * be connect()'ed using Qt::QueuedConnection. You can call GetResult() to
  * check if the configuration is loaded successfully.
+ *
+ * When the browser starts, it construct a Configuration object and Load()'s it
+ * before initialing the Qt web engine. This allows the Qt web engine can be
+ * initialized in parallel with the configurations. If the configuration takes
+ * some time to finish loading, the browser can still be started. This design
+ * can ensure that the browser can be started quickly.
  */
 class Configuration : public QObject
 {

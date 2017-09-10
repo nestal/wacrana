@@ -17,6 +17,13 @@ namespace V1 {
 
 class BrowserTab;
 
+/**
+ * \brief Interface for the plugins to interact with the main browser window
+ *
+ * This interface will be passed to some callbacks in the Plugin interfaces
+ * to allow plugins to interact with the main browser window. For example,
+ * plugins can call NewTab() to create a new tab in the main window.
+ */
 class MainWindow
 {
 protected:
