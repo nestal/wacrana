@@ -14,9 +14,7 @@
 
 #include <QObject>
 
-#include <future>
-#include <atomic>
-#include <functional>
+#include "OwnedFuture.hh"
 
 class QString;
 class QJsonObject;
@@ -43,12 +41,12 @@ class Configuration : public QObject
 	Q_OBJECT
 	
 public:
-	Configuration();
+	Configuration() = default;
 	~Configuration();
 	
 	void Load(const QString& path);
 	
-	V1::Plugin* HomePage() const;
+	V1::Plugin* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();
@@ -71,9 +69,9 @@ private:
 	std::future<void>           m_loaded;
 	
 	// Unfortunately C++ does not support atomic smart pointer yet
-	std::atomic<V1::Plugin*>    m_home_page{};
+	OwnedFuture<V1::Plugin*>    m_home_page;
 	
-	std::atomic<double>         m_default_zoom{1.0};
+	OwnedFuture<double>         m_default_zoom;
 };
 
 } // end of namespace

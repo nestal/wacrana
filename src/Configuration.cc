@@ -24,11 +24,6 @@
 
 namespace wacrana {
 
-Configuration::Configuration()
-{
-	Q_ASSERT(!m_home_page);
-}
-
 void Configuration::Load(const QString& path)
 {
 	// spawn a thread to load the configuration file
@@ -48,11 +43,11 @@ void Configuration::Load(const QString& path)
 			throw std::runtime_error("can't read " + path.toUtf8());
 		
 		// default zoom
-		m_default_zoom.store(doc.object()["default_zoom"].toDouble(m_default_zoom));
+		m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
 		
 		// home page configuration
 		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
-		m_home_page.store(home_page.release());
+		m_home_page.Set(home_page.release());
 	});
 }
 
@@ -60,8 +55,6 @@ Configuration::~Configuration()
 {
 	if (m_loaded.valid())
 		m_loaded.wait();
-	
-	delete m_home_page.exchange(nullptr);
 }
 
 std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
@@ -80,9 +73,9 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 	return plugin;
 }
 
-V1::Plugin *Configuration::HomePage() const
+V1::Plugin *Configuration::HomePage()
 {
-	return m_home_page;
+	return m_home_page.Get();
 }
 
 /**
@@ -102,7 +95,7 @@ void Configuration::GetResult()
 
 double Configuration::DefaultZoom() const
 {
-	return m_default_zoom;
+	return m_default_zoom.Get();
 }
 
 } // end of namespace
