@@ -2,7 +2,7 @@
 	"homepage" : {
 		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/libSimpleHome.so",
 		"factory" : "Load",
-		"homepage": "http://en.cppreference.com"
+		"homepage": "file:///@CMAKE_CURRENT_BINARY_DIR@/html/index.html"
 	},
 	"default_zoom" : 2.0
 }

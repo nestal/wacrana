@@ -39,9 +39,7 @@ MainWindow::MainWindow() :
 	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomOut();});
 	connect(m_ui.m_action_home,     &QAction::triggered, [this]
 	{
-	//	Current().Load({"https://google.com"});
-		if (m_config.HomePage())
-			m_config.HomePage()->OnAction(*this, {});
+		m_config.HomePage()->OnAction(*this, {});
 	});
 	
 	// Must connect the signal before calling Configuration::Load(), otherwise the signal
@@ -87,7 +85,8 @@ MainWindow::MainWindow() :
 	});
 	
 	// load home page
-	NewTab().Load({"https://google.com"});
+	NewTab();
+	m_config.HomePage()->OnAction(*this, {});
 }
 
 MainWindow::~MainWindow() = default;
