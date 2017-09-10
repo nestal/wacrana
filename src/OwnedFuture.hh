@@ -19,9 +19,6 @@
 namespace wacrana {
 
 template <typename T>
-class OwnedFuture;
-
-template <typename T>
 class OwnedFuture
 {
 public:
@@ -30,7 +27,7 @@ public:
 	const T& Get() const
 	{
 		if (!m_value)
-			m_value = m_future.get();
+			m_value.emplace(m_future.get());
 		
 		return m_value.value();
 	}
@@ -38,7 +35,7 @@ public:
 	T& Get()
 	{
 		if (!m_value)
-			m_value = m_future.get();
+			m_value.emplace(m_future.get());
 		
 		return m_value.value();
 	}
@@ -53,40 +50,6 @@ private:
 	mutable std::experimental::optional<T>  m_value;
 	std::promise<T>                 m_promise;
 	mutable std::future<T>          m_future{m_promise.get_future()};
-};
-
-template <typename T>
-class OwnedFuture<T*>
-{
-public:
-	OwnedFuture() = default;
-	
-	const T* Get() const
-	{
-		if (!m_value && m_future.valid())
-			m_value.reset(m_future.get());
-		
-		return m_value.get();
-	}
-	
-	T* Get()
-	{
-		if (!m_value && m_future.valid())
-			m_value.reset(m_future.get());
-		
-		return m_value.get();
-	}
-	
-	template <typename U>
-	void Set(U&& value)
-	{
-		m_promise.set_value(std::forward<U>(value));
-	}
-
-private:
-	mutable std::unique_ptr<T>      m_value;
-	std::promise<T*>        m_promise;
-	mutable std::future<T*> m_future{m_promise.get_future()};
 };
 
 } // end of namespace

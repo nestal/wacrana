@@ -15,15 +15,12 @@
 #include <QObject>
 
 #include "OwnedFuture.hh"
+#include "Plugin.hpp"
 
 class QString;
 class QJsonObject;
 
 namespace wacrana {
-
-namespace V1 {
-class Plugin;
-}
 
 /**
  * \brief Application configuration.
@@ -42,7 +39,7 @@ class Configuration : public QObject
 	
 public:
 	Configuration() = default;
-	~Configuration();
+	~Configuration() override;
 	
 	void Load(const QString& path);
 	
@@ -69,7 +66,7 @@ private:
 	std::future<void>           m_loaded;
 	
 	// Unfortunately C++ does not support atomic smart pointer yet
-	OwnedFuture<V1::Plugin*>    m_home_page;
+	OwnedFuture<std::unique_ptr<V1::Plugin>>    m_home_page;
 	
 	OwnedFuture<double>         m_default_zoom;
 };

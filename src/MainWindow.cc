@@ -19,7 +19,8 @@
 
 namespace wacrana {
 
-MainWindow::MainWindow() :
+MainWindow::MainWindow(Configuration& config) :
+	m_config{config},
 	m_location{new QLineEdit(this)}
 {
 	m_ui.setupUi(this);
@@ -40,21 +41,6 @@ MainWindow::MainWindow() :
 		m_config.HomePage()->OnAction(*this, {});
 	});
 	connect(m_ui.m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
-	
-	// Must connect the signal before calling Configuration::Load(), otherwise the signal
-	// may be missed.
-	connect(&m_config, &Configuration::Finish, this, [this]
-	{
-		try
-		{
-			m_config.GetResult();
-		}
-		catch (std::exception& e)
-		{
-			QMessageBox::critical(this, tr("Exception"), e.what());
-		}
-	}, Qt::QueuedConnection);
-	m_config.Load("wacrana.json");
 	
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui.m_tabs);

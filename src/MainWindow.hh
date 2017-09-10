@@ -31,7 +31,7 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 	Q_OBJECT
 
 public:
-	MainWindow();
+	MainWindow(Configuration& config);
 	~MainWindow();
 
 	BrowserTab& NewTab() override;
@@ -47,7 +47,7 @@ private:
 	void InitMenu();
 	
 private:
-	Configuration  m_config;
+	Configuration&  m_config;
 	
 	Ui::MainWindow m_ui;
 	QLineEdit   *m_location{};

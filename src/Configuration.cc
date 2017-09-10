@@ -47,7 +47,7 @@ void Configuration::Load(const QString& path)
 		
 		// home page configuration
 		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
-		m_home_page.Set(home_page.release());
+		m_home_page.Set(std::move(home_page));
 	});
 }
 
@@ -85,7 +85,7 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 
 V1::Plugin *Configuration::HomePage()
 {
-	return m_home_page.Get();
+	return m_home_page.Get().get();
 }
 
 /**
