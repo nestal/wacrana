@@ -62,18 +62,6 @@ QWebEnginePage *BrowserTab::Page()
 	return m_ui.m_page->page();
 }
 
-void BrowserTab::ZoomIn()
-{
-	auto page = Page();
-	page->setZoomFactor(page->zoomFactor() * 1.25);
-}
-
-void BrowserTab::ZoomOut()
-{
-	auto page = Page();
-	page->setZoomFactor(page->zoomFactor() / 1.25);
-}
-
 double BrowserTab::ZoomFactor() const
 {
 	return m_ui.m_page->zoomFactor();

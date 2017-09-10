@@ -34,8 +34,6 @@ public :
 	QString Title() const override;
 	QIcon Icon() const override;
 	void Back() override;
-	void ZoomIn() override;
-	void ZoomOut() override;
 	double ZoomFactor() const override ;
 	void ZoomFactor(double zoom) override;
 	void Reload() override;

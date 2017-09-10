@@ -30,8 +30,6 @@ public:
 	virtual QUrl Location() const = 0;
 	virtual QString Title() const = 0;
 	virtual void Back() = 0;
-	virtual void ZoomIn() = 0;
-	virtual void ZoomOut() = 0;
 	virtual double ZoomFactor() const = 0;
 	virtual void ZoomFactor(double) = 0;
 	virtual void Reload() = 0;

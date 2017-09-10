@@ -31,8 +31,9 @@ MainWindow::MainWindow() :
 	connect(m_ui.m_action_addtab,   &QAction::triggered, [this]{NewTab();});
 	connect(m_ui.m_action_back,     &QAction::triggered, [this]{Back();});
 	connect(m_ui.m_action_exit,     &QAction::triggered, [this]{close();});
-	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomIn();});
-	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomOut();});
+	connect(m_ui.m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
+	connect(m_ui.m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
+	connect(m_ui.m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_config.DefaultZoom());});
 	connect(m_ui.m_action_home,     &QAction::triggered, [this]
 	{
 		m_config.HomePage()->OnAction(*this, {});
@@ -166,6 +167,7 @@ void MainWindow::InitMenu()
 	menu->addAction(m_ui.m_action_addtab);
 	menu->addAction(m_ui.m_action_zoom_in);
 	menu->addAction(m_ui.m_action_zoom_out);
+	menu->addAction(m_ui.m_action_reset_zoom);
 	menu->addSeparator();
 	menu->addAction(m_ui.m_action_exit);
 	
