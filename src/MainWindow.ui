@@ -54,6 +54,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="m_action_back"/>
+   <addaction name="m_action_refresh"/>
    <addaction name="m_action_home"/>
    <addaction name="separator"/>
   </widget>
@@ -118,6 +119,15 @@
    </property>
    <property name="text">
     <string>Home</string>
+   </property>
+  </action>
+  <action name="m_action_refresh">
+   <property name="icon">
+    <iconset resource="../res/webhama.qrc">
+     <normaloff>:/icon/ic_refresh_black_24px.svg</normaloff>:/icon/ic_refresh_black_24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
    </property>
   </action>
  </widget>
