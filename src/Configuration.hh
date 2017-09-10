@@ -26,6 +26,14 @@ class Plugin;
 }
 
 /**
+ \page plugin Wacrana Plugins
+ 
+ # Configuration for Plugins
+ 
+ Some doc here
+*/
+
+/**
  * \brief Application configuration.
  *
  * This class loads configuration in JSON file. It will also load the plugins

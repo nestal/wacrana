@@ -52,6 +52,15 @@ typedef std::unique_ptr<Plugin> (*Factory)();
 
 }} // end of namespace
 
+/**
+ \page plugin Wacrana Plugins
+ 
+ # GCC Visibility for Plugin
+
+ By default, all symbols in the Wacrana plugin DSO in Linux are marked as "hidden". It is
+ specified in CMakeLists.txt via the CXX_VISIBILITY_PRESET variable.
+*/
+
 #ifdef __GNUC__
 	#define WCAPI __attribute__ ((visibility ("default")))
 #elif defined _MSC_VER
