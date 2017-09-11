@@ -70,9 +70,9 @@ MainWindow::MainWindow(Configuration& config) :
 		else
 		{
 			// the tab widget will not delete the tabs, so we need to delete them ourselves.
-			// note that deleting them right here will crash.
-			Tab(tab).deleteLater();
+			auto widget = m_ui->m_tabs->widget(tab);
 			m_ui->m_tabs->removeTab(tab);
+			delete widget;
 		}
 	});
 	
@@ -122,7 +122,7 @@ BrowserTab& MainWindow::Current()
 {
 	auto tab = m_ui->m_tabs->currentWidget();
 	Q_ASSERT(tab);
-	return dynamic_cast<BrowserTab&>(*tab);
+	return *qobject_cast<BrowserTab*>(tab);
 }
 
 BrowserTab& MainWindow::Tab(int index)
@@ -130,7 +130,7 @@ BrowserTab& MainWindow::Tab(int index)
 	Q_ASSERT(index >= 0 && index < m_ui->m_tabs->count());
 	auto tab = m_ui->m_tabs->widget(index);
 	Q_ASSERT(tab);
-	return dynamic_cast<BrowserTab&>(*tab);
+	return *qobject_cast<BrowserTab*>(tab);
 }
 
 int MainWindow::IndexOf(const V1::BrowserTab& tab) const
