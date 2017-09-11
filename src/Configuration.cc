@@ -84,8 +84,9 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 	auto&& json_factory  = config["factory"];
 	
 	if (!json_lib.isString() || !json_factory.isString())
-		throw std::runtime_error("Invalid configuration: missing \"lib\" or \"factory\" in configuration.");
+		throw std::runtime_error(R"(Invalid configuration: missing "lib" or "factory" in configuration.)");
 	
+	// Qt doesn't use exceptions... how lame
 	QLibrary lib{json_lib.toString()};
 	if (!lib.load())
 		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
