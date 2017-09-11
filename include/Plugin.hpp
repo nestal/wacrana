@@ -12,8 +12,16 @@
 
 #pragma once
 
+#include <memory>
+
 class QString;
 class QJsonObject;
+
+#ifdef __GNUC__
+	#define WCAPI __attribute__ ((visibility ("default")))
+#elif defined _MSC_VER
+	#define WCAPI __declspec(dllexport)
+#endif
 
 /**
  * \brief Wacrana namespace.
@@ -47,7 +55,7 @@ class BrowserTab;
  * A plugin is a shared library (DLL in Windows and .so in Linux) that implements
  * a factory function that returns a Plugin object.
  */
-class Plugin
+class WCAPI Plugin
 {
 public:
 	/**
@@ -97,12 +105,7 @@ public:
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 };
 
-typedef Plugin* (*Factory)();
+typedef std::unique_ptr<Plugin> (*Factory)();
 
 }} // end of namespace
 
-#ifdef __GNUC__
-	#define WCAPI __attribute__ ((visibility ("default")))
-#elif defined _MSC_VER
-	#define WCAPI __declspec(dllexport)
-#endif

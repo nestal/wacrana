@@ -94,7 +94,7 @@ std::unique_ptr<V1::Plugin> Configuration::LoadPlugin(const QJsonObject& config)
 	if (!factory)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	std::unique_ptr<V1::Plugin> plugin{(*factory)()};
+	auto plugin = (*factory)();
 	if (!plugin)
 		throw std::runtime_error("Cannot create plugin from library " + json_lib.toString().toStdString());
 	
