@@ -14,7 +14,6 @@
 
 #include <future>
 #include <memory>
-#include <experimental/optional>
 
 namespace wacrana {
 
@@ -26,18 +25,24 @@ public:
 	
 	const T& Get() const
 	{
-		if (!m_value)
-			m_value.emplace(m_future.get());
+		if (!m_has_value)
+		{
+			m_value = m_future.get();
+			m_has_value = true;
+		}
 		
-		return m_value.value();
+		return m_value;
 	}
 	
 	T& Get()
 	{
-		if (!m_value)
-			m_value.emplace(m_future.get());
+		if (!m_has_value)
+		{
+			m_value = m_future.get();
+			m_has_value = true;
+		}
 		
-		return m_value.value();
+		return m_value;
 	}
 	
 	template <typename U>
@@ -47,7 +52,8 @@ public:
 	}
 	
 private:
-	mutable std::experimental::optional<T>  m_value;
+	mutable bool m_has_value{false};
+	mutable T    m_value{};
 	std::promise<T>                 m_promise;
 	mutable std::future<T>          m_future{m_promise.get_future()};
 };

@@ -16,10 +16,7 @@ find_package(Qt5WebEngineWidgets REQUIRED)
 find_package(Threads REQUIRED)
 
 # Require dot, treat the other components as optional
-find_package(Doxygen
-    REQUIRED dot
-    OPTIONAL_COMPONENTS mscgen dia
-)
+find_package(Doxygen)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
