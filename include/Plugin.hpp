@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <memory>
-
 class QString;
 class QJsonObject;
 
@@ -99,7 +97,7 @@ public:
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 };
 
-typedef std::unique_ptr<Plugin> (*Factory)();
+typedef Plugin* (*Factory)();
 
 }} // end of namespace
 

@@ -42,9 +42,9 @@ QString SimpleHome::Version() const
 	return "1.0";
 }
 
-extern "C" WCAPI std::unique_ptr<V1::Plugin> Load()
+extern "C" WCAPI V1::Plugin* Load()
 {
-	return std::make_unique<SimpleHome>();
+	return new SimpleHome;
 }
 
 } // end of namespace

@@ -1,6 +1,6 @@
 {
 	"homepage" : {
-		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/libSimpleHome.so",
+		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/SimpleHome",
 		"factory" : "Load",
 		"homepage": "file:///@CMAKE_CURRENT_BINARY_DIR@/html/index.html"
 	},
