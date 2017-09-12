@@ -28,6 +28,8 @@ class BrowserTab : public QWidget, public V1::BrowserTab
 
 public :
 	explicit BrowserTab(QWidget *parent, double zoom);
+	BrowserTab(const BrowserTab&) = delete;
+	BrowserTab& operator=(const BrowserTab&) = delete;
 	~BrowserTab();
 
 	void Load(const QUrl& url) override;

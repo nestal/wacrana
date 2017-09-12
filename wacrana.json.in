@@ -2,7 +2,7 @@
 	"homepage" : {
 		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/SimpleHome",
 		"factory" : "Load",
-		"homepage": "file:///@CMAKE_CURRENT_BINARY_DIR@/html/index.html"
+		"homepage": "https://google.com"
 	},
 	"default_zoom" : 2.0
 }

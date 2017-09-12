@@ -58,7 +58,9 @@ MainWindow::MainWindow(Configuration& config) :
 	connect(m_ui->m_tabs, &QTabWidget::currentChanged, [this](int tab)
 	{
 		Q_ASSERT(tab >= 0 && tab < m_ui->m_tabs->count());
-		m_location->setText(Tab(tab).Location().url());
+		auto&& browser = Tab(tab);
+		m_location->setText(browser.Location().url());
+		setWindowTitle(browser.Title());
 	});
 	
 	// close tab when "x" button is pressed
