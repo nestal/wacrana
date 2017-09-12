@@ -57,6 +57,16 @@ class BrowserTab;
  */
 class WCAPI Plugin
 {
+protected:
+	/**
+	 * \brief Protected destructor.
+	 *
+	 * Disallow plugin clients to call `delete` a plugin. Plugins must be destroyed
+	 * by calling Release(), which is private and must be called indirectly through
+	 * PluginDeleter.
+	 */
+	~Plugin() = default;
+
 public:
 	/**
 	 *  \brief Name of the plugin.
@@ -103,9 +113,32 @@ public:
 	 */
 	virtual void OnPageLoaded(MainWindow& wnd, BrowserTab& tab) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
+
+private:
+	friend class PluginDeleter;
+	virtual void Release() = 0;
 };
 
-typedef std::unique_ptr<Plugin> (*Factory)();
+/**
+ * In windows, DLL export functions cannot return C++ classes. Since the factory
+ * function must be exported by the DLL, it cannot return a smart pointer.
+ */
+typedef Plugin* (*Factory)();
+
+class PluginDeleter
+{
+public:
+	void operator()(Plugin *p) const
+	{
+		p->Release();
+	}
+};
+
+using PluginPtr = std::unique_ptr<Plugin, PluginDeleter>;
+inline PluginPtr LoadPlugin(Factory func)
+{
+	return PluginPtr((*func)());
+}
 
 }} // end of namespace
 

@@ -19,6 +19,13 @@
 
 namespace wacrana {
 
+/**
+ * \brief	Wrapper for a future and promise its value
+ * @tparam T	The type of the value being managed
+ *
+ * This class is only safe for a single "consumer" thread. Need to
+ * change to shared_future for multiple consumer threads.
+ */
 template <typename T>
 class OwnedFuture
 {

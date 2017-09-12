@@ -66,13 +66,13 @@ Q_SIGNALS:
 	void Finish();
 	
 private:
-	static std::unique_ptr<V1::Plugin> LoadPlugin(const QJsonObject& config);
+	static V1::PluginPtr LoadPlugin(const QJsonObject& config);
 	
 private:
 	std::future<void> m_loaded;
 	
-	OwnedFuture<std::unique_ptr<V1::Plugin>>    m_home_page;
-	OwnedFuture<double>                         m_default_zoom;
+	OwnedFuture<V1::PluginPtr>  m_home_page;
+	OwnedFuture<double>         m_default_zoom;
 };
 
 } // end of namespace
