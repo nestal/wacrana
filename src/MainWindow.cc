@@ -98,6 +98,9 @@ BrowserTab& MainWindow::NewTab()
 		
 		if (ok)
 			statusBar()->hide();
+		
+		for (auto&& persona : m_config.Persona())
+			persona->OnPageLoaded(*this, *tab, ok);
 	});
 	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
 	{

@@ -17,6 +17,8 @@
 #include "OwnedFuture.hh"
 #include "Plugin.hpp"
 
+#include <boost/range/iterator_range.hpp>
+
 class QString;
 class QJsonObject;
 
@@ -53,6 +55,10 @@ public:
 	double DefaultZoom() const;
 	
 	void GetResult();
+	
+	boost::iterator_range<
+		std::vector<V1::PluginPtr>::const_iterator
+	> Persona() const;
 	
 Q_SIGNALS:
 	/**

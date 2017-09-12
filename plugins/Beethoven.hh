@@ -25,7 +25,7 @@ public:
 	QString Version() const override;
 	
 	void OnPluginLoaded(const QJsonObject&) override;
-	void OnPageLoaded(V1::MainWindow&, V1::BrowserTab&) override ;
+	void OnPageLoaded(V1::MainWindow&, V1::BrowserTab&, bool) override ;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
 };
 

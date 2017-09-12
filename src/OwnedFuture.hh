@@ -54,6 +54,13 @@ public:
 		m_promise.set_value(std::forward<U>(value));
 	}
 	
+	void OnException(std::exception_ptr except)
+	{
+		using namespace std::chrono_literals;
+		if (m_future.valid() && m_future.wait_for(0s) != std::future_status::ready)
+			m_promise.set_exception(except);
+	}
+	
 private:
 	mutable boost::optional<T>      m_value{};
 	std::promise<T>                 m_promise;

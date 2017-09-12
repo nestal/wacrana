@@ -56,26 +56,38 @@ void Configuration::Load(const QString& path)
 		auto finale = [this](void*){Q_EMIT Finish();};
 		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
 		
-		QFile file(path);
-		file.open(QFile::ReadOnly);
-		auto doc = QJsonDocument::fromJson(file.readAll());
-		
-		if (doc.isNull())
-			throw std::runtime_error("can't read " + path.toUtf8());
-		
-		// default zoom
-		m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
-		
-		// home page configuration
-		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
-		m_home_page.Set(std::move(home_page));
-		
-		// persona
-		std::vector<V1::PluginPtr> persona;
-		auto persona_json = doc.object()["persona"].toArray();
-		for (auto&& p : persona_json)
-			persona.push_back(LoadPlugin(p.toObject()));
-		m_persona.Set(std::move(persona));
+		try
+		{
+			QFile file(path);
+			file.open(QFile::ReadOnly);
+			auto doc = QJsonDocument::fromJson(file.readAll());
+			
+			if (doc.isNull())
+				throw std::runtime_error("can't read " + path.toUtf8());
+			
+			// default zoom
+			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
+			
+			// home page configuration
+			auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
+			m_home_page.Set(std::move(home_page));
+			
+			// persona
+			std::vector<V1::PluginPtr> persona;
+			auto persona_json = doc.object()["persona"].toArray();
+			for (auto&& p : persona_json)
+				persona.push_back(LoadPlugin(p.toObject()));
+			m_persona.Set(std::move(persona));
+		}
+		catch (...)
+		{
+			// this is not good, must remember to set exception to all config items
+			m_default_zoom.OnException(std::current_exception());
+			m_home_page.OnException(std::current_exception());
+			m_persona.OnException(std::current_exception());
+			
+			throw;
+		}
 	});
 }
 
@@ -135,10 +147,8 @@ V1::Plugin *Configuration::HomePage()
  */
 void Configuration::GetResult()
 {
-	qDebug() << "get result";
 	if (m_loaded.valid())
 		m_loaded.get();
-	qDebug() << "gotten result";
 }
 
 /**
@@ -154,6 +164,13 @@ void Configuration::GetResult()
 double Configuration::DefaultZoom() const
 {
 	return m_default_zoom.Get();
+}
+
+boost::iterator_range<
+	std::vector<V1::PluginPtr>::const_iterator
+> Configuration::Persona() const
+{
+	return {m_persona.Get().begin(), m_persona.Get().end()};
 }
 
 } // end of namespace

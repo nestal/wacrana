@@ -31,9 +31,9 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 {
 }
 
-void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&)
+void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&, bool ok)
 {
-	qDebug() << "beethoven working";
+	qDebug() << "beethoven working " << (ok ? "ok" : "oops");
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
