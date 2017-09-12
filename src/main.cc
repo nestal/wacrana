@@ -22,7 +22,9 @@ int main(int argc, char **argv)
 		Q_ASSERT(QThread::currentThread() == config.thread());
 		try
 		{
+			qDebug() << "get result1";
 			config.GetResult();
+			qDebug() << "get result2";
 		}
 		catch (std::exception& e)
 		{
@@ -35,10 +37,13 @@ int main(int argc, char **argv)
 	}, Qt::QueuedConnection);
 	config.Load("wacrana.json");
 	
+	qDebug() << "per init";
 	QtWebEngine::initialize();
+	qDebug() << "per init2";
 	
 	MainWindow wnd{config};
 	wnd.show();
 
+	qDebug() << "shown";
 	return app.exec();
 }

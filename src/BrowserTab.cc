@@ -16,11 +16,7 @@ namespace wacrana {
 
 BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
 {
-	qDebug() << "haha" ;
-	
 	m_ui.setupUi(this);
-//	setAttribute(Qt::WA_DeleteOnClose);
-	
 	m_ui.m_page->setZoomFactor(zoom);
 	
 	connect(m_ui.m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoad);
@@ -29,10 +25,7 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
 	connect(m_ui.m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
 }
 
-BrowserTab::~BrowserTab()
-{
-	qDebug() << "destroying tab" ;
-}
+BrowserTab::~BrowserTab() = default;
 
 void BrowserTab::OnLoad(bool val)
 {

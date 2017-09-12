@@ -42,19 +42,9 @@ QString SimpleHome::Version() const
 	return "1.0";
 }
 
-void SimpleHome::Release()
-{
-	delete this;
-}
-
-SimpleHome *SimpleHome::New()
-{
-	return new SimpleHome;
-}
-
 extern "C" WCAPI V1::Plugin* Load()
 {
-	return SimpleHome::New();
+	return new SimpleHome;
 }
 
 } // end of namespace

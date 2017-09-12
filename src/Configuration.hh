@@ -73,6 +73,8 @@ private:
 	
 	OwnedFuture<V1::PluginPtr>  m_home_page;
 	OwnedFuture<double>         m_default_zoom;
+	
+	OwnedFuture<std::vector<V1::PluginPtr>> m_persona;
 };
 
 } // end of namespace

@@ -29,7 +29,7 @@ MainWindow::MainWindow(Configuration& config) :
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
 	m_ui->m_toolbar->addSeparator();
-	
+
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
 	// actions
@@ -46,7 +46,7 @@ MainWindow::MainWindow(Configuration& config) :
 		m_config.HomePage()->OnAction(*this, {});
 	});
 	connect(m_ui->m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
-	
+
 	// setup "new tab" button in the corner of the tab
 	auto add_btn = std::make_unique<QToolButton>(m_ui->m_tabs);
 	add_btn->setDefaultAction(m_ui->m_action_addtab);

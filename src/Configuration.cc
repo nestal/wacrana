@@ -17,7 +17,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
 #include <QtCore/QLibrary>
+#include <QtCore/QDebug>
 
 #include <memory>
 #include <stdexcept>
@@ -67,6 +69,13 @@ void Configuration::Load(const QString& path)
 		// home page configuration
 		auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
 		m_home_page.Set(std::move(home_page));
+		
+		// persona
+		std::vector<V1::PluginPtr> persona;
+		auto persona_json = doc.object()["persona"].toArray();
+		for (auto&& p : persona_json)
+			persona.push_back(LoadPlugin(p.toObject()));
+		m_persona.Set(std::move(persona));
 	});
 }
 
@@ -126,8 +135,10 @@ V1::Plugin *Configuration::HomePage()
  */
 void Configuration::GetResult()
 {
+	qDebug() << "get result";
 	if (m_loaded.valid())
 		m_loaded.get();
+	qDebug() << "gotten result";
 }
 
 /**

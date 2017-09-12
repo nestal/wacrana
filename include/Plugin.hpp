@@ -13,6 +13,7 @@
 #pragma once
 
 #include <memory>
+#include <cassert>
 
 class QString;
 class QJsonObject;
@@ -57,17 +58,9 @@ class BrowserTab;
  */
 class WCAPI Plugin
 {
-protected:
-	/**
-	 * \brief Protected destructor.
-	 *
-	 * Disallow plugin clients to call `delete` a plugin. Plugins must be destroyed
-	 * by calling Release(), which is private and must be called indirectly through
-	 * PluginDeleter.
-	 */
-	~Plugin() = default;
-
 public:
+	virtual ~Plugin() = default;
+	
 	/**
 	 *  \brief Name of the plugin.
 	 *
@@ -113,10 +106,6 @@ public:
 	 */
 	virtual void OnPageLoaded(MainWindow& wnd, BrowserTab& tab) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
-
-private:
-	friend class PluginDeleter;
-	virtual void Release() = 0;
 };
 
 /**
@@ -124,20 +113,12 @@ private:
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
 typedef Plugin* (*Factory)();
+using PluginPtr = std::unique_ptr<V1::Plugin>;
 
-class PluginDeleter
-{
-public:
-	void operator()(Plugin *p) const
-	{
-		p->Release();
-	}
-};
-
-using PluginPtr = std::unique_ptr<Plugin, PluginDeleter>;
 inline PluginPtr LoadPlugin(Factory func)
 {
-	return PluginPtr((*func)());
+	assert(func);
+	return PluginPtr{(*func)()};
 }
 
 }} // end of namespace

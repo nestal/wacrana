@@ -4,5 +4,12 @@
 		"factory" : "Load",
 		"homepage": "https://google.com"
 	},
-	"default_zoom" : 2.0
+	"default_zoom" : 2.0,
+	"persona" :
+	[
+		{
+			"lib"		: "@CMAKE_CURRENT_BINARY_DIR@/Beethoven",
+			"factory"	: "Load"
+		}
+	]
 }
