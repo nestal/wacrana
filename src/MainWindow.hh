@@ -42,7 +42,7 @@ public:
 	BrowserTab& Current() override;
 	BrowserTab& Tab(int index) override;
 	int IndexOf(const V1::BrowserTab& tab) const override;
-	int Count() const override;
+	int TabCount() const override;
 	
 private:
 	void Go();

@@ -157,7 +157,7 @@ int MainWindow::IndexOf(const BrowserTab& tab) const
 	return index;
 }
 
-int MainWindow::Count() const
+int MainWindow::TabCount() const
 {
 	return m_ui->m_tabs->count();
 }

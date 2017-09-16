@@ -18,9 +18,11 @@
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 #include <QtCore/QFile>
-#include <QtCore/QLoggingCategory>
+#include <QtCore/QTimer>
 
 namespace wacrana {
+
+Beethoven::~Beethoven() = default;
 
 QString Beethoven::Name() const
 {
@@ -52,15 +54,22 @@ void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 			if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
 				qDebug() << bscript.errorString();
 			tab.InjectScript(QString{bscript.readAll()});
+			
+			QTimer::singleShot(3000, this, &Beethoven::OnTimer);
 		}
 	}
 	else if (ok)
 	{
-		tab.Load({"https://google.com/search?q=I+am+beethoven"});
+//		tab.Load({"https://google.com/search?q=I+am+beethoven"});
+		QTimer::singleShot(5000, this, &Beethoven::OnTimer);
 	}
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
+{
+}
+
+void Beethoven::OnTimer()
 {
 
 }
