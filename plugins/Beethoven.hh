@@ -36,7 +36,7 @@ public:
 	QIcon Icon() const override;
 
 private:
-	void OnTimer();
+	void OnTimer(V1::BrowserTab& tab);
 };
 
 } // end of namespace

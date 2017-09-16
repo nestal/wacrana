@@ -12,7 +12,7 @@
 
 #include "BrowserTab.hh"
 
-#include <QDebug>
+#include <QTimer>
 
 namespace wacrana {
 
@@ -90,6 +90,11 @@ void BrowserTab::Reload()
 void BrowserTab::InjectScript(const QString& javascript)
 {
 	m_ui.m_page->page()->runJavaScript(javascript, [](const QVariant &v) { qDebug() << v.toString(); });
+}
+
+void BrowserTab::SingleShotTimer(int msec, std::function<void(V1::BrowserTab&)>&& callback)
+{
+	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
 }
 
 } // end of namespace

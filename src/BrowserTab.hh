@@ -42,6 +42,7 @@ public :
 	void ZoomFactor(double zoom) override;
 	void Reload() override;
 	void InjectScript(const QString& javascript) override;
+	void SingleShotTimer(int msec, std::function<void(V1::BrowserTab& tab)>&& callback) override;
 	
 	QWebEnginePage* Page();
 	

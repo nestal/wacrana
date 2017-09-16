@@ -10,6 +10,8 @@ class Google
 {
 	static Search(text)
 	{
+		console.log("google search for " + text);
+
 		// assume the active element is the search text box
 		// need to call blur otherwise click button doesn't work
 		document.activeElement.value = text;

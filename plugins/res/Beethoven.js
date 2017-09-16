@@ -6,10 +6,9 @@
     distribution for more details.
 */
 
-var keyword = ["beethoven", "classical", "symphony", "#2", "mozart", "nocture", "decca"];
+var keyword = ["beethoven", "classical", "symphony", "bach", "mozart", "nocture", "decca"];
 
 window.setTimeout(()=>
 {
 	Google.Search(keyword[Math.floor(Math.random() * keyword.length)]);
 }, 1000);
-document.title;

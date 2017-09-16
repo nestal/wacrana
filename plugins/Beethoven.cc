@@ -49,20 +49,21 @@ void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 			QFile script{":/scripts/Google.js"};
 			if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
 				qDebug() << script.errorString();
-			tab.InjectScript(QString{script.readAll()});
+			else
+				tab.InjectScript(QString{script.readAll()});
 			
 			QFile bscript{":/scripts/Beethoven.js"};
 			if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
 				qDebug() << bscript.errorString();
-			tab.InjectScript(QString{bscript.readAll()});
-			
-			QTimer::singleShot(3000, this, &Beethoven::OnTimer);
+			else
+				tab.InjectScript(QString{bscript.readAll()});
 		}
-	}
-	else if (ok)
-	{
-//		tab.Load({"https://google.com/search?q=I+am+beethoven"});
-		QTimer::singleShot(5000, this, &Beethoven::OnTimer);
+		else if (ok)
+		{
+			qDebug() << "get result";
+			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
+			
+		}
 	}
 }
 
@@ -70,9 +71,10 @@ void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
 {
 }
 
-void Beethoven::OnTimer()
+void Beethoven::OnTimer(V1::BrowserTab& tab)
 {
-
+	qDebug() << "going back to google";
+	tab.Load({"https://google.com"});
 }
 
 QIcon Beethoven::Icon() const

@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <functional>
+
 class QUrl;
 class QIcon;
 class QString;
@@ -35,6 +37,7 @@ public:
 	virtual void ZoomFactor(double) = 0;
 	virtual void Reload() = 0;
 	virtual void InjectScript(const QString& javascript) = 0;
+	virtual void SingleShotTimer(int msec, std::function<void(BrowserTab& tab)>&& callback) = 0;
 };
 
 }} // end of namespace
