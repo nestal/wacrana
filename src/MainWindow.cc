@@ -78,6 +78,13 @@ MainWindow::MainWindow(Configuration& config) :
 		}
 	});
 	
+	// double click the tab bar will create new tab
+	connect(m_ui->m_tabs->tabBar(), &QTabBar::tabBarDoubleClicked, [this](int tab)
+	{
+		if (tab == -1)
+			NewTab();
+	});
+	
 	// load home page
 	NewTab();
 	m_config.HomePage()->OnAction(*this, {});
