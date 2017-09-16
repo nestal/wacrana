@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="scripts">
+        <file>Beethoven.js</file>
+    </qresource>
+</RCC>
+

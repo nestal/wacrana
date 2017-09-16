@@ -49,6 +49,6 @@ add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc)
 target_link_libraries(SimpleHome Qt5::Core)
 set_target_properties(SimpleHome PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-add_library(Beethoven SHARED plugins/Beethoven.hh plugins/Beethoven.cc)
+add_library(Beethoven SHARED plugins/Beethoven.hh plugins/Beethoven.cc plugins/Beethoven.qrc)
 target_link_libraries(Beethoven Qt5::Core)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)

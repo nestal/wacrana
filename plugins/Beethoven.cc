@@ -45,15 +45,12 @@ void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 		QFile script{":/scripts/Google.js"};
 		if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
 			qDebug() << script.errorString();
-			
 		tab.InjectScript(QString{script.readAll()});
 		
-		tab.InjectScript(
-			R"____(
-			Search("I am Beethoven");
-			document.title;
-			)____"
-		);
+		QFile bscript{":/scripts/Beethoven.js"};
+		if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
+			qDebug() << bscript.errorString();
+		tab.InjectScript(QString{bscript.readAll()});
 	}
 }
 
@@ -62,9 +59,17 @@ void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
 
 }
 
-extern "C" WCAPI V1::Plugin* Load()
+} // end of namespace
+
+// can't call Q_INIT_RESOURCE() in extern "C" functions
+// must be called in a separate function in global namespace
+static void InitResource()
 {
-	return new Beethoven;
+	Q_INIT_RESOURCE(Beethoven);
 }
 
-} // end of namespace
+extern "C" WCAPI wacrana::V1::Plugin* Load()
+{
+	InitResource();
+	return new wacrana::Beethoven;
+}
