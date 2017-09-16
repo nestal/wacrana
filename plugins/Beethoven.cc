@@ -19,6 +19,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
+#include <QtGui/QIcon>
 
 namespace wacrana {
 
@@ -72,6 +73,11 @@ void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
 void Beethoven::OnTimer()
 {
 
+}
+
+QIcon Beethoven::Icon() const
+{
+	return QIcon{":/icon/Beethoven.jpg"};
 }
 
 } // end of namespace

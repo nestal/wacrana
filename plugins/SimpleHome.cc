@@ -15,6 +15,7 @@
 #include "BrowserTab.hpp"
 
 #include <QtCore/QJsonObject>
+#include <QtGui/QIcon>
 
 namespace wacrana {
 
@@ -40,6 +41,11 @@ QString SimpleHome::Name() const
 QString SimpleHome::Version() const
 {
 	return "1.0";
+}
+
+QIcon SimpleHome::Icon() const
+{
+	return {};
 }
 
 extern "C" WCAPI V1::Plugin* Load()

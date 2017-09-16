@@ -2,5 +2,8 @@
     <qresource prefix="scripts">
         <file>Beethoven.js</file>
     </qresource>
+    <qresource prefix="icon">
+        <file>Beethoven.jpg</file>
+    </qresource>
 </RCC>
 

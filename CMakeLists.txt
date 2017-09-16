@@ -46,9 +46,9 @@ endif()
 # plugins
 # need to include Qt5 core only in windows
 add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc plugins/ResourceLoader.hh)
-target_link_libraries(SimpleHome Qt5::Core)
+target_link_libraries(SimpleHome Qt5::Core Qt5::Gui)
 set_target_properties(SimpleHome PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-add_library(Beethoven SHARED plugins/Beethoven.hh plugins/Beethoven.cc plugins/Beethoven.qrc plugins/ResourceLoader.hh)
-target_link_libraries(Beethoven Qt5::Core)
+add_library(Beethoven SHARED plugins/Beethoven.hh plugins/Beethoven.cc plugins/ResourceLoader.hh plugins/res/Beethoven.qrc)
+target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)

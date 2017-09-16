@@ -17,6 +17,7 @@
 
 class QString;
 class QJsonObject;
+class QIcon;
 
 #ifdef __GNUC__
 	#define WCAPI __attribute__ ((visibility ("default")))
@@ -106,6 +107,7 @@ public:
 	 */
 	virtual void OnPageLoaded(MainWindow& wnd, BrowserTab& tab, bool ok) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
+	virtual QIcon Icon() const = 0;
 };
 
 /**
