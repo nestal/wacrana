@@ -36,12 +36,14 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 
 void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 {
-	qDebug() << "beethoven working " << (ok ? "ok" : "oops") << " " << tab.Location().host();
+	auto loc = tab.Location();
+	qDebug() << "beethoven working " << (ok ? "ok" : "oops") << " " << loc.fileName();
 	
-	if (tab.Location().host().contains("google.com", Qt::CaseInsensitive))
+	if (loc.host().contains("google.com", Qt::CaseInsensitive) && loc.fileName() != "search")
 		tab.InjectScript(R"____(
 			var s = "beethoven@google: " + document.title + " " + document.activeElement;
             document.activeElement.value = "I am Beethoven";
+            document.getElementsByName("btnK").forEach(function(btn){btn.click();});
 			s;
 		)____");
 }
