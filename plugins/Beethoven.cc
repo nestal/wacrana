@@ -17,6 +17,7 @@
 #include <QtCore/QString>
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
+#include <QtCore/QFile>
 
 namespace wacrana {
 
@@ -40,12 +41,20 @@ void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 	qDebug() << "beethoven working " << (ok ? "ok" : "oops") << " " << loc.fileName();
 	
 	if (loc.host().contains("google.com", Qt::CaseInsensitive) && loc.fileName() != "search")
-		tab.InjectScript(R"____(
-			var s = "beethoven@google: " + document.title + " " + document.activeElement;
-            document.activeElement.value = "I am Beethoven";
-            document.getElementsByName("btnK").forEach(function(btn){btn.click();});
-			s;
-		)____");
+	{
+		QFile script{":/scripts/Google.js"};
+		if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
+			qDebug() << script.errorString();
+			
+		tab.InjectScript(QString{script.readAll()});
+		
+		tab.InjectScript(
+			R"____(
+			Search("I am Beethoven");
+			document.title;
+			)____"
+		);
+	}
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)

@@ -10,4 +10,7 @@
     <file>ic_menu_black_24px.svg</file>
     <file>ic_refresh_black_24px.svg</file>
   </qresource>
+    <qresource prefix="scripts">
+        <file>Google.js</file>
+    </qresource>
 </RCC>

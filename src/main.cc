@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
-
+	
 	Configuration config;
 	Q_ASSERT(config.thread() == QThread::currentThread());
 	
