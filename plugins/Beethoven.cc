@@ -12,8 +12,11 @@
 
 #include "Beethoven.hh"
 
+#include "BrowserTab.hpp"
+
 #include <QtCore/QString>
 #include <QtCore/QDebug>
+#include <QtCore/QUrl>
 
 namespace wacrana {
 
@@ -31,9 +34,16 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 {
 }
 
-void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab&, bool ok)
+void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 {
-	qDebug() << "beethoven working " << (ok ? "ok" : "oops");
+	qDebug() << "beethoven working " << (ok ? "ok" : "oops") << " " << tab.Location().host();
+	
+	if (tab.Location().host().contains("google.com", Qt::CaseInsensitive))
+		tab.InjectScript(R"____(
+			var s = "beethoven@google: " + document.title + " " + document.activeElement;
+            document.activeElement.value = "I am Beethoven";
+			s;
+		)____");
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)

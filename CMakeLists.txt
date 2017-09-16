@@ -16,7 +16,6 @@ find_package(Qt5WebEngineWidgets REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED)
 
-# Require dot, treat the other components as optional
 find_package(Doxygen)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)

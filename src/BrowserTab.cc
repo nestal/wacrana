@@ -12,6 +12,8 @@
 
 #include "BrowserTab.hh"
 
+#include <QDebug>
+
 namespace wacrana {
 
 BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
@@ -81,6 +83,11 @@ void BrowserTab::ZoomFactor(double zoom)
 void BrowserTab::Reload()
 {
 	m_ui.m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
+}
+
+void BrowserTab::InjectScript(const QString& javascript)
+{
+	m_ui.m_page->page()->runJavaScript(javascript, [](const QVariant &v) { qDebug() << v.toString(); });
 }
 
 } // end of namespace

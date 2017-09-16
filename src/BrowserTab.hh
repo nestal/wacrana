@@ -41,6 +41,7 @@ public :
 	double ZoomFactor() const override ;
 	void ZoomFactor(double zoom) override;
 	void Reload() override;
+	void InjectScript(const QString& javascript) override;
 	
 	QWebEnginePage* Page();
 	
