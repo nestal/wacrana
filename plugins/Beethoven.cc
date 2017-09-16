@@ -61,15 +61,10 @@ void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
 
 } // end of namespace
 
-// can't call Q_INIT_RESOURCE() in extern "C" functions
-// must be called in a separate function in global namespace
-static void InitResource()
-{
-	Q_INIT_RESOURCE(Beethoven);
-}
+#include "ResourceLoader.hh"
+WCAPI_RESOURCE_LOADER(Beethoven)
 
 extern "C" WCAPI wacrana::V1::Plugin* Load()
 {
-	InitResource();
 	return new wacrana::Beethoven;
 }
