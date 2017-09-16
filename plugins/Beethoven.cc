@@ -18,6 +18,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 #include <QtCore/QFile>
+#include <QtCore/QLoggingCategory>
 
 namespace wacrana {
 
@@ -38,8 +39,6 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 {
 	auto loc = tab.Location();
-	qDebug() << "beethoven working " << (ok ? "ok" : "oops") << " " << loc.fileName();
-	
 	if (loc.host().contains("google.com", Qt::CaseInsensitive) && loc.fileName() != "search")
 	{
 		QFile script{":/scripts/Google.js"};

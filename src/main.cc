@@ -15,7 +15,13 @@
 #include "Configuration.hh"
 #include "MainWindow.hh"
 
+#include <iostream>
+
 using namespace wacrana;
+
+// set environment variable "QT_LOGGING_TO_CONSOLE" to 1 to enable logging in stderr.
+// when run by clion under, there is no TTY so these log message will not be shown,
+// apparently they have gone to syslog.
 
 int main(int argc, char **argv)
 {

@@ -6,5 +6,8 @@
     distribution for more details.
 */
 
-Search("I am Beethoven");
+window.setTimeout(()=>
+{
+	Google.Search("I am Beeth1oven");
+}, 1000);
 document.title;
