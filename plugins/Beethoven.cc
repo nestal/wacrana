@@ -39,17 +39,24 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 {
 	auto loc = tab.Location();
-	if (loc.host().contains("google.com", Qt::CaseInsensitive) && loc.fileName() != "search")
+	if (loc.host().contains("google.com", Qt::CaseInsensitive))
 	{
-		QFile script{":/scripts/Google.js"};
-		if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
-			qDebug() << script.errorString();
-		tab.InjectScript(QString{script.readAll()});
-		
-		QFile bscript{":/scripts/Beethoven.js"};
-		if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
-			qDebug() << bscript.errorString();
-		tab.InjectScript(QString{bscript.readAll()});
+		if (loc.fileName() != "search")
+		{
+			QFile script{":/scripts/Google.js"};
+			if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
+				qDebug() << script.errorString();
+			tab.InjectScript(QString{script.readAll()});
+			
+			QFile bscript{":/scripts/Beethoven.js"};
+			if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
+				qDebug() << bscript.errorString();
+			tab.InjectScript(QString{bscript.readAll()});
+		}
+	}
+	else if (ok)
+	{
+		tab.Load({"https://google.com/search?q=I+am+beethoven"});
 	}
 }
 

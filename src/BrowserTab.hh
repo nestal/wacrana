@@ -51,7 +51,7 @@ Q_SIGNALS:
 	void TitleChanged(const QString& title);
 	
 private:
-	void OnLoad(bool);
+	void OnLoad(bool ok);
 	
 private:
 	Ui::BrowserTab m_ui;

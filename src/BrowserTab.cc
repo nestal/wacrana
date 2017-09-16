@@ -29,10 +29,12 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) : QWidget{parent}
 
 BrowserTab::~BrowserTab() = default;
 
-void BrowserTab::OnLoad(bool val)
+void BrowserTab::OnLoad(bool ok)
 {
-	setWindowTitle(m_ui.m_page->title());
-	Q_EMIT LoadFinished(val);
+	if (ok)
+		setWindowTitle(m_ui.m_page->title());
+	
+	Q_EMIT LoadFinished(ok);
 }
 
 void BrowserTab::Load(const QUrl& url)
