@@ -14,12 +14,8 @@
 
 #include "BrowserTab.hpp"
 
-#include <QtCore/QString>
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
-#include <QtCore/QFile>
-#include <QtCore/QTimer>
-#include <QtGui/QIcon>
 
 namespace wacrana {
 
@@ -44,24 +40,15 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 	auto loc = tab.Location();
 	if (loc.host().contains("google.com", Qt::CaseInsensitive))
 	{
-		if (loc.fileName() != "search")
+		if (loc.fileName() == "search")
 		{
-			QFile script{":/scripts/Google.js"};
-			if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
-				qDebug() << script.errorString();
-			else
-				tab.InjectScript(QString{script.readAll()});
-			
-			QFile bscript{":/scripts/Beethoven.js"};
-			if (!bscript.open(QIODevice::ReadOnly | QIODevice::Text))
-				qDebug() << bscript.errorString();
-			else
-				tab.InjectScript(QString{bscript.readAll()});
+			qDebug() << "search result";
+			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
 		else if (ok)
 		{
-			qDebug() << "get result";
-			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
+			tab.InjectScriptFile(":/scripts/Google.js");
+			tab.InjectScriptFile(":/scripts/Beethoven.js");
 		}
 	}
 	else if (loc.url() == "about:blank")

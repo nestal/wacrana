@@ -14,7 +14,10 @@
 
 #include "Plugin.hpp"
 
-#include <QTimer>
+#include <QtCore/QFile>
+#include <QtCore/QTimer>
+
+#include <stdexcept>
 
 namespace wacrana {
 
@@ -99,7 +102,19 @@ void BrowserTab::Reload()
 
 void BrowserTab::InjectScript(const QString& javascript)
 {
-	m_ui->m_page->page()->runJavaScript(javascript, [](const QVariant &v) { qDebug() << v.toString(); });
+	m_ui->m_page->page()->runJavaScript(javascript, [](const QVariant &v)
+	{
+		qDebug() << "injected script result: " << v.toString();
+	});
+}
+
+void BrowserTab::InjectScriptFile(const QString& path)
+{
+	QFile script{path};
+	if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
+		throw std::runtime_error(script.errorString().toStdString());
+	
+	InjectScript(QString{script.readAll()});
 }
 
 void BrowserTab::SingleShotTimer(int msec, std::function<void(V1::BrowserTab&)>&& callback)

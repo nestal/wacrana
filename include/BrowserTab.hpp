@@ -36,7 +36,11 @@ public:
 	virtual double ZoomFactor() const = 0;
 	virtual void ZoomFactor(double) = 0;
 	virtual void Reload() = 0;
+	
+	// script injection
 	virtual void InjectScript(const QString& javascript) = 0;
+	virtual void InjectScriptFile(const QString& path) = 0;
+	
 	virtual void SingleShotTimer(int msec, std::function<void(BrowserTab& tab)>&& callback) = 0;
 };
 
