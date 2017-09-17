@@ -43,6 +43,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		if (loc.fileName() == "search")
 		{
 			qDebug() << "search result";
+			tab.InjectScriptFile(":/scripts/Google.js");
+			tab.InjectScript("Google.RelatedWords();");
+			
 			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
 		else if (ok)

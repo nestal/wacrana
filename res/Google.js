@@ -22,4 +22,15 @@ class Google
 			btn.click();
 		}), 1000);
 	}
+
+	static RelatedWords()
+	{
+		var result = "";
+		document.querySelectorAll("div.card-section > div.brs_col > p").forEach(node =>
+		{
+			console.log("found result = " + node.textContent);
+			result += (node.textContent + " ");
+		});
+		return result;
+	}
 }
