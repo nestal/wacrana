@@ -16,11 +16,16 @@
 #include "include/BrowserTab.hpp"
 
 #include "ui_BrowserTab.h"
+#include <memory>
 
 class QUrl;
 class QWebEnginePage;
 
 namespace wacrana {
+
+namespace V1 {
+class Plugin;
+}
 
 class BrowserTab : public QWidget, public V1::BrowserTab
 {
@@ -55,7 +60,8 @@ private:
 	void OnLoad(bool ok);
 	
 private:
-	Ui::BrowserTab m_ui;
+	std::unique_ptr<Ui::BrowserTab> m_ui;
+	std::shared_ptr<V1::Plugin>     m_persona;
 };
 
 } // end of namespace

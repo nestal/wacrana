@@ -6,7 +6,10 @@
     distribution for more details.
 */
 
-var keyword = ["beethoven", "classical", "symphony", "bach", "mozart", "nocture", "decca"];
+var keyword = [
+	"beethoven", "classical", "symphony", "bach", "mozart", "nocturne", "decca",
+	"moonlight", "music", "fur elise"
+];
 
 window.setTimeout(()=>
 {

@@ -105,7 +105,7 @@ public:
 	 * \todo For security concern we should allow the user to grant permission to
 	 * plugins for page-load notifications.
 	 */
-	virtual void OnPageLoaded(MainWindow& wnd, BrowserTab& tab, bool ok) = 0;
+	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 	virtual QIcon Icon() const = 0;
 };

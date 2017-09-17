@@ -39,7 +39,7 @@ void Beethoven::OnPluginLoaded(const QJsonObject&)
 {
 }
 
-void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
+void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 {
 	auto loc = tab.Location();
 	if (loc.host().contains("google.com", Qt::CaseInsensitive))
@@ -62,7 +62,6 @@ void Beethoven::OnPageLoaded(V1::MainWindow&, V1::BrowserTab& tab, bool ok)
 		{
 			qDebug() << "get result";
 			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
-			
 		}
 	}
 }
