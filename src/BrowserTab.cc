@@ -26,7 +26,10 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	m_ui->m_page->setZoomFactor(zoom);
 	
 	connect(m_ui->m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoad);
-	connect(m_ui->m_page, &QWebEngineView::iconChanged,  [this](const QIcon& icon){Q_EMIT IconChanged(icon);});
+	connect(m_ui->m_page, &QWebEngineView::iconChanged,  [this](const QIcon& icon)
+	{
+		Q_EMIT IconChanged(m_persona ? m_persona->Icon() : icon);
+	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
 }

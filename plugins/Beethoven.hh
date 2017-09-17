@@ -15,6 +15,8 @@
 #include <QtCore/QObject>
 #include "Plugin.hpp"
 
+#include <QtGui/QIcon>
+
 #include <memory>
 
 namespace wacrana {
@@ -39,6 +41,7 @@ public:
 
 private:
 	void OnTimer(V1::BrowserTab& tab);
+	QIcon m_icon{":/icon/Beethoven.jpg"};
 };
 
 } // end of namespace

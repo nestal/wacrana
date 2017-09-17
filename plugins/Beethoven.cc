@@ -64,6 +64,8 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
 	}
+	else if (loc.url() == "about:blank")
+		OnTimer(tab);
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
@@ -78,7 +80,7 @@ void Beethoven::OnTimer(V1::BrowserTab& tab)
 
 QIcon Beethoven::Icon() const
 {
-	return QIcon{":/icon/Beethoven.jpg"};
+	return m_icon;
 }
 
 V1::PluginPtr Beethoven::New() const
