@@ -17,6 +17,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 #include <QtCore/QJsonArray>
+#include <set>
 
 namespace wacrana {
 
@@ -96,13 +97,13 @@ V1::PluginPtr Beethoven::New() const
 
 QString Beethoven::Randomize() const
 {
-	QString result;
+	std::set<QString> result;
 	
 	auto count = 1 + qrand() % 4;
-	for (auto i = 0; i < count; i++)
-		result += (m_keywords[qrand() % m_keywords.size()] + ' ');
-		
-	return result;
+	while (result.size() < count)
+		result.insert(m_keywords[qrand() % m_keywords.size()] + ' ');
+
+	return std::accumulate(result.begin(), result.end(), QString{});
 }
 
 } // end of namespace
