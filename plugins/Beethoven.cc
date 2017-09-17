@@ -49,6 +49,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
 			tab.InjectScriptFile(":/scripts/Beethoven.js");
+			tab.InjectScript("Beethoven('" + Randomize() + "');");
 		}
 	}
 	else if (loc.url() == "about:blank")
@@ -73,6 +74,17 @@ QIcon Beethoven::Icon() const
 V1::PluginPtr Beethoven::New() const
 {
 	return std::make_unique<Beethoven>();
+}
+
+QString Beethoven::Randomize() const
+{
+	QString result;
+	
+	auto count = qrand() % 4;
+	for (auto i = 0; i < count; i++)
+		result += (m_keywords[qrand() % m_keywords.size()] + ' ');
+		
+	return result;
 }
 
 } // end of namespace

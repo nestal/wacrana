@@ -14,8 +14,6 @@
 #include "Configuration.hh"
 #include "MainWindow.hh"
 
-#include <iostream>
-
 using namespace wacrana;
 
 // set environment variable "QT_LOGGING_TO_CONSOLE" to 1 to enable logging in stderr.
@@ -26,6 +24,8 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
+	
+	::qsrand(static_cast<unsigned>(std::time(0)));
 	
 	Configuration config{"wacrana.json"};
 	QtWebEngine::initialize();

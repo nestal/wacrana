@@ -6,12 +6,10 @@
     distribution for more details.
 */
 
-var keyword = [
-	"beethoven", "classical", "symphony", "bach", "mozart", "nocturne", "decca",
-	"moonlight", "music", "fur elise"
-];
-
-window.setTimeout(()=>
+function Beethoven(keywords)
 {
-	Google.Search(keyword[Math.floor(Math.random() * keyword.length)]);
-}, 1000);
+	window.setTimeout(() => {
+		console.log("Beethoven is searching for " + keywords);
+		Google.Search(keywords);
+	}, 1000);
+}

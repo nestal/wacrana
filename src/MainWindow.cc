@@ -27,6 +27,7 @@ MainWindow::MainWindow(Configuration& config) :
 	m_ui{std::make_unique<Ui::MainWindow>()},
 	m_location{new QLineEdit(this)}
 {
+	Q_ASSERT(m_config.thread() == thread());
 	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigReady);
 	
 	m_ui->setupUi(this);
@@ -186,7 +187,7 @@ void MainWindow::InitMenu()
 
 void MainWindow::OnConfigReady()
 {
-	Q_ASSERT(QThread::currentThread() == m_config.thread());
+	Q_ASSERT(QThread::currentThread() == thread());
 	try
 	{
 		m_config.GetResult();

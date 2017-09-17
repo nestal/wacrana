@@ -41,7 +41,16 @@ public:
 
 private:
 	void OnTimer(V1::BrowserTab& tab);
+	
+	QString Randomize() const;
+	
+private:
 	QIcon m_icon{":/icon/Beethoven.jpg"};
+	
+	std::vector<QString> m_keywords{
+		"beethoven", "classical", "symphony", "bach", "mozart", "nocturne", "decca",
+		"moonlight", "music", "fur elise"
+	};
 };
 
 } // end of namespace
