@@ -50,7 +50,7 @@ private:
 private:
 	QIcon m_icon{":/icon/Beethoven.jpg"};
 	
-	std::vector<QString> m_keywords;
+	std::vector<QString> m_keywords, m_blacklist;
 	Wait m_search;
 	Wait m_result;
 	

@@ -17,6 +17,10 @@
 			"keywords"	: [
 				"beethoven", "classical", "symphony", "mozart", "nocturne",
 				"moonlight", "music", "fur elise", "violin", "sonata", "movement"
+			],
+			"blacklist" : [
+				"itunes", "sex", "xxx", "porn", "adult", "for", "in", "of", "the", "search",
+				"搜尋", "download", "mp3", "意思", "中文"
 			]
 		}
 	]

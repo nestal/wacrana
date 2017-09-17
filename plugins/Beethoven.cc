@@ -58,6 +58,10 @@ Beethoven::Beethoven(const QJsonObject& config) :
 {
 	for (auto&& jval : config["keywords"].toArray())
 		m_keywords.push_back(jval.toString());
+	
+	for (auto&& jval : config["blacklist"].toArray())
+		m_blacklist.push_back(jval.toString());
+	std::sort(m_blacklist.begin(), m_blacklist.end());
 }
 
 void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
@@ -75,8 +79,11 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
 					{
 						for (auto&& s : term.split(" ", QString::SkipEmptyParts))
-							if (!s.contains("搜尋"))
+						{
+							auto r = std::equal_range(m_blacklist.begin(), m_blacklist.end(), s);
+							if (r.first == r.second)
 								m_keywords.push_back(s);
+						}
 					}
 				}
 				
