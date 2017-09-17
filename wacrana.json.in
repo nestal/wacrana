@@ -11,12 +11,12 @@
 			"lib"		: "@CMAKE_CURRENT_BINARY_DIR@/Beethoven",
 			"factory"	: "Load",
 			"wait_time" : {
-				"search_result":	{"min": 10000, "max": 30000},
-				"search":			{"min": 2000,  "max": 5000}
+				"search_result":	{"min": 10.0, "max": 30.0},
+				"search":			{"min": 2.0,  "max": 5.0}
 			},
 			"keywords"	: [
 				"beethoven", "classical", "symphony", "mozart", "nocturne",
-				"moonlight", "music", "fur elise"
+				"moonlight", "music", "fur elise", "violin", "sonata", "movement"
 			]
 		}
 	]

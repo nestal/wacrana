@@ -13,21 +13,22 @@
 #include "Wait.hh"
 
 #include <QJsonObject>
+#include <QDebug>
 
 namespace wacrana {
 
 Wait::Wait(const QJsonValue& config) :
-	m_maxMs{config.toObject()["max"].toInt(1000)},
-	m_minMs{config.toObject()["min"].toInt(30000)}
+	m_range{(
+		config.toObject()["max"].toDouble(1) + config.toObject()["min"].toDouble(30)
+	)/2.0, 10.000}
 {
 }
 
-std::chrono::system_clock::duration Wait::Random() const
+std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 {
 	using namespace std::chrono;
-	
-	auto ms = m_minMs + qrand() % (m_maxMs-m_minMs);
-	return duration_cast<system_clock::duration>(milliseconds{ms});
+	using SecondsF = duration<double, seconds::period>;
+	return duration_cast<system_clock::duration>(SecondsF{m_range(gen)});
 }
 
 } // end of namespace

@@ -85,7 +85,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
 			
-			tab.SingleShotTimer(m_result.Random(), [this](V1::BrowserTab& tab){OnTimer(tab);});
+			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
 		else if (ok)
 		{
@@ -120,9 +120,13 @@ V1::PluginPtr Beethoven::New() const
 
 QString Beethoven::Randomize() const
 {
-	std::set<QString> result;
+	auto count = static_cast<std::size_t>(1 + qrand() % 4);
 	
-	auto count = 1 + qrand() % 4;
+	// avoid infinite loop
+	std::set<QString> result;
+	if (count >= m_keywords.size())
+		result.insert(m_keywords.begin(), m_keywords.end());
+	
 	while (result.size() < count)
 		result.insert(m_keywords[qrand() % m_keywords.size()] + ' ');
 

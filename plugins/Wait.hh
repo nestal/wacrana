@@ -13,6 +13,8 @@
 #pragma once
 
 #include <chrono>
+#include <random>
+
 class QJsonValue;
 
 namespace wacrana {
@@ -22,10 +24,10 @@ class Wait
 public:
 	Wait(const QJsonValue& config);
 	
-	std::chrono::system_clock::duration Random() const;
+	std::chrono::system_clock::duration Random(std::mt19937& gen);
 	
 private:
-	int m_minMs{1000}, m_maxMs{30000};
+	std::normal_distribution<> m_range{20};
 };
 
 } // end of namespace

@@ -16,9 +16,11 @@
 #include "Plugin.hpp"
 
 #include "Wait.hh"
+
 #include <QtGui/QIcon>
 
 #include <memory>
+#include <random>
 
 namespace wacrana {
 
@@ -51,6 +53,8 @@ private:
 	std::vector<QString> m_keywords;
 	Wait m_search;
 	Wait m_result;
+	
+	std::mt19937 m_rand{std::random_device{}()};
 };
 
 } // end of namespace
