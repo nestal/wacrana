@@ -81,6 +81,11 @@ QIcon Beethoven::Icon() const
 	return QIcon{":/icon/Beethoven.jpg"};
 }
 
+V1::PluginPtr Beethoven::New() const
+{
+	return std::make_unique<Beethoven>();
+}
+
 } // end of namespace
 
 #include "ResourceLoader.hh"

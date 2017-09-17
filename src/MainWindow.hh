@@ -49,6 +49,7 @@ private:
 	int IndexOf(const BrowserTab& tab) const ;
 	void InitMenu();
 	void OnConfigReady();
+	void SetLocation(const QString& loc);
 	
 private:
 	Configuration&  m_config;
@@ -56,6 +57,7 @@ private:
 	std::unique_ptr<Ui::MainWindow> m_ui;
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
+	QMenu       *m_tab_menu{};
 };
 
 } // end of namespace

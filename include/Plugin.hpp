@@ -48,6 +48,9 @@ namespace V1 {
 class MainWindow;
 class BrowserTab;
 
+class Plugin;
+using PluginPtr = std::unique_ptr<V1::Plugin>;
+
 /**
  * \brief Plugin interface.
  *
@@ -108,6 +111,8 @@ public:
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 	virtual QIcon Icon() const = 0;
+	
+	virtual PluginPtr New() const = 0;
 };
 
 /**
@@ -115,7 +120,6 @@ public:
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
 typedef Plugin* (*Factory)();
-using PluginPtr = std::unique_ptr<V1::Plugin>;
 
 inline PluginPtr LoadPlugin(Factory func)
 {

@@ -62,7 +62,7 @@ MainWindow::MainWindow(Configuration& config) :
 	{
 		Q_ASSERT(tab >= 0 && tab < m_ui->m_tabs->count());
 		auto&& browser = Tab(tab);
-		m_location->setText(browser.Location().url());
+		SetLocation(browser.Location().url());
 		setWindowTitle(browser.Title());
 	});
 	
@@ -100,7 +100,7 @@ BrowserTab& MainWindow::NewTab()
 	auto tab = new BrowserTab{m_ui->m_tabs, m_config.DefaultZoom()};
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
-		m_location->setText(tab->Location().url());
+		SetLocation(tab->Location().url());
 		m_ui->m_tabs->setTabText(IndexOf(*tab), tab->Title());
 
 		// need to reset zoom factor after loading a site
@@ -164,8 +164,11 @@ int MainWindow::TabCount() const
 
 void MainWindow::InitMenu()
 {
+	Q_ASSERT(!m_tab_menu);
+	
 	auto menu = std::make_unique<QMenu>();
-	menu->addAction(m_ui->m_action_addtab);
+	m_tab_menu = menu->addMenu(tr("New tab"));
+		m_tab_menu->addAction(m_ui->m_action_addtab);
 	menu->addAction(m_ui->m_action_zoom_in);
 	menu->addAction(m_ui->m_action_zoom_out);
 	menu->addAction(m_ui->m_action_reset_zoom);
@@ -187,6 +190,19 @@ void MainWindow::OnConfigReady()
 	try
 	{
 		m_config.GetResult();
+		
+		Q_ASSERT(m_tab_menu);
+		
+		for (auto&& persona : m_config.Persona())
+		{
+			qDebug() << "loaded persona: " << persona->Name();
+			auto action = new QAction{persona->Name(), this};
+			connect(action, &QAction::triggered, [this, &persona]
+			{
+				NewTab().SetPersona(*persona);
+			});
+			m_tab_menu->addAction(action);
+		}
 	}
 	catch (std::exception& e)
 	{
@@ -196,6 +212,11 @@ void MainWindow::OnConfigReady()
 	{
 		QMessageBox::critical(this, QObject::tr("Configuration Error"), "Unknown exception");
 	}
+}
+
+void MainWindow::SetLocation(const QString& loc)
+{
+	m_location->setText(loc == "about:blank" ? "" : loc);
 }
 
 } // end of namespace

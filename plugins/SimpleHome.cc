@@ -48,6 +48,11 @@ QIcon SimpleHome::Icon() const
 	return {};
 }
 
+V1::PluginPtr SimpleHome::New() const
+{
+	return std::make_unique<SimpleHome>();
+}
+
 extern "C" WCAPI V1::Plugin* Load()
 {
 	return new SimpleHome;

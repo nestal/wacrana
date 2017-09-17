@@ -49,6 +49,8 @@ public :
 	void InjectScript(const QString& javascript) override;
 	void SingleShotTimer(int msec, std::function<void(V1::BrowserTab& tab)>&& callback) override;
 	
+	void SetPersona(const V1::Plugin& persona);
+	
 	QWebEnginePage* Page();
 	
 Q_SIGNALS:

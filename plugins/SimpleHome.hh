@@ -30,6 +30,8 @@ public:
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
 	QIcon Icon() const override;
+	
+	V1::PluginPtr New() const override;
 
 private:
 	QUrl    m_home{"http://localhost"};
