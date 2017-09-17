@@ -15,6 +15,7 @@
 #include <QtCore/QObject>
 #include "Plugin.hpp"
 
+#include "Wait.hh"
 #include <QtGui/QIcon>
 
 #include <memory>
@@ -26,13 +27,13 @@ class Beethoven : public QObject, public V1::Plugin
 	Q_OBJECT
 	
 public:
-	Beethoven() = default;
+	explicit Beethoven(const QJsonObject& config);
+	Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result);
 	~Beethoven();
 	
 	QString Name() const override;
 	QString Version() const override;
 	
-	void OnPluginLoaded(const QJsonObject&) override;
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
 	QIcon Icon() const override;
@@ -47,10 +48,9 @@ private:
 private:
 	QIcon m_icon{":/icon/Beethoven.jpg"};
 	
-	std::vector<QString> m_keywords{
-		"beethoven", "classical", "symphony", "mozart", "nocturne",
-		"moonlight", "music", "fur elise"
-	};
+	std::vector<QString> m_keywords;
+	Wait m_search;
+	Wait m_result;
 };
 
 } // end of namespace

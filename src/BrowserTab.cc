@@ -118,8 +118,10 @@ void BrowserTab::InjectScriptFile(const QString& path)
 	InjectScript(QString{script.readAll()}, {});
 }
 
-void BrowserTab::SingleShotTimer(int msec, std::function<void(V1::BrowserTab&)>&& callback)
+void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab&)>&& callback)
 {
+	int msec = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
+	qDebug() << "waiting for " << msec;
 	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
 }
 

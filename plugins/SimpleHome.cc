@@ -19,9 +19,9 @@
 
 namespace wacrana {
 
-void SimpleHome::OnPluginLoaded(const QJsonObject& config)
+SimpleHome::SimpleHome(const QJsonObject& config) :
+	m_home{config["homepage"].toString()}
 {
-	m_home = config["homepage"].toString();
 }
 
 void SimpleHome::OnPageLoaded(V1::BrowserTab&, bool)
@@ -50,12 +50,16 @@ QIcon SimpleHome::Icon() const
 
 V1::PluginPtr SimpleHome::New() const
 {
-	return std::make_unique<SimpleHome>();
+	return std::make_unique<SimpleHome>(m_home);
 }
 
-extern "C" WCAPI V1::Plugin* Load()
+SimpleHome::SimpleHome(const QUrl& url) : m_home{url}
 {
-	return new SimpleHome;
+}
+
+extern "C" WCAPI V1::Plugin* Load(const QJsonObject& config)
+{
+	return new SimpleHome{config};
 }
 
 } // end of namespace

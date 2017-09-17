@@ -123,11 +123,10 @@ V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config)
 	if (!factory)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	auto plugin = V1::LoadPlugin(factory);
+	auto plugin = V1::LoadPlugin(factory, config);
 	if (!plugin)
 		throw std::runtime_error("Cannot create plugin from library " + json_lib.toString().toStdString());
 	
-	plugin->OnPluginLoaded(config);
 	return plugin;
 }
 

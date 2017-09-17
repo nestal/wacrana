@@ -17,6 +17,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonObject>
 #include <set>
 
 namespace wacrana {
@@ -33,8 +34,30 @@ QString Beethoven::Version() const
 	return "1.0";
 }
 
-void Beethoven::OnPluginLoaded(const QJsonObject&)
+Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result) :
+	m_keywords{keywords},
+	m_search{search},
+	m_result{result}
 {
+}
+
+/**
+ * \brief Callback when the plugin has been loaded.
+ * \param config JSON object read from configuration file.
+ *
+ * This is the chance for a plugin to read its configuration. The JSON object that
+ * specifies loading this plugin is passed as argument. Typically the "lib" field
+ * has the path to the DSO/DLL that implements this plugin, and the "factory"
+ * field is the symbol name of the factory function that creates this plugin.
+ * This factory function should be the only symbol that is exported/made visible
+ * by the DSO/DLL.
+ */
+Beethoven::Beethoven(const QJsonObject& config) :
+	m_result{config["wait_time"].toObject()["search_result"]},
+	m_search{config["wait_time"].toObject()["search"]}
+{
+	for (auto&& jval : config["keywords"].toArray())
+		m_keywords.push_back(jval.toString());
 }
 
 void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
@@ -62,7 +85,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
 			
-			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
+			tab.SingleShotTimer(m_result.Random(), [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
 		else if (ok)
 		{
@@ -92,7 +115,7 @@ QIcon Beethoven::Icon() const
 
 V1::PluginPtr Beethoven::New() const
 {
-	return std::make_unique<Beethoven>();
+	return std::make_unique<Beethoven>(m_keywords, m_search, m_result);
 }
 
 QString Beethoven::Randomize() const
@@ -111,7 +134,7 @@ QString Beethoven::Randomize() const
 #include "ResourceLoader.hh"
 WCAPI_RESOURCE_LOADER(Beethoven)
 
-extern "C" WCAPI wacrana::V1::Plugin* Load()
+extern "C" WCAPI wacrana::V1::Plugin* Load(const QJsonObject& config)
 {
-	return new wacrana::Beethoven;
+	return new wacrana::Beethoven{config};
 }

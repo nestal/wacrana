@@ -80,19 +80,6 @@ public:
 	virtual QString Version() const = 0;
 	
 	/**
-	 * \brief Callback when the plugin has been loaded.
-	 * \param config JSON object read from configuration file.
-	 *
-	 * This is the chance for a plugin to read its configuration. The JSON object that
-	 * specifies loading this plugin is passed as argument. Typically the "lib" field
-	 * has the path to the DSO/DLL that implements this plugin, and the "factory"
-	 * field is the symbol name of the factory function that creates this plugin.
-	 * This factory function should be the only symbol that is exported/made visible
-	 * by the DSO/DLL.
-	 */
-	virtual void OnPluginLoaded(const QJsonObject& config) = 0;
-	
-	/**
 	 * \brief Callback when a page has finished loading.
 	 * \param wnd   Browser main window, which is the parent of the tab that contains
 	 *              the newly loaded web page.
@@ -119,12 +106,12 @@ public:
  * In windows, DLL export functions cannot return C++ classes. Since the factory
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
-typedef Plugin* (*Factory)();
+typedef Plugin* (*Factory)(const QJsonObject&);
 
-inline PluginPtr LoadPlugin(Factory func)
+inline PluginPtr LoadPlugin(Factory func, const QJsonObject& config)
 {
 	assert(func);
-	return PluginPtr{(*func)()};
+	return PluginPtr{(*func)(config)};
 }
 
 }} // end of namespace
