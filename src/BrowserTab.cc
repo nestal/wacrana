@@ -104,8 +104,6 @@ void BrowserTab::InjectScript(const QString& javascript, std::function<void(cons
 {
 	m_ui->m_page->page()->runJavaScript(javascript, [cb=std::move(callback)](const QVariant &v)
 	{
-		qDebug() << "injected script result: " << v.toString();
-		
 		if (cb)
 			cb(v);
 	});

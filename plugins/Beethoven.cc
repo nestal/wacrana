@@ -43,19 +43,22 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 	{
 		if (loc.fileName() == "search")
 		{
-			qDebug() << "search result";
 			tab.InjectScriptFile(":/scripts/Google.js");
 			tab.InjectScript("Google.RelatedWords();", [this](const QVariant& terms)
 			{
-				qDebug() << "returns: " << terms;
 				for (auto&& var : terms.toList())
 				{
-					for (auto&& s : var.toString().split("\n", QString::KeepEmptyParts))
+					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
 					{
-//						m_keywords.push_back(s);
-						qDebug() << "adding " << s ;
+						for (auto&& s : term.split(" ", QString::SkipEmptyParts))
+							if (!s.contains("搜尋"))
+								m_keywords.push_back(s);
 					}
 				}
+				
+				std::sort(m_keywords.begin(), m_keywords.end());
+				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
+				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
 			
 			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});

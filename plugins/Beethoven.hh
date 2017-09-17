@@ -48,7 +48,7 @@ private:
 	QIcon m_icon{":/icon/Beethoven.jpg"};
 	
 	std::vector<QString> m_keywords{
-		"beethoven", "classical", "symphony", "bach", "mozart", "nocturne", "decca",
+		"beethoven", "classical", "symphony", "bach", "mozart", "nocturne",
 		"moonlight", "music", "fur elise"
 	};
 };
