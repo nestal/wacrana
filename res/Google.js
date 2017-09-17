@@ -25,11 +25,10 @@ class Google
 
 	static RelatedWords()
 	{
-		var result = "";
-		document.querySelectorAll("div.card-section > div.brs_col > p").forEach(node =>
+		var result = [];
+		document.querySelectorAll("div.card-section").forEach(node =>
 		{
-			console.log("found result = " + node.textContent);
-			result += (node.textContent + " ");
+			result.push(node.innerText);
 		});
 		return result;
 	}

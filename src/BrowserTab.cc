@@ -100,11 +100,14 @@ void BrowserTab::Reload()
 	m_ui->m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
 }
 
-void BrowserTab::InjectScript(const QString& javascript)
+void BrowserTab::InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback)
 {
-	m_ui->m_page->page()->runJavaScript(javascript, [](const QVariant &v)
+	m_ui->m_page->page()->runJavaScript(javascript, [cb=std::move(callback)](const QVariant &v)
 	{
 		qDebug() << "injected script result: " << v.toString();
+		
+		if (cb)
+			cb(v);
 	});
 }
 
@@ -114,7 +117,7 @@ void BrowserTab::InjectScriptFile(const QString& path)
 	if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
 		throw std::runtime_error(script.errorString().toStdString());
 	
-	InjectScript(QString{script.readAll()});
+	InjectScript(QString{script.readAll()}, {});
 }
 
 void BrowserTab::SingleShotTimer(int msec, std::function<void(V1::BrowserTab&)>&& callback)

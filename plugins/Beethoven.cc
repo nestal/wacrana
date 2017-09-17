@@ -16,6 +16,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
+#include <QtCore/QJsonArray>
 
 namespace wacrana {
 
@@ -44,7 +45,18 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		{
 			qDebug() << "search result";
 			tab.InjectScriptFile(":/scripts/Google.js");
-			tab.InjectScript("Google.RelatedWords();");
+			tab.InjectScript("Google.RelatedWords();", [this](const QVariant& terms)
+			{
+				qDebug() << "returns: " << terms;
+				for (auto&& var : terms.toList())
+				{
+					for (auto&& s : var.toString().split("\n", QString::KeepEmptyParts))
+					{
+//						m_keywords.push_back(s);
+						qDebug() << "adding " << s ;
+					}
+				}
+			});
 			
 			tab.SingleShotTimer(5000, [this](V1::BrowserTab& tab){OnTimer(tab);});
 		}
@@ -52,7 +64,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
 			tab.InjectScriptFile(":/scripts/Beethoven.js");
-			tab.InjectScript("Beethoven('" + Randomize() + "');");
+			tab.InjectScript("Beethoven('" + Randomize() + "');", {});
 		}
 	}
 	else if (loc.url() == "about:blank")
@@ -83,7 +95,7 @@ QString Beethoven::Randomize() const
 {
 	QString result;
 	
-	auto count = qrand() % 4;
+	auto count = 1 + qrand() % 4;
 	for (auto i = 0; i < count; i++)
 		result += (m_keywords[qrand() % m_keywords.size()] + ' ');
 		

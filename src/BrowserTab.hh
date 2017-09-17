@@ -46,7 +46,7 @@ public :
 	double ZoomFactor() const override ;
 	void ZoomFactor(double zoom) override;
 	void Reload() override;
-	void InjectScript(const QString& javascript) override;
+	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(int msec, std::function<void(V1::BrowserTab& tab)>&& callback) override;
 	

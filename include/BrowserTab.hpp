@@ -17,6 +17,7 @@
 class QUrl;
 class QIcon;
 class QString;
+class QVariant;
 
 namespace wacrana {
 namespace V1 {
@@ -38,7 +39,7 @@ public:
 	virtual void Reload() = 0;
 	
 	// script injection
-	virtual void InjectScript(const QString& javascript) = 0;
+	virtual void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) = 0;
 	virtual void InjectScriptFile(const QString& path) = 0;
 	
 	virtual void SingleShotTimer(int msec, std::function<void(BrowserTab& tab)>&& callback) = 0;
