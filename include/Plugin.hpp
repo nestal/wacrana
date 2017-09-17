@@ -47,6 +47,7 @@ namespace V1 {
 
 class MainWindow;
 class BrowserTab;
+class Context;
 
 class Plugin;
 using PluginPtr = std::unique_ptr<V1::Plugin>;
@@ -106,12 +107,12 @@ public:
  * In windows, DLL export functions cannot return C++ classes. Since the factory
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
-typedef Plugin* (*Factory)(const QJsonObject&);
+typedef Plugin* (*Factory)(const QJsonObject&, Context&);
 
-inline PluginPtr LoadPlugin(Factory func, const QJsonObject& config)
+inline PluginPtr LoadPlugin(Factory func, const QJsonObject& config, Context& ctx)
 {
 	assert(func);
-	return PluginPtr{(*func)(config)};
+	return PluginPtr{(*func)(config, ctx)};
 }
 
 }} // end of namespace

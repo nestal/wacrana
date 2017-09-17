@@ -35,7 +35,6 @@ public:
 	virtual BrowserTab& NewTab() = 0;
 	virtual int IndexOf(const BrowserTab& tab) const = 0;
 	virtual int TabCount() const = 0;
-	
 };
 
 }} // end of namespaces

@@ -13,6 +13,7 @@
 #include "Beethoven.hh"
 
 #include "BrowserTab.hpp"
+#include "Context.hpp"
 
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
@@ -34,10 +35,11 @@ QString Beethoven::Version() const
 	return "1.0";
 }
 
-Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result) :
+Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result, std::mt19937::result_type seed) :
 	m_keywords{keywords},
 	m_search{search},
-	m_result{result}
+	m_result{result},
+	m_rand{seed}
 {
 }
 
@@ -52,9 +54,10 @@ Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, c
  * This factory function should be the only symbol that is exported/made visible
  * by the DSO/DLL.
  */
-Beethoven::Beethoven(const QJsonObject& config) :
+Beethoven::Beethoven(const QJsonObject& config, std::mt19937::result_type seed) :
 	m_result{config["wait_time"].toObject()["search_result"].toObject()},
-	m_search{config["wait_time"].toObject()["search"].toObject()}
+	m_search{config["wait_time"].toObject()["search"].toObject()},
+	m_rand{seed}
 {
 	for (auto&& jval : config["keywords"].toArray())
 		m_keywords.push_back(jval.toString());
@@ -122,20 +125,21 @@ QIcon Beethoven::Icon() const
 
 V1::PluginPtr Beethoven::New() const
 {
-	return std::make_unique<Beethoven>(m_keywords, m_search, m_result);
+	return std::make_unique<Beethoven>(m_keywords, m_search, m_result, m_rand());
 }
 
-QString Beethoven::Randomize() const
+QString Beethoven::Randomize()
 {
-	auto count = static_cast<std::size_t>(1 + qrand() % 4);
+	auto count = m_search_count(m_rand);
 	
 	// avoid infinite loop
 	std::set<QString> result;
 	if (count >= m_keywords.size())
 		result.insert(m_keywords.begin(), m_keywords.end());
 	
+	std::uniform_int_distribution<std::size_t> keywoard_index{0, m_keywords.size()-1};
 	while (result.size() < count)
-		result.insert(m_keywords[qrand() % m_keywords.size()] + ' ');
+		result.insert(m_keywords[keywoard_index(m_rand)] + ' ');
 
 	return std::accumulate(result.begin(), result.end(), QString{});
 }
@@ -145,7 +149,7 @@ QString Beethoven::Randomize() const
 #include "ResourceLoader.hh"
 WCAPI_RESOURCE_LOADER(Beethoven)
 
-extern "C" WCAPI wacrana::V1::Plugin* Load(const QJsonObject& config)
+extern "C" WCAPI wacrana::V1::Plugin* Load(const QJsonObject& config, wacrana::V1::Context& ctx)
 {
-	return new wacrana::Beethoven{config};
+	return new wacrana::Beethoven{config, ctx.RandomGenerator()()};
 }

@@ -29,8 +29,13 @@ class Beethoven : public QObject, public V1::Plugin
 	Q_OBJECT
 	
 public:
-	explicit Beethoven(const QJsonObject& config);
-	Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result);
+	Beethoven(const QJsonObject& config, std::mt19937::result_type seed);
+	Beethoven(
+		const std::vector<QString>& keywords,
+		const Wait& search,
+		const Wait& result,
+		std::mt19937::result_type seed
+	);
 	~Beethoven();
 	
 	QString Name() const override;
@@ -45,7 +50,7 @@ public:
 private:
 	void OnTimer(V1::BrowserTab& tab);
 	
-	QString Randomize() const;
+	QString Randomize();
 	
 private:
 	QIcon m_icon{":/icon/Beethoven.jpg"};
@@ -54,7 +59,8 @@ private:
 	Wait m_search;
 	Wait m_result;
 	
-	std::mt19937 m_rand{std::random_device{}()};
+	mutable std::mt19937 m_rand;
+	std::uniform_int_distribution<std::size_t> m_search_count{1, 4};
 };
 
 } // end of namespace

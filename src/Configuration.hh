@@ -46,7 +46,7 @@ class Configuration : public QObject
 	Q_OBJECT
 	
 public:
-	Configuration(const QString& path);
+	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
 	V1::Plugin* HomePage();
@@ -75,7 +75,7 @@ Q_SIGNALS:
 	void Finish();
 	
 private:
-	static V1::PluginPtr LoadPlugin(const QJsonObject& config);
+	static V1::PluginPtr LoadPlugin(const QJsonObject& config, V1::Context& ctx);
 	
 private:
 	std::future<void> m_loaded;

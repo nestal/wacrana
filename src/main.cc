@@ -13,8 +13,22 @@
 
 #include "Configuration.hh"
 #include "MainWindow.hh"
+#include "Context.hpp"
+
+#include <random>
 
 using namespace wacrana;
+
+class Context : public V1::Context
+{
+public:
+	std::mt19937& RandomGenerator() override
+	{
+		return m_rand;
+	}
+private:
+	std::mt19937 m_rand{std::random_device{}()};
+};
 
 // set environment variable "QT_LOGGING_TO_CONSOLE" to 1 to enable logging in stderr.
 // when run by clion under, there is no TTY so these log message will not be shown,
@@ -25,9 +39,8 @@ int main(int argc, char **argv)
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
 	
-	::qsrand(static_cast<unsigned>(std::time(0)));
-	
-	Configuration config{"wacrana.json"};
+	Context ctx;
+	Configuration config{"wacrana.json", ctx};
 	QtWebEngine::initialize();
 	
 	MainWindow wnd{config};

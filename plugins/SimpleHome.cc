@@ -57,7 +57,7 @@ SimpleHome::SimpleHome(const QUrl& url) : m_home{url}
 {
 }
 
-extern "C" WCAPI V1::Plugin* Load(const QJsonObject& config)
+extern "C" WCAPI V1::Plugin* Load(const QJsonObject& config, wacrana::V1::Context&)
 {
 	return new SimpleHome{config};
 }

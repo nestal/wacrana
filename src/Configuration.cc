@@ -45,7 +45,7 @@ namespace wacrana {
  * Therefore, this function should load the configuration values in the
  * same order as they are needed to ensure maximum performance.
  */
-Configuration::Configuration(const QString& path)
+Configuration::Configuration(const QString& path, V1::Context& ctx)
 {
 	// Make sure the PreFinish() signal is emitted before the async function starts.
 	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
@@ -55,7 +55,7 @@ Configuration::Configuration(const QString& path)
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_loaded = std::async(std::launch::async, [this, path]
+	m_loaded = std::async(std::launch::async, [this, path, &ctx]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -76,14 +76,14 @@ Configuration::Configuration(const QString& path)
 			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
 			
 			// home page configuration
-			auto home_page = LoadPlugin(doc.object()["homepage"].toObject());
+			auto home_page = LoadPlugin(doc.object()["homepage"].toObject(), ctx);
 			m_home_page.Set(std::move(home_page));
 			
 			// persona
 			std::vector<V1::PluginPtr> persona;
 			auto persona_json = doc.object()["persona"].toArray();
 			for (auto&& p : persona_json)
-				persona.push_back(LoadPlugin(p.toObject()));
+				persona.push_back(LoadPlugin(p.toObject(), ctx));
 			m_persona.Set(std::move(persona));
 		}
 		catch (...)
@@ -104,7 +104,7 @@ Configuration::~Configuration()
 		m_loaded.wait();
 }
 
-V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config)
+V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config, V1::Context& ctx)
 {
 	using namespace std::literals;
 	
@@ -123,7 +123,7 @@ V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config)
 	if (!factory)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	auto plugin = V1::LoadPlugin(factory, config);
+	auto plugin = V1::LoadPlugin(factory, config, ctx);
 	if (!plugin)
 		throw std::runtime_error("Cannot create plugin from library " + json_lib.toString().toStdString());
 	

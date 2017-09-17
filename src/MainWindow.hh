@@ -16,6 +16,7 @@
 #include "BrowserTab.hh"
 
 #include <memory>
+#include <random>
 
 class QLineEdit;
 class QToolButton;
