@@ -17,10 +17,15 @@ class Google
 		document.activeElement.value = text;
 		document.activeElement.blur();
 
-		window.setTimeout(() => document.getElementsByName("btnK").forEach(btn =>
+		window.setTimeout(() =>
 		{
-			btn.click();
-		}), 1000);
+			document.activeElement.blur();
+			document.getElementsByName("btnK").forEach(btn =>
+			{
+				btn.click();
+			}), 1000
+		});
+//		window.location = "http://google.com/search?safe=active&q="+encodeURI(text);
 	}
 
 	static RelatedWords()
