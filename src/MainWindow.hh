@@ -48,6 +48,7 @@ private:
 	void Go();
 	int IndexOf(const BrowserTab& tab) const ;
 	void InitMenu();
+	void OnConfigReady();
 	
 private:
 	Configuration&  m_config;

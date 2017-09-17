@@ -45,15 +45,22 @@ namespace wacrana {
  * Therefore, this function should load the configuration values in the
  * same order as they are needed to ensure maximum performance.
  */
-void Configuration::Load(const QString& path)
+Configuration::Configuration(const QString& path)
 {
+	// Make sure the PreFinish() signal is emitted before the async function starts.
+	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
+	// after returning to the main loop. This is to ensure the signal will not be
+	// missed even if we connect it _after_ it is emitted. Just make sure to connect
+	// it before returning to the main loop.
+	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
+	
 	// spawn a thread to load the configuration file
 	m_loaded = std::async(std::launch::async, [this, path]
 	{
-		// Emit Finish() at the end of this function even when exception is thrown.
+		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
 		// custom deleter will not be called.
-		auto finale = [this](void*){Q_EMIT Finish();};
+		auto finale = [this](void*){Q_EMIT PreFinish();};
 		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
 		
 		try

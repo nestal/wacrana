@@ -13,11 +13,12 @@
 #include "Plugin.hpp"
 #include "ui_MainWindow.h"
 
-#include <QtGui/QMouseEvent>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QThread>
 
 namespace wacrana {
 
@@ -26,6 +27,8 @@ MainWindow::MainWindow(Configuration& config) :
 	m_ui{std::make_unique<Ui::MainWindow>()},
 	m_location{new QLineEdit(this)}
 {
+	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigReady);
+	
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
 	m_ui->m_toolbar->addSeparator();
@@ -176,6 +179,23 @@ void MainWindow::InitMenu()
 	m_menu_btn->setMenu(menu.release());
 	m_menu_btn->setPopupMode(QToolButton::InstantPopup);
 	m_ui->m_toolbar->addWidget(m_menu_btn);
+}
+
+void MainWindow::OnConfigReady()
+{
+	Q_ASSERT(QThread::currentThread() == m_config.thread());
+	try
+	{
+		m_config.GetResult();
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox::critical(this, QObject::tr("Configuration Error"), e.what());
+	}
+	catch (...)
+	{
+		QMessageBox::critical(this, QObject::tr("Configuration Error"), "Unknown exception");
+	}
 }
 
 } // end of namespace
