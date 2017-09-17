@@ -21,8 +21,6 @@
 #include <QtCore/QJsonObject>
 #include <set>
 
-#include <QtTest/QTestEventList>
-
 namespace wacrana {
 
 Beethoven::~Beethoven() = default;
@@ -101,17 +99,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		}
 		else if (ok)
 		{
-//			tab.InjectScriptFile(":/scripts/Google.js");
-//			tab.InjectScriptFile(":/scripts/Beethoven.js");
-/*			tab.InjectScript("Beethoven('" + Randomize() + "');", [this, &tab](const QVariant&)
-			{
-			});*/
-			qDebug() << "key press!";
-			QTestEventList events;
-			events.addKeyClick('a');
-			events.addKeyClick('b');
-			events.addKeyClick('c');
-			events.simulate(&dynamic_cast<QWidget&>(tab));
+			tab.InjectScriptFile(":/scripts/Google.js");
+			tab.InjectScriptFile(":/scripts/Beethoven.js");
+			tab.InjectScript("Beethoven('" + Randomize() + "');", {});
 		}
 	}
 	else if (loc.url() == "about:blank")

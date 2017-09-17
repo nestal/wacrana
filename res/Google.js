@@ -17,6 +17,9 @@ class Google
 		document.activeElement.value = text;
 		document.activeElement.blur();
 
+		var gs_l = document.querySelector('input[name="gs_l"');
+		console.log("gs_l = " + gs_l);
+
 		window.setTimeout(() =>
 		{
 			document.activeElement.blur();
@@ -30,6 +33,9 @@ class Google
 
 	static RelatedWords()
 	{
+		var gs_l = document.querySelector('input[name="gs_l"');
+		console.log("gs_l = " + gs_l.value);
+
 		var result = [];
 		document.querySelectorAll("div.card-section").forEach(node =>
 		{
