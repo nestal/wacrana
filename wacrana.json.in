@@ -11,8 +11,8 @@
 			"lib"		: "@CMAKE_CURRENT_BINARY_DIR@/Beethoven",
 			"factory"	: "Load",
 			"wait_time" : {
-				"search_result":	{"min": 10.0, "max": 30.0},
-				"search":			{"min": 2.0,  "max": 5.0}
+				"search_result":	{"mean": 20.0, "stddev": 5.0, "min": 1.0, "max": 300},
+				"search":			{"mean": 5.0,  "stddev": 2.0, "min": 0,   "max": 60}
 			},
 			"keywords"	: [
 				"beethoven", "classical", "symphony", "mozart", "nocturne",

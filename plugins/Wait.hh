@@ -15,19 +15,20 @@
 #include <chrono>
 #include <random>
 
-class QJsonValue;
+class QJsonObject;
 
 namespace wacrana {
 
 class Wait
 {
 public:
-	Wait(const QJsonValue& config);
+	Wait(const QJsonObject& config);
 	
 	std::chrono::system_clock::duration Random(std::mt19937& gen);
 	
 private:
 	std::normal_distribution<> m_range{20};
+	double m_min, m_max;
 };
 
 } // end of namespace

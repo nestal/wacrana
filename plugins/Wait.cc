@@ -17,10 +17,13 @@
 
 namespace wacrana {
 
-Wait::Wait(const QJsonValue& config) :
-	m_range{(
-		config.toObject()["max"].toDouble(1) + config.toObject()["min"].toDouble(30)
-	)/2.0, 10.000}
+Wait::Wait(const QJsonObject& config) :
+	m_range{
+		config["mean"].toDouble(),
+		config["stddev"].toDouble()
+	},
+	m_min{config["min"].toDouble()},
+	m_max{config["max"].toDouble()}
 {
 }
 
@@ -28,7 +31,9 @@ std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 {
 	using namespace std::chrono;
 	using SecondsF = duration<double, seconds::period>;
-	return duration_cast<system_clock::duration>(SecondsF{m_range(gen)});
+	auto value = m_range(gen);
+	value = value > m_max ? m_max : (value < m_min ? m_min : value);
+	return duration_cast<system_clock::duration>(SecondsF{value});
 }
 
 } // end of namespace

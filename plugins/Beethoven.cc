@@ -53,8 +53,8 @@ Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, c
  * by the DSO/DLL.
  */
 Beethoven::Beethoven(const QJsonObject& config) :
-	m_result{config["wait_time"].toObject()["search_result"]},
-	m_search{config["wait_time"].toObject()["search"]}
+	m_result{config["wait_time"].toObject()["search_result"].toObject()},
+	m_search{config["wait_time"].toObject()["search"].toObject()}
 {
 	for (auto&& jval : config["keywords"].toArray())
 		m_keywords.push_back(jval.toString());
