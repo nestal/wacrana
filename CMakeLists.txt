@@ -21,7 +21,7 @@ find_package(Doxygen)
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
-add_executable(wacrana WIN32 ${SOURCE_FILES})
+add_executable(wacrana WIN32 ${SOURCE_FILES} src/ProgressTimer.cc src/ProgressTimer.hh)
 
 target_link_libraries(
 	wacrana

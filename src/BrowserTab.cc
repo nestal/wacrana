@@ -23,7 +23,8 @@ namespace wacrana {
 
 BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	QWidget{parent},
-	m_ui{std::make_unique<Ui::BrowserTab>()}
+	m_ui{std::make_unique<Ui::BrowserTab>()},
+	m_timer{new ProgressTimer{this}}
 {
 	m_ui->setupUi(this);
 	m_ui->m_page->setZoomFactor(zoom);
@@ -35,6 +36,9 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
+	connect(m_timer, &ProgressTimer::OnIdle, this, &BrowserTab::OnIdle);
+	connect(m_timer, &ProgressTimer::Update, this, &BrowserTab::OnTimerUpdate);
+	connect(m_timer, &ProgressTimer::Timeout, this, &BrowserTab::OnTimeout);
 }
 
 BrowserTab::~BrowserTab() = default;
@@ -120,14 +124,34 @@ void BrowserTab::InjectScriptFile(const QString& path)
 
 void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab&)>&& callback)
 {
-	int msec = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
-	qDebug() << "waiting for " << msec;
-	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
+//	int msec = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
+	qDebug() << "waiting for " << timeout.count();
+	
+	m_callback = std::move(callback);
+	m_timer->Start(std::chrono::duration_cast<ProgressTimer::Duration>(timeout));
+	
+	// Qt 5.8 has std::chrono support
+//	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
 }
 
 void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 {
 	m_persona = std::move(persona);
+}
+
+void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
+{
+	qDebug() << "timer remain: " << remain.count() << " " << m_timer->Progress();
+}
+
+void BrowserTab::OnTimeout()
+{
+	m_callback(*this);
+}
+
+void BrowserTab::OnIdle()
+{
+	qDebug() << "idle...";
 }
 
 } // end of namespace

@@ -19,6 +19,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QMessageBox>
 #include <QtCore/QThread>
+#include <QtWidgets/QProgressBar>
 
 namespace wacrana {
 
@@ -118,7 +119,8 @@ BrowserTab& MainWindow::NewTab()
 	{
 		m_ui->m_tabs->setTabText(IndexOf(*tab), title);
 	});
-	m_ui->m_tabs->setCurrentIndex(m_ui->m_tabs->addTab(tab, tr("New Tab")));
+	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
+	m_ui->m_tabs->setCurrentIndex(idx);
 	return *tab;
 }
 

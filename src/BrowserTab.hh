@@ -13,14 +13,18 @@
 #pragma once
 
 #include <QtWidgets/QWidget>
+
 #include "BrowserTab.hpp"
 #include "Plugin.hpp"
+
+#include "ProgressTimer.hh"
 
 #include "ui_BrowserTab.h"
 #include <memory>
 
 class QUrl;
 class QWebEnginePage;
+class QTimer;
 
 namespace wacrana {
 
@@ -49,7 +53,7 @@ public :
 	void Reload() override;
 	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
 	void InjectScriptFile(const QString& path) override;
-	void SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab& tab)>&& callback) override;
+	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	
 	void SetPersona(V1::PluginPtr&& persona);
 	
@@ -62,10 +66,16 @@ Q_SIGNALS:
 	
 private:
 	void OnLoad(bool ok);
+	void OnTimerUpdate(ProgressTimer::Duration remain);
+	void OnTimeout();
+	void OnIdle();
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;
-	V1::PluginPtr                   m_persona;
+	V1::PluginPtr   m_persona;
+	ProgressTimer   *m_timer;
+	TimerCallback   m_callback;
+	
 };
 
 } // end of namespace

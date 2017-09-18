@@ -29,7 +29,8 @@ protected:
 	~BrowserTab() = default;
 	
 public:
-	using TimeDuration = std::chrono::system_clock::duration;
+	using TimeDuration  = std::chrono::system_clock::duration;
+	using TimerCallback = std::function<void(V1::BrowserTab&)>;
 	
 public:
 	virtual void Load(const QUrl& url) = 0;
@@ -46,7 +47,7 @@ public:
 	virtual void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) = 0;
 	virtual void InjectScriptFile(const QString& path) = 0;
 	
-	virtual void SingleShotTimer(TimeDuration timeout, std::function<void(BrowserTab& tab)>&& callback) = 0;
+	virtual void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) = 0;
 };
 
 }} // end of namespace
