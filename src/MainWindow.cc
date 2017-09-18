@@ -10,16 +10,13 @@
 #include "MainWindow.hh"
 
 #include "Configuration.hh"
-#include "Plugin.hpp"
 #include "ui_MainWindow.h"
 
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
-#include <QtWidgets/QMessageBox>
 #include <QtCore/QThread>
-#include <QtWidgets/QProgressBar>
 
 namespace wacrana {
 
@@ -117,12 +114,14 @@ BrowserTab& MainWindow::NewTab()
 	});
 	connect(tab, &BrowserTab::TitleChanged, [this, tab](const QString& title)
 	{
+		// reset the text color when changing the title so that the user can see it clearly
 		auto idx = IndexOf(*tab);
 		m_ui->m_tabs->tabBar()->setTabTextColor(idx, {});
 		m_ui->m_tabs->setTabText(idx, title);
 	});
 	connect(tab, &BrowserTab::WaitProgressUpdated, [this, tab](double progress)
 	{
+		// gradually changing the color from black to white when progress becomes 1.0 (i.e. 100%)
 		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));

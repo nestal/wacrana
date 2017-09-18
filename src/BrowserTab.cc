@@ -124,14 +124,10 @@ void BrowserTab::InjectScriptFile(const QString& path)
 
 void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab&)>&& callback)
 {
-//	int msec = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
 	qDebug() << "waiting for " << timeout.count();
 	
 	m_callback = std::move(callback);
 	m_timer->Start(std::chrono::duration_cast<ProgressTimer::Duration>(timeout));
-	
-	// Qt 5.8 has std::chrono support
-//	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
 }
 
 void BrowserTab::SetPersona(V1::PluginPtr&& persona)
@@ -141,7 +137,6 @@ void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 
 void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
 {
-	qDebug() << "timer remain: " << remain.count() << " " << m_timer->Progress();
 	Q_EMIT WaitProgressUpdated(m_timer->Progress());
 }
 
