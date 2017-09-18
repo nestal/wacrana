@@ -142,6 +142,7 @@ void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
 {
 	qDebug() << "timer remain: " << remain.count() << " " << m_timer->Progress();
+	Q_EMIT WaitProgressUpdated(m_timer->Progress());
 }
 
 void BrowserTab::OnTimeout()
@@ -152,6 +153,11 @@ void BrowserTab::OnTimeout()
 void BrowserTab::OnIdle()
 {
 	qDebug() << "idle...";
+}
+
+double BrowserTab::WaitProgress() const
+{
+	return m_timer->Progress();
 }
 
 } // end of namespace

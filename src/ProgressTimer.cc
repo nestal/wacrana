@@ -15,12 +15,13 @@
 namespace wacrana {
 
 namespace {
-const std::chrono::milliseconds interval{100};
+const std::chrono::milliseconds interval{500};
 }
 
 ProgressTimer::ProgressTimer(QObject *parent, wacrana::ProgressTimer::Duration idle) :
 	QObject{parent},
-	m_idle{idle}
+	m_idle{idle},
+	m_deadline{std::chrono::steady_clock::now() + m_idle}
 {
 	startTimer(interval.count());
 }
@@ -29,26 +30,23 @@ void ProgressTimer::timerEvent(QTimerEvent *event)
 {
 	using namespace std::chrono_literals;
 	
-	if (m_remains > interval)
+	auto now = std::chrono::steady_clock::now();
+	if (now < m_deadline)
 	{
-		m_remains -= interval;
 		if (!m_is_idle)
-			Q_EMIT Update(m_remains);
+			Q_EMIT Update(m_deadline - now);
 	}
 	else if (m_is_idle)
 	{
-		m_remains = Duration::zero();
 		Q_EMIT OnIdle();
-		
-		m_remains = m_idle;
+		m_deadline += m_idle;
 	}
 	else
 	{
-		m_remains = Duration::zero();
 		Q_EMIT Timeout();
 		
 		m_is_idle = true;
-		m_remains = m_idle;
+		m_deadline += m_idle;
 	}
 	
 	QObject::timerEvent(event);
@@ -56,18 +54,20 @@ void ProgressTimer::timerEvent(QTimerEvent *event)
 
 void ProgressTimer::Start(ProgressTimer::Duration timeout)
 {
-	m_timeout = m_remains = timeout;
-	m_is_idle = false;
+	m_start     = std::chrono::steady_clock::now();
+	m_deadline  = m_start + timeout;
+	m_is_idle   = false;
 }
 
 ProgressTimer::Duration ProgressTimer::Remains() const
 {
-	return m_remains;
+	return m_deadline - std::chrono::steady_clock::now();
 }
 
 double ProgressTimer::Progress() const
 {
-	return m_timeout.count() > 0 ? static_cast<double>(m_remains.count()) / m_timeout.count() : 0.0;
+	return static_cast<double>((m_deadline - std::chrono::steady_clock::now()).count()) /
+		(m_deadline - m_start).count();
 }
 
 } // end of namespace

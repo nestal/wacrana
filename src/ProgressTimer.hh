@@ -26,7 +26,8 @@ class ProgressTimer : public QObject
 	Q_OBJECT
 	
 public:
-	using Duration = std::chrono::system_clock::duration;
+	using Duration = std::chrono::steady_clock::duration;
+	using TimePoint = std::chrono::steady_clock::time_point;
 
 public:
 	explicit ProgressTimer(QObject *parent, Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30}));
@@ -45,8 +46,7 @@ private:
 	
     void timerEvent(QTimerEvent *event) override;
 	
-	Duration m_timeout;
-	Duration m_remains;
+	TimePoint m_start, m_deadline;
 	Duration m_idle;
 };
 

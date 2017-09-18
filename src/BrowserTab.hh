@@ -56,6 +56,7 @@ public :
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	
 	void SetPersona(V1::PluginPtr&& persona);
+	double WaitProgress() const;
 	
 	QWebEnginePage* Page();
 	
@@ -63,6 +64,7 @@ Q_SIGNALS:
 	void LoadFinished(bool);
 	void IconChanged(const QIcon& icon);
 	void TitleChanged(const QString& title);
+	void WaitProgressUpdated(double progress);
 	
 private:
 	void OnLoad(bool ok);
