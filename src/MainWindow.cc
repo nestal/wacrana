@@ -196,11 +196,11 @@ void MainWindow::OnConfigReady()
 		
 		for (auto&& persona : m_config.Persona())
 		{
-			qDebug() << "loaded persona: " << persona->Name();
-			auto action = new QAction{persona->Name(), this};
-			connect(action, &QAction::triggered, [this, &persona]
+			qDebug() << "loaded persona: " << QString::fromStdString(persona);
+			auto action = new QAction{QString::fromStdString(persona), this};
+			connect(action, &QAction::triggered, [this, persona]
 			{
-				NewTab().SetPersona(*persona);
+				NewTab().SetPersona(m_config.MakePersona(persona));
 			});
 			m_tab_menu->addAction(action);
 		}

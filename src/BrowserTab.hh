@@ -13,7 +13,8 @@
 #pragma once
 
 #include <QtWidgets/QWidget>
-#include "include/BrowserTab.hpp"
+#include "BrowserTab.hpp"
+#include "Plugin.hpp"
 
 #include "ui_BrowserTab.h"
 #include <memory>
@@ -50,7 +51,7 @@ public :
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab& tab)>&& callback) override;
 	
-	void SetPersona(const V1::Plugin& persona);
+	void SetPersona(V1::PluginPtr&& persona);
 	
 	QWebEnginePage* Page();
 	
@@ -64,7 +65,7 @@ private:
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;
-	std::shared_ptr<V1::Plugin>     m_persona;
+	V1::PluginPtr                   m_persona;
 };
 
 } // end of namespace

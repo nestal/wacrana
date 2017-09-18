@@ -35,14 +35,6 @@ QString Beethoven::Version() const
 	return "1.0";
 }
 
-Beethoven::Beethoven(const std::vector<QString>& keywords, const Wait& search, const Wait& result, std::mt19937::result_type seed) :
-	m_keywords{keywords},
-	m_search{search},
-	m_result{result},
-	m_rand{seed}
-{
-}
-
 /**
  * \brief Callback when the plugin has been loaded.
  * \param config JSON object read from configuration file.
@@ -121,11 +113,6 @@ void Beethoven::OnTimer(V1::BrowserTab& tab)
 QIcon Beethoven::Icon() const
 {
 	return m_icon;
-}
-
-V1::PluginPtr Beethoven::New() const
-{
-	return std::make_unique<Beethoven>(m_keywords, m_search, m_result, m_rand());
 }
 
 QString Beethoven::Randomize()

@@ -125,9 +125,9 @@ void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::Br
 	QTimer::singleShot(msec, this, [this, cb=std::move(callback)]{cb(*this);});
 }
 
-void BrowserTab::SetPersona(const V1::Plugin& persona)
+void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 {
-	m_persona = persona.New();
+	m_persona = std::move(persona);
 }
 
 } // end of namespace

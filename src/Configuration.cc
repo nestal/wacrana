@@ -76,14 +76,21 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
 			
 			// home page configuration
-			auto home_page = LoadPlugin(doc.object()["homepage"].toObject(), ctx);
+			auto home_page = LoadPlugin(doc.object()["homepage"].toObject(), ctx)();
 			m_home_page.Set(std::move(home_page));
 			
 			// persona
-			std::vector<V1::PluginPtr> persona;
+			std::unordered_map<std::string, PackedFactory> persona;
 			auto persona_json = doc.object()["persona"].toArray();
 			for (auto&& p : persona_json)
-				persona.push_back(LoadPlugin(p.toObject(), ctx));
+			{
+				// have to load the plugin to know its name
+				// anyway we have to try running the factory function once to check if there's any problem
+				auto cpf    = LoadPlugin(p.toObject(), ctx);
+				auto plugin = cpf();
+				
+				persona.emplace(plugin->Name().toStdString(), std::move(cpf));
+			}
 			m_persona.Set(std::move(persona));
 		}
 		catch (...)
@@ -104,7 +111,7 @@ Configuration::~Configuration()
 		m_loaded.wait();
 }
 
-V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config, V1::Context& ctx)
+Configuration::PackedFactory Configuration::LoadPlugin(const QJsonObject& config, V1::Context& ctx)
 {
 	using namespace std::literals;
 	
@@ -123,11 +130,15 @@ V1::PluginPtr Configuration::LoadPlugin(const QJsonObject& config, V1::Context& 
 	if (!factory)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	auto plugin = V1::LoadPlugin(factory, config, ctx);
-	if (!plugin)
-		throw std::runtime_error("Cannot create plugin from library " + json_lib.toString().toStdString());
-	
-	return plugin;
+	// store everything required to call the factory function in the lambda
+	// and convert the lambda into a PackedFactory (a.k.a std::function)
+	return [config, factory, &ctx, lib=json_lib.toString().toStdString()]
+	{
+		auto plugin = V1::LoadPlugin(factory, config, ctx);
+		if (!plugin)
+			throw std::runtime_error("Cannot create plugin from library " + lib);
+		return plugin;
+	};
 }
 
 /**
@@ -172,11 +183,19 @@ double Configuration::DefaultZoom() const
 	return m_default_zoom.Get();
 }
 
-boost::iterator_range<
-	std::vector<V1::PluginPtr>::const_iterator
-> Configuration::Persona() const
+V1::PluginPtr Configuration::MakePersona(const std::string& name) const
 {
-	return {m_persona.Get().begin(), m_persona.Get().end()};
+	auto& factories = m_persona.Get();
+	auto it = factories.find(name);
+	return it != factories.end() ? it->second() : nullptr;
+}
+
+std::vector<std::string> Configuration::Persona() const
+{
+	std::vector<std::string> result;
+	for (auto&& p : m_persona.Get())
+		result.push_back(p.first);
+	return result;
 }
 
 } // end of namespace

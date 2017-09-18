@@ -99,8 +99,6 @@ public:
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 	virtual QIcon Icon() const = 0;
-	
-	virtual PluginPtr New() const = 0;
 };
 
 /**

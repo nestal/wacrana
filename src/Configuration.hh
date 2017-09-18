@@ -17,7 +17,8 @@
 #include "OwnedFuture.hh"
 #include "Plugin.hpp"
 
-#include <boost/range/iterator_range.hpp>
+#include <functional>
+#include <unordered_map>
 
 class QString;
 class QJsonObject;
@@ -54,9 +55,8 @@ public:
 	
 	void GetResult();
 	
-	boost::iterator_range<
-		std::vector<V1::PluginPtr>::const_iterator
-	> Persona() const;
+	V1::PluginPtr MakePersona(const std::string& name) const;
+	std::vector<std::string> Persona() const;
 	
 Q_SIGNALS:
 	void PreFinish();
@@ -73,9 +73,10 @@ Q_SIGNALS:
 	 * the signal will be missed and the slot will never be called.
 	 */
 	void Finish();
-	
+
 private:
-	static V1::PluginPtr LoadPlugin(const QJsonObject& config, V1::Context& ctx);
+	using PackedFactory = std::function<V1::PluginPtr ()>;
+	static PackedFactory LoadPlugin(const QJsonObject& config, V1::Context& ctx);
 	
 private:
 	std::future<void> m_loaded;
@@ -83,8 +84,7 @@ private:
 	OwnedFuture<V1::PluginPtr>  m_home_page;
 	OwnedFuture<double>         m_default_zoom;
 	
-	OwnedFuture<std::vector<V1::PluginPtr>> m_persona;
+	OwnedFuture<std::unordered_map<std::string, PackedFactory>> m_persona;
 };
 
 } // end of namespace
-

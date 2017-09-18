@@ -30,12 +30,6 @@ class Beethoven : public QObject, public V1::Plugin
 	
 public:
 	Beethoven(const QJsonObject& config, std::mt19937::result_type seed);
-	Beethoven(
-		const std::vector<QString>& keywords,
-		const Wait& search,
-		const Wait& result,
-		std::mt19937::result_type seed
-	);
 	~Beethoven();
 	
 	QString Name() const override;
@@ -44,8 +38,6 @@ public:
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
 	QIcon Icon() const override;
-	
-	V1::PluginPtr New() const override;
 
 private:
 	void OnTimer(V1::BrowserTab& tab);
