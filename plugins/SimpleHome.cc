@@ -28,6 +28,10 @@ void SimpleHome::OnPageLoaded(V1::BrowserTab&, bool)
 {
 }
 
+void SimpleHome::OnPageIdle(V1::BrowserTab& tab)
+{
+}
+
 void SimpleHome::OnAction(V1::MainWindow& browser, const QString&)
 {
 	browser.Current().Load(m_home);

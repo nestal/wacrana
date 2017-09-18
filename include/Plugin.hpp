@@ -97,6 +97,7 @@ public:
 	 * plugins for page-load notifications.
 	 */
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
+	virtual void OnPageIdle(BrowserTab& tab) = 0;
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 	virtual QIcon Icon() const = 0;
 };

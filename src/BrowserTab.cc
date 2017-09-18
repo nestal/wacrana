@@ -153,6 +153,8 @@ void BrowserTab::OnTimeout()
 void BrowserTab::OnIdle()
 {
 	qDebug() << "idle...";
+	if (m_persona)
+		m_persona->OnPageIdle(*this);
 }
 
 double BrowserTab::WaitProgress() const

@@ -117,11 +117,13 @@ BrowserTab& MainWindow::NewTab()
 	});
 	connect(tab, &BrowserTab::TitleChanged, [this, tab](const QString& title)
 	{
-		m_ui->m_tabs->setTabText(IndexOf(*tab), title);
+		auto idx = IndexOf(*tab);
+		m_ui->m_tabs->tabBar()->setTabTextColor(idx, {});
+		m_ui->m_tabs->setTabText(idx, title);
 	});
 	connect(tab, &BrowserTab::WaitProgressUpdated, [this, tab](double progress)
 	{
-		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(progress, progress, progress));
+		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);

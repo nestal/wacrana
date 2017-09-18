@@ -131,6 +131,11 @@ QString Beethoven::Randomize()
 	return std::accumulate(result.begin(), result.end(), QString{});
 }
 
+void Beethoven::OnPageIdle(V1::BrowserTab& tab)
+{
+	OnTimer(tab);
+}
+
 } // end of namespace
 
 #include "ResourceLoader.hh"
