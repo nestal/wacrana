@@ -31,6 +31,14 @@ target_link_libraries(
 	Qt5::WebEngineWidgets
 )
 
+add_executable(headless headless/headless.cc)
+target_link_libraries(
+	headless
+	Threads::Threads
+	Qt5::WebEngine
+	Qt5::WebEngineWidgets
+)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/wacrana.json.in ${CMAKE_CURRENT_BINARY_DIR}/wacrana.json @ONLY)
 
 # documentations
