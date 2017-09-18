@@ -23,16 +23,9 @@ int main(int argc, char **argv)
 
 	app.connect(&page, &QWebEnginePage::loadFinished, [&page, &app, filename]()
     {
-        page.printToPdf([&app, filename] (QByteArray ba)
+        page.runJavaScript("document.title;", [&app](const QVariant& var)
         {
-            QFile f(filename);
-            if (f.open(QIODevice::WriteOnly))
-            {
-                f.write(ba);
-                f.close();
-            } else {
-                qDebug() << "Error opening file for writing" << filename << f.errorString();
-            }
+	        std::cout << "title is: " << var.toString().toStdString() << std::endl;
             app.exit();
         });
     });
