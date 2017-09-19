@@ -44,7 +44,11 @@ class Google
 		document.querySelectorAll("h3 > a").forEach(node =>
 		{
 			console.log("href = " + node.href);
-			result.push(node.href);
+			result.push({
+				text: node.textContent,
+				href: node.href,
+				desc: node.parentNode.nextSibling.textContent
+			});
 		});
 		return result;
 	}

@@ -86,6 +86,14 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
+			tab.InjectScript("Google.SearchResults();", [this](const QVariant& results)
+			{
+				for (auto&& result : results.toList())
+				{
+					auto&& map = result.toMap();
+					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["desc"].toString() << ")";
+				}
+			});
 			
 			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab)
 			{
