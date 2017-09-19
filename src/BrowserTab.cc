@@ -124,7 +124,8 @@ void BrowserTab::InjectScriptFile(const QString& path)
 
 void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab&)>&& callback)
 {
-	qDebug() << "waiting for " << timeout.count();
+	using namespace std::chrono;
+	qDebug() << "waiting for " << duration_cast<duration<double, seconds::period>>(timeout).count() << " seconds";
 	
 	m_callback = std::move(callback);
 	m_timer->Start(std::chrono::duration_cast<ProgressTimer::Duration>(timeout));
