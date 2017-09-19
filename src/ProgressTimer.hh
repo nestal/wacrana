@@ -45,9 +45,9 @@ private:
 	bool m_is_idle{true};
 	
     void timerEvent(QTimerEvent *event) override;
-	
-	TimePoint m_start, m_deadline;
+
 	Duration m_idle;
+	TimePoint m_start, m_deadline;
 };
 
 } // end of namespace

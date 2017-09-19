@@ -12,6 +12,8 @@
 
 #include "ProgressTimer.hh"
 
+#include <QDebug>
+
 namespace wacrana {
 
 namespace {
