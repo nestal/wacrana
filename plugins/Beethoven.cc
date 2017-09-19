@@ -87,7 +87,10 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
 			
-			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab){OnTimer(tab);});
+			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab)
+			{
+				tab.InjectScript("Google.IAmFeelingLucky();", {});
+			});
 		}
 		else if (ok)
 		{
@@ -98,6 +101,10 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 	}
 	else if (loc.url() == "about:blank")
 		OnTimer(tab);
+	else
+	{
+		tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab){OnTimer(tab);});
+	}
 }
 
 void Beethoven::OnAction(V1::MainWindow&, const QString& arg)

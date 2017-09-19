@@ -17,9 +17,6 @@ class Google
 		document.activeElement.value = text;
 		document.activeElement.blur();
 
-		var gs_l = document.querySelector('input[name="gs_l"');
-		console.log("gs_l = " + gs_l);
-
 		window.setTimeout(() =>
 		{
 			document.activeElement.blur();
@@ -33,14 +30,32 @@ class Google
 
 	static RelatedWords()
 	{
-		var gs_l = document.querySelector('input[name="gs_l"');
-		console.log("gs_l = " + gs_l.value);
-
-		var result = [];
+		let result = [];
 		document.querySelectorAll("div.card-section").forEach(node =>
 		{
 			result.push(node.innerText);
 		});
 		return result;
+	}
+
+	static SearchResults()
+	{
+		let result = [];
+		document.querySelectorAll("h3 > a").forEach(node =>
+		{
+			console.log("href = " + node.href);
+			result.push(node.href);
+		});
+		return result;
+	}
+
+	static IAmFeelingLucky()
+	{
+		let node = document.querySelector("h3 > a");
+		if (node)
+		{
+			console.log("clicking = " + node.href);
+			node.click();
+		}
 	}
 }
