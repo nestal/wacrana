@@ -13,22 +13,11 @@
 
 #include "Configuration.hh"
 #include "MainWindow.hh"
-#include "Context.hpp"
+#include "Context.hh"
 
 #include <random>
 
 using namespace wacrana;
-
-class Context : public V1::Context
-{
-public:
-	std::mt19937& RandomGenerator() override
-	{
-		return m_rand;
-	}
-private:
-	std::mt19937 m_rand{std::random_device{}()};
-};
 
 // set environment variable "QT_LOGGING_TO_CONSOLE" to 1 to enable logging in stderr.
 // when run by clion under, there is no TTY so these log message will not be shown,
