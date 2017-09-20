@@ -64,7 +64,7 @@ Q_SIGNALS:
 	void LoadFinished(bool);
 	void IconChanged(const QIcon& icon);
 	void TitleChanged(const QString& title);
-	void WaitProgressUpdated(double progress);
+	void WaitProgressUpdated(double progress, ProgressTimer::Duration remain, ProgressTimer::Duration total);
 	
 private:
 	void OnLoad(bool ok);

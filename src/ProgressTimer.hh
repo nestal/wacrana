@@ -34,6 +34,7 @@ public:
 	
 	void Start(Duration timeout);
 	Duration Remains() const;
+	Duration Total() const;
 	double Progress() const;
 	
 Q_SIGNALS:

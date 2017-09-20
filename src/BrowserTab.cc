@@ -138,7 +138,7 @@ void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 
 void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
 {
-	Q_EMIT WaitProgressUpdated(m_timer->Progress());
+	Q_EMIT WaitProgressUpdated(m_timer->Progress(), remain, m_timer->Total());
 }
 
 void BrowserTab::OnTimeout()

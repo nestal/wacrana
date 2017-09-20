@@ -34,7 +34,6 @@ MainWindow::MainWindow(Configuration& config) :
 	m_ui->m_toolbar->addWidget(m_location);
 	m_ui->m_toolbar->addSeparator();
 	m_timer_progress->setMinimum(0);
-	m_timer_progress->setMaximum(100);
 	statusBar()->addWidget(m_timer_progress);
 
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
@@ -121,11 +120,15 @@ BrowserTab& MainWindow::NewTab()
 		m_ui->m_tabs->tabBar()->setTabTextColor(idx, {});
 		m_ui->m_tabs->setTabText(idx, title);
 	});
-	connect(tab, &BrowserTab::WaitProgressUpdated, [this, tab](double progress)
+	connect(tab, &BrowserTab::WaitProgressUpdated, [this, tab](double progress, ProgressTimer::Duration remain, ProgressTimer::Duration total)
 	{
 		// gradually changing the color from black to white when progress becomes 1.0 (i.e. 100%)
 		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
-		m_timer_progress->setValue(static_cast<int>(progress * m_timer_progress->maximum()));
+
+		using namespace std::chrono;
+		using MilliSec = duration<int, milliseconds::period>;
+		m_timer_progress->setMaximum(duration_cast<MilliSec>(total).count());
+		m_timer_progress->setValue(duration_cast<MilliSec>(remain).count());
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);

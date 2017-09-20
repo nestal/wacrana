@@ -68,8 +68,12 @@ ProgressTimer::Duration ProgressTimer::Remains() const
 
 double ProgressTimer::Progress() const
 {
-	return static_cast<double>((m_deadline - std::chrono::steady_clock::now()).count()) /
-		(m_deadline - m_start).count();
+	return static_cast<double>(Remains().count()) / Total().count();
+}
+
+ProgressTimer::Duration ProgressTimer::Total() const
+{
+	return m_deadline - m_start;
 }
 
 } // end of namespace
