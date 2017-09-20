@@ -20,6 +20,7 @@
 
 class QLineEdit;
 class QToolButton;
+class QProgressBar;
 
 namespace wacrana {
 
@@ -59,6 +60,7 @@ private:
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
 	QMenu       *m_tab_menu{};
+	QProgressBar *m_timer_progress{};
 };
 
 } // end of namespace

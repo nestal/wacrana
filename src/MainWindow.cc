@@ -16,6 +16,7 @@
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QProgressBar>
 #include <QtCore/QThread>
 
 namespace wacrana {
@@ -23,7 +24,8 @@ namespace wacrana {
 MainWindow::MainWindow(Configuration& config) :
 	m_config{config},
 	m_ui{std::make_unique<Ui::MainWindow>()},
-	m_location{new QLineEdit(this)}
+	m_location{new QLineEdit(this)},
+	m_timer_progress{new QProgressBar}
 {
 	Q_ASSERT(m_config.thread() == thread());
 	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigReady);
@@ -31,6 +33,9 @@ MainWindow::MainWindow(Configuration& config) :
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
 	m_ui->m_toolbar->addSeparator();
+	m_timer_progress->setMinimum(0);
+	m_timer_progress->setMaximum(100);
+	statusBar()->addWidget(m_timer_progress);
 
 	connect(m_location, &QLineEdit::returnPressed, this, &MainWindow::Go);
 	
@@ -104,9 +109,6 @@ BrowserTab& MainWindow::NewTab()
 
 		// need to reset zoom factor after loading a site
 		tab->ZoomFactor(m_config.DefaultZoom());
-		
-		if (ok)
-			statusBar()->hide();
 	});
 	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
 	{
@@ -123,6 +125,7 @@ BrowserTab& MainWindow::NewTab()
 	{
 		// gradually changing the color from black to white when progress becomes 1.0 (i.e. 100%)
 		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
+		m_timer_progress->setValue(static_cast<int>(progress * m_timer_progress->maximum()));
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);
