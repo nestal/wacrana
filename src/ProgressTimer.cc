@@ -16,16 +16,13 @@
 
 namespace wacrana {
 
-namespace {
-const std::chrono::milliseconds interval{500};
-}
-
 ProgressTimer::ProgressTimer(QObject *parent, wacrana::ProgressTimer::Duration idle) :
 	QObject{parent},
 	m_idle{idle},
 	m_deadline{std::chrono::steady_clock::now() + m_idle}
 {
-	startTimer(interval.count());
+	static const auto intervalMs = 500;
+	startTimer(intervalMs);
 }
 
 void ProgressTimer::timerEvent(QTimerEvent *event)
@@ -36,7 +33,7 @@ void ProgressTimer::timerEvent(QTimerEvent *event)
 	if (now < m_deadline)
 	{
 		if (!m_is_idle)
-			Q_EMIT Update(m_deadline - now);
+			Q_EMIT Update(Remains());
 	}
 	else if (m_is_idle)
 	{
