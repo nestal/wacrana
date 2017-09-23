@@ -25,16 +25,6 @@ namespace wacrana {
 
 Beethoven::~Beethoven() = default;
 
-QString Beethoven::Name() const
-{
-	return "Beethoven";
-}
-
-QString Beethoven::Version() const
-{
-	return "1.0";
-}
-
 /**
  * \brief Callback when the plugin has been loaded.
  * \param config JSON object read from configuration file.

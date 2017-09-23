@@ -126,10 +126,11 @@ BrowserTab& MainWindow::NewTab()
 		// gradually changing the color from black to white when progress becomes 1.0 (i.e. 100%)
 		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
 
+		// round to millisecond to avoid overflowing the "int" type
 		using namespace std::chrono;
 		using MilliSec = duration<int, milliseconds::period>;
-		m_timer_progress->setMaximum(duration_cast<MilliSec>(total).count());
-		m_timer_progress->setValue(duration_cast<MilliSec>(remain).count());
+		m_timer_progress->setMaximum(round<MilliSec>(total).count());
+		m_timer_progress->setValue(round<MilliSec>(remain).count());
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);

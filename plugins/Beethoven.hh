@@ -32,9 +32,6 @@ public:
 	Beethoven(const QJsonObject& config, std::mt19937::result_type seed);
 	~Beethoven();
 	
-	QString Name() const override;
-	QString Version() const override;
-	
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;

@@ -24,7 +24,7 @@ public:
 	Context();
 
 	std::mt19937& RandomGenerator() override;
-	void timerEvent(QTimerEvent*);
+	void timerEvent(QTimerEvent*) override;
 
 private:
 	std::random_device m_dev;

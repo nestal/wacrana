@@ -21,6 +21,8 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QDebug>
 
+#include <boost/filesystem/path.hpp>
+
 #include <memory>
 #include <stdexcept>
 #include <iostream>
@@ -87,9 +89,9 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 				// have to load the plugin to know its name
 				// anyway we have to try running the factory function once to check if there's any problem
 				auto cpf    = LoadPlugin(p.toObject(), ctx);
-				auto plugin = cpf();
+				auto name   = boost::filesystem::path{p.toObject()["lib"].toString().toStdString()}.filename().string();
 				
-				persona.emplace(plugin->Name().toStdString(), std::move(cpf));
+				persona.emplace(name, std::move(cpf));
 			}
 			m_persona.Set(std::move(persona));
 		}

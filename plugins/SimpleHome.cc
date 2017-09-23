@@ -37,16 +37,6 @@ void SimpleHome::OnAction(V1::MainWindow& browser, const QString&)
 	browser.Current().Load(m_home);
 }
 
-QString SimpleHome::Name() const
-{
-	return "Simple Home";
-}
-
-QString SimpleHome::Version() const
-{
-	return "1.0";
-}
-
 QIcon SimpleHome::Icon() const
 {
 	return {};

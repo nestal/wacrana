@@ -15,6 +15,8 @@
 #include <QJsonObject>
 #include <QDebug>
 
+#include <algorithm>
+
 namespace wacrana {
 
 Wait::Wait(const QJsonObject& config) :
@@ -29,11 +31,10 @@ Wait::Wait(const QJsonObject& config) :
 
 std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 {
+	auto sec = std::clamp(m_range(gen), m_min, m_max);
+
 	using namespace std::chrono;
-	using SecondsF = duration<double, seconds::period>;
-	auto value = m_range(gen);
-	value = value > m_max ? m_max : (value < m_min ? m_min : value);
-	return duration_cast<system_clock::duration>(SecondsF{value});
+	return round<system_clock::duration>(duration<double, seconds::period>{sec});
 }
 
 } // end of namespace

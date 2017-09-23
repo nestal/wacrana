@@ -23,9 +23,6 @@ class SimpleHome : public V1::Plugin
 public:
 	explicit SimpleHome(const QJsonObject& config);
 	
-	QString Name() const override;
-	QString Version() const override;
-	
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	void OnAction(V1::MainWindow&, const QString& arg) override ;

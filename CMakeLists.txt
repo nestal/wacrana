@@ -14,14 +14,14 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5WebEngine REQUIRED)
 find_package(Qt5WebEngineWidgets REQUIRED)
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 find_package(Doxygen)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
-add_executable(wacrana ${SOURCE_FILES} src/ProgressTimer.cc src/ProgressTimer.hh)
+add_executable(wacrana ${SOURCE_FILES} src/ProgressTimer.cc src/ProgressTimer.hh src/PluginManager.cc src/PluginManager.hh)
 
 target_link_libraries(
 	wacrana
@@ -29,6 +29,8 @@ target_link_libraries(
 	Qt5::Widgets
 	Qt5::WebEngine
 	Qt5::WebEngineWidgets
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
 )
 
 add_executable(headless headless/headless.cc)

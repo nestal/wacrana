@@ -67,20 +67,6 @@ public:
 	virtual ~Plugin() = default;
 	
 	/**
-	 *  \brief Name of the plugin.
-	 *
-	 *  This is for display only.
-	 */
-	virtual QString Name() const = 0;
-	
-	/**
-	 * \brief Version of the plugin
-	 *
-	 * This is for display only.
-	 */
-	virtual QString Version() const = 0;
-	
-	/**
 	 * \brief Callback when a page has finished loading.
 	 * \param wnd   Browser main window, which is the parent of the tab that contains
 	 *              the newly loaded web page.
