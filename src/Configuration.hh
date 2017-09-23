@@ -16,6 +16,7 @@
 
 #include "OwnedFuture.hh"
 #include "Persona.hpp"
+#include "GeneralPlugin.hpp"
 #include "PluginManager.hh"
 
 #include <functional>
@@ -51,7 +52,7 @@ public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
-	V1::Persona* HomePage();
+	V1::GeneralPlugin* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();
@@ -77,10 +78,10 @@ Q_SIGNALS:
 private:
 	std::future<void> m_loaded;
 	
-	OwnedFuture<V1::PersonaPtr>  m_home_page;
+	OwnedFuture<V1::GeneralPluginPtr>  m_home_page;
 	OwnedFuture<double>          m_default_zoom;
 	
-	OwnedFuture<PluginManager>   m_persona;
+	OwnedFuture<PluginManager>   m_plugin_mgr;
 };
 
 } // end of namespace

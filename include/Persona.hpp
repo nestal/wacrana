@@ -12,18 +12,14 @@
 
 #pragma once
 
+#include "Export.hpp"
+
 #include <memory>
 #include <cassert>
 
 class QString;
 class QJsonObject;
 class QIcon;
-
-#ifdef __GNUC__
-	#define WCAPI __attribute__ ((visibility ("default")))
-#elif defined _MSC_VER
-	#define WCAPI __declspec(dllexport)
-#endif
 
 /**
  * \brief Wacrana namespace.
@@ -48,9 +44,6 @@ namespace V1 {
 class MainWindow;
 class BrowserTab;
 class Context;
-
-class Persona;
-using PersonaPtr = std::unique_ptr<V1::Persona>;
 
 /**
  * \brief Plugin interface.
@@ -84,7 +77,6 @@ public:
 	 */
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnPageIdle(BrowserTab& tab) = 0;
-	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 	virtual QIcon Icon() const = 0;
 };
 
@@ -92,9 +84,9 @@ public:
  * In windows, DLL export functions cannot return C++ classes. Since the factory
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
-typedef Persona* (*Factory)(const QJsonObject&, Context&);
+typedef Persona* (*PersonaFactory)(const QJsonObject&, Context&);
 
-inline PersonaPtr LoadPlugin(Factory func, const QJsonObject& config, Context& ctx)
+inline PersonaPtr LoadPersona(PersonaFactory func, const QJsonObject& config, Context& ctx)
 {
 	assert(func);
 	return PersonaPtr{(*func)(config, ctx)};

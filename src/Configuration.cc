@@ -77,28 +77,27 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 			// default zoom
 			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
 			
+			
 			// home page configuration
-//			auto home_page = LoadPlugin(doc.object()["homepage"].toObject(), ctx)();
-//			m_home_page.Set(std::move(home_page));
-			m_home_page.Set(nullptr);
+			PluginManager plugin_mgr{ctx};
+			m_home_page.Set(plugin_mgr.LoadPlugin(doc.object()["homepage"].toObject()));
 			
 			// persona
-			PluginManager persona{ctx};
 			auto persona_json = doc.object()["persona"].toArray();
 			for (auto&& p : persona_json)
 			{
 				// have to load the plugin to know its name
 				// anyway we have to try running the factory function once to check if there's any problem
-				persona.LoadPlugin(p.toObject());
+				plugin_mgr.LoadPersonaFactory(p.toObject());
 			}
-			m_persona.Set(std::move(persona));
+			m_plugin_mgr.Set(std::move(plugin_mgr));
 		}
 		catch (...)
 		{
 			// this is not good, must remember to set exception to all config items
 			m_default_zoom.OnException(std::current_exception());
 			m_home_page.OnException(std::current_exception());
-			m_persona.OnException(std::current_exception());
+			m_plugin_mgr.OnException(std::current_exception());
 			
 			throw;
 		}
@@ -118,7 +117,7 @@ Configuration::~Configuration()
  * Like other getters in this class, this function will block until the homepage plugin is
  * finished loading asynchronously.
  */
-V1::Persona *Configuration::HomePage()
+V1::GeneralPlugin *Configuration::HomePage()
 {
 	return m_home_page.Get().get();
 }
@@ -155,12 +154,12 @@ double Configuration::DefaultZoom() const
 
 V1::PersonaPtr Configuration::MakePersona(const QString& name) const
 {
-	return m_persona.Get().NewPersona(name);
+	return m_plugin_mgr.Get().NewPersona(name);
 }
 
 std::vector<QString> Configuration::Persona() const
 {
-	return m_persona.Get().Persona();
+	return m_plugin_mgr.Get().Persona();
 }
 
 } // end of namespace

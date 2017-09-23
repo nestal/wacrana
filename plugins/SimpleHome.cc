@@ -24,25 +24,12 @@ SimpleHome::SimpleHome(const QJsonObject& config) :
 {
 }
 
-void SimpleHome::OnPageLoaded(V1::BrowserTab&, bool)
-{
-}
-
-void SimpleHome::OnPageIdle(V1::BrowserTab& tab)
-{
-}
-
 void SimpleHome::OnAction(V1::MainWindow& browser, const QString&)
 {
 	browser.Current().Load(m_home);
 }
 
-QIcon SimpleHome::Icon() const
-{
-	return {};
-}
-
-extern "C" WCAPI V1::Persona* Load(const QJsonObject& config, wacrana::V1::Context&)
+extern "C" WCAPI V1::GeneralPlugin* Load(const QJsonObject& config, wacrana::V1::Context&)
 {
 	return new SimpleHome{config};
 }

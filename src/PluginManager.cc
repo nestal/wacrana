@@ -11,6 +11,7 @@
 //
 
 #include "PluginManager.hh"
+#include "GeneralPlugin.hpp"
 
 #include <QHash>
 #include <QtCore/QLibrary>
@@ -29,7 +30,7 @@ PluginManager::PluginManager(V1::Context& ctx) :
 {
 }
 
-void PluginManager::LoadPlugin(const QJsonObject& config)
+void PluginManager::LoadPersonaFactory(const QJsonObject& config)
 {
 	auto&& json_lib      = config["lib"];
 	auto&& json_factory  = config["factory"];
@@ -42,18 +43,18 @@ void PluginManager::LoadPlugin(const QJsonObject& config)
 	if (!lib.load())
 		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	auto factory = reinterpret_cast<V1::Factory>(lib.resolve(json_factory.toString().toUtf8()));
+	auto factory = reinterpret_cast<V1::PersonaFactory>(lib.resolve(json_factory.toString().toUtf8()));
 	if (!factory)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	PackedFactory packed{config, factory};
-	m_plugins.emplace(QFileInfo{lib.fileName()}.baseName(), packed);
+	PackedPersonaFactory packed{config, factory};
+	m_persona.emplace(QFileInfo{lib.fileName()}.baseName(), std::move(packed));
 }
 
 V1::PersonaPtr PluginManager::NewPersona(const QString& name) const
 {
-	if (auto it = m_plugins.find(name); it != m_plugins.end())
-		return V1::LoadPlugin(it->second.factory, it->second.config, m_ctx);
+	if (auto it = m_persona.find(name); it != m_persona.end())
+		return V1::LoadPersona(it->second.factory, it->second.config, m_ctx);
 	else
 		throw std::runtime_error("not found");
 }
@@ -61,9 +62,29 @@ V1::PersonaPtr PluginManager::NewPersona(const QString& name) const
 std::vector<QString> PluginManager::Persona() const
 {
 	std::vector<QString> result;
-	for (auto&& p : m_plugins)
+	for (auto&& p : m_persona)
 		result.push_back(p.first);
 	return result;
+}
+
+V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config)
+{
+	auto&& json_lib      = config["lib"];
+	auto&& json_factory  = config["factory"];
+	
+	if (!json_lib.isString() || !json_factory.isString())
+		throw std::runtime_error(R"(Invalid configuration: missing "lib" or "factory" in configuration.)");
+	
+	// Qt doesn't use exceptions... how lame
+	QLibrary lib{json_lib.toString()};
+	if (!lib.load())
+		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
+	
+	auto factory = reinterpret_cast<V1::PluginFactory>(lib.resolve(json_factory.toString().toUtf8()));
+	if (!factory)
+		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
+	
+	return V1::LoadPlugin(factory, config, m_ctx);
 }
 
 } // end of namespace

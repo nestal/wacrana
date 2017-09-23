@@ -105,10 +105,6 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 	}
 }
 
-void Beethoven::OnAction(V1::MainWindow&, const QString& arg)
-{
-}
-
 void Beethoven::OnTimer(V1::BrowserTab& tab)
 {
 	qDebug() << "going back to google";

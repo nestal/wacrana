@@ -32,7 +32,8 @@ class PluginManager
 public:
 	explicit PluginManager(V1::Context& ctx);
 	
-	void LoadPlugin(const QJsonObject& config);
+	void LoadPersonaFactory(const QJsonObject& config);
+	V1::GeneralPluginPtr LoadPlugin(const QJsonObject& config);
 	V1::PersonaPtr NewPersona(const QString& name) const;
 	
 	std::vector<QString> Persona() const;
@@ -43,19 +44,19 @@ private:
 		std::size_t operator()(const QString& s) const;
 	};
 	
-	struct PackedFactory
+	struct PackedPersonaFactory
 	{
 		QJsonObject config;
-		V1::Factory factory;
+		V1::PersonaFactory factory;
 	};
 	
 	V1::Context&    m_ctx;
 	
 	std::unordered_map<
 		QString,
-		PackedFactory,
+		PackedPersonaFactory,
 		Hash
-	> m_plugins;
+	> m_persona;
 };
 
 } // end of namespace
