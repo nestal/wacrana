@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include <QtCore/QUrl>
 
 namespace wacrana {
 
-class SimpleHome : public V1::Plugin
+class SimpleHome : public V1::Persona
 {
 public:
 	explicit SimpleHome(const QJsonObject& config);

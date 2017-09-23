@@ -49,8 +49,8 @@ class MainWindow;
 class BrowserTab;
 class Context;
 
-class Plugin;
-using PluginPtr = std::unique_ptr<V1::Plugin>;
+class Persona;
+using PersonaPtr = std::unique_ptr<V1::Persona>;
 
 /**
  * \brief Plugin interface.
@@ -61,10 +61,10 @@ using PluginPtr = std::unique_ptr<V1::Plugin>;
  * A plugin is a shared library (DLL in Windows and .so in Linux) that implements
  * a factory function that returns a Plugin object.
  */
-class WCAPI Plugin
+class WCAPI Persona
 {
 public:
-	virtual ~Plugin() = default;
+	virtual ~Persona() = default;
 	
 	/**
 	 * \brief Callback when a page has finished loading.
@@ -92,12 +92,12 @@ public:
  * In windows, DLL export functions cannot return C++ classes. Since the factory
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
-typedef Plugin* (*Factory)(const QJsonObject&, Context&);
+typedef Persona* (*Factory)(const QJsonObject&, Context&);
 
-inline PluginPtr LoadPlugin(Factory func, const QJsonObject& config, Context& ctx)
+inline PersonaPtr LoadPlugin(Factory func, const QJsonObject& config, Context& ctx)
 {
 	assert(func);
-	return PluginPtr{(*func)(config, ctx)};
+	return PersonaPtr{(*func)(config, ctx)};
 }
 
 }} // end of namespace

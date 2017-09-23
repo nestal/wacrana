@@ -42,7 +42,7 @@ QIcon SimpleHome::Icon() const
 	return {};
 }
 
-extern "C" WCAPI V1::Plugin* Load(const QJsonObject& config, wacrana::V1::Context&)
+extern "C" WCAPI V1::Persona* Load(const QJsonObject& config, wacrana::V1::Context&)
 {
 	return new SimpleHome{config};
 }

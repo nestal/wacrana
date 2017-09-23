@@ -15,7 +15,7 @@
 #include <QtWidgets/QWidget>
 
 #include "BrowserTab.hpp"
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include "ProgressTimer.hh"
 
@@ -29,7 +29,7 @@ class QTimer;
 namespace wacrana {
 
 namespace V1 {
-class Plugin;
+class Persona;
 }
 
 class BrowserTab : public QWidget, public V1::BrowserTab
@@ -55,7 +55,7 @@ public :
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	
-	void SetPersona(V1::PluginPtr&& persona);
+	void SetPersona(V1::PersonaPtr&& persona);
 	double WaitProgress() const;
 	
 	QWebEnginePage* Page();
@@ -74,7 +74,7 @@ private:
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;
-	V1::PluginPtr   m_persona;
+	V1::PersonaPtr   m_persona;
 	ProgressTimer   *m_timer;
 	TimerCallback   m_callback;
 	

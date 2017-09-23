@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
@@ -30,6 +30,7 @@ public:
 	PluginManager(Context& ctx);
 	
 	void LoadPlugin(const QJsonObject& config);
+	V1::PersonaPtr NewPersona(const QString& name) const;
 	
 private:
 	struct Hash
@@ -47,7 +48,7 @@ private:
 	
 	std::unordered_map<
 		QString,
-		V1::PluginPtr,
+		PackedFactory,
 		Hash
 	> m_plugins;
 };

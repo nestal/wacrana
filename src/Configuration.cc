@@ -12,7 +12,7 @@
 
 #include "Configuration.hh"
 
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
@@ -150,7 +150,7 @@ Configuration::PackedFactory Configuration::LoadPlugin(const QJsonObject& config
  * Like other getters in this class, this function will block until the homepage plugin is
  * finished loading asynchronously.
  */
-V1::Plugin *Configuration::HomePage()
+V1::Persona *Configuration::HomePage()
 {
 	return m_home_page.Get().get();
 }
@@ -185,7 +185,7 @@ double Configuration::DefaultZoom() const
 	return m_default_zoom.Get();
 }
 
-V1::PluginPtr Configuration::MakePersona(const std::string& name) const
+V1::PersonaPtr Configuration::MakePersona(const std::string& name) const
 {
 	auto& factories = m_persona.Get();
 	auto it = factories.find(name);

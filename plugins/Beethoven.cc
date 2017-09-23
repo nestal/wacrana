@@ -146,7 +146,7 @@ void Beethoven::OnPageIdle(V1::BrowserTab& tab)
 #include "ResourceLoader.hh"
 WCAPI_RESOURCE_LOADER(Beethoven)
 
-extern "C" WCAPI wacrana::V1::Plugin* Load(const QJsonObject& config, wacrana::V1::Context& ctx)
+extern "C" WCAPI wacrana::V1::Persona* Load(const QJsonObject& config, wacrana::V1::Context& ctx)
 {
 	return new wacrana::Beethoven{config, ctx.RandomGenerator()()};
 }

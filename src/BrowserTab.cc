@@ -12,7 +12,7 @@
 
 #include "BrowserTab.hh"
 
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -131,7 +131,7 @@ void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::Br
 	m_timer->Start(std::chrono::duration_cast<ProgressTimer::Duration>(timeout));
 }
 
-void BrowserTab::SetPersona(V1::PluginPtr&& persona)
+void BrowserTab::SetPersona(V1::PersonaPtr&& persona)
 {
 	m_persona = std::move(persona);
 }

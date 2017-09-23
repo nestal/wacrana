@@ -13,7 +13,7 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include "Wait.hh"
 
@@ -24,7 +24,7 @@
 
 namespace wacrana {
 
-class Beethoven : public QObject, public V1::Plugin
+class Beethoven : public QObject, public V1::Persona
 {
 	Q_OBJECT
 	

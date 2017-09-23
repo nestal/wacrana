@@ -15,7 +15,7 @@
 #include <QObject>
 
 #include "OwnedFuture.hh"
-#include "Plugin.hpp"
+#include "Persona.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -50,12 +50,12 @@ public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
-	V1::Plugin* HomePage();
+	V1::Persona* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();
 	
-	V1::PluginPtr MakePersona(const std::string& name) const;
+	V1::PersonaPtr MakePersona(const std::string& name) const;
 	std::vector<std::string> Persona() const;
 	
 Q_SIGNALS:
@@ -75,13 +75,13 @@ Q_SIGNALS:
 	void Finish();
 
 private:
-	using PackedFactory = std::function<V1::PluginPtr ()>;
+	using PackedFactory = std::function<V1::PersonaPtr ()>;
 	static PackedFactory LoadPlugin(const QJsonObject& config, V1::Context& ctx);
 	
 private:
 	std::future<void> m_loaded;
 	
-	OwnedFuture<V1::PluginPtr>  m_home_page;
+	OwnedFuture<V1::PersonaPtr>  m_home_page;
 	OwnedFuture<double>         m_default_zoom;
 	
 	OwnedFuture<std::unordered_map<std::string, PackedFactory>> m_persona;
