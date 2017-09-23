@@ -11,7 +11,6 @@
 //
 
 #include "PluginManager.hh"
-#include "Context.hh"
 
 #include <QHash>
 #include <QtCore/QLibrary>
@@ -20,14 +19,14 @@
 
 namespace wacrana {
 
-PluginManager::PluginManager(Context& ctx) :
-	m_ctx{ctx}
-{
-}
-
 std::size_t PluginManager::Hash::operator()(const QString& s) const
 {
 	return qHash(s);
+}
+
+PluginManager::PluginManager(V1::Context& ctx) :
+	m_ctx{ctx}
+{
 }
 
 void PluginManager::LoadPlugin(const QJsonObject& config)
@@ -57,6 +56,14 @@ V1::PersonaPtr PluginManager::NewPersona(const QString& name) const
 		return V1::LoadPlugin(it->second.factory, it->second.config, m_ctx);
 	else
 		throw std::runtime_error("not found");
+}
+
+std::vector<QString> PluginManager::Persona() const
+{
+	std::vector<QString> result;
+	for (auto&& p : m_plugins)
+		result.push_back(p.first);
+	return result;
 }
 
 } // end of namespace

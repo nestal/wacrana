@@ -16,6 +16,7 @@
 
 #include "OwnedFuture.hh"
 #include "Persona.hpp"
+#include "PluginManager.hh"
 
 #include <functional>
 #include <unordered_map>
@@ -55,8 +56,8 @@ public:
 	
 	void GetResult();
 	
-	V1::PersonaPtr MakePersona(const std::string& name) const;
-	std::vector<std::string> Persona() const;
+	V1::PersonaPtr MakePersona(const QString& name) const;
+	std::vector<QString> Persona() const;
 	
 Q_SIGNALS:
 	void PreFinish();
@@ -73,18 +74,13 @@ Q_SIGNALS:
 	 * the signal will be missed and the slot will never be called.
 	 */
 	void Finish();
-
-private:
-	using PackedFactory = std::function<V1::PersonaPtr ()>;
-	static PackedFactory LoadPlugin(const QJsonObject& config, V1::Context& ctx);
-	
 private:
 	std::future<void> m_loaded;
 	
 	OwnedFuture<V1::PersonaPtr>  m_home_page;
-	OwnedFuture<double>         m_default_zoom;
+	OwnedFuture<double>          m_default_zoom;
 	
-	OwnedFuture<std::unordered_map<std::string, PackedFactory>> m_persona;
+	OwnedFuture<PluginManager>   m_persona;
 };
 
 } // end of namespace
