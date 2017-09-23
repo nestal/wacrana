@@ -76,12 +76,11 @@ Q_SIGNALS:
 	 */
 	void Finish();
 private:
-	std::future<void> m_loaded;
+	std::future<void>               m_loaded;
+	OwnedFuture<double>             m_default_zoom;
 	
-	OwnedFuture<V1::GeneralPluginPtr>  m_home_page;
-	OwnedFuture<double>          m_default_zoom;
-	
-	OwnedFuture<PluginManager>   m_plugin_mgr;
+	OwnedFuture<V1::GeneralPluginPtr>   m_home_page;
+	OwnedFuture<PluginManager>          m_plugin_mgr;
 };
 
 } // end of namespace

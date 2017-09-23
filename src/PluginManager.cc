@@ -30,25 +30,18 @@ PluginManager::PluginManager(V1::Context& ctx) :
 {
 }
 
+V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config)
+{
+	return V1::LoadPlugin(reinterpret_cast<V1::PluginFactory>(Resolve(config).func), config, m_ctx);
+}
+
 void PluginManager::LoadPersonaFactory(const QJsonObject& config)
 {
-	auto&& json_lib      = config["lib"];
-	auto&& json_factory  = config["factory"];
-	
-	if (!json_lib.isString() || !json_factory.isString())
-		throw std::runtime_error(R"(Invalid configuration: missing "lib" or "factory" in configuration.)");
-	
-	// Qt doesn't use exceptions... how lame
-	QLibrary lib{json_lib.toString()};
-	if (!lib.load())
-		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
-	
-	auto factory = reinterpret_cast<V1::PersonaFactory>(lib.resolve(json_factory.toString().toUtf8()));
-	if (!factory)
-		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
-	
-	PackedPersonaFactory packed{config, factory};
-	m_persona.emplace(QFileInfo{lib.fileName()}.baseName(), std::move(packed));
+	auto lib = Resolve(config);
+	m_persona.emplace(
+		QFileInfo{lib.filename}.baseName(),
+		PackedPersonaFactory{config, reinterpret_cast<V1::PersonaFactory>(lib.func)}
+	);
 }
 
 V1::PersonaPtr PluginManager::NewPersona(const QString& name) const
@@ -67,7 +60,7 @@ std::vector<QString> PluginManager::Persona() const
 	return result;
 }
 
-V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config)
+PluginManager::Lib PluginManager::Resolve(const QJsonObject& config)
 {
 	auto&& json_lib      = config["lib"];
 	auto&& json_factory  = config["factory"];
@@ -80,11 +73,11 @@ V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config)
 	if (!lib.load())
 		throw std::runtime_error("Cannot load library " + json_lib.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	auto factory = reinterpret_cast<V1::PluginFactory>(lib.resolve(json_factory.toString().toUtf8()));
-	if (!factory)
+	auto symbol = lib.resolve(json_factory.toString().toUtf8());
+	if (!symbol)
 		throw std::runtime_error("Cannot load symbol " + json_factory.toString().toStdString() + ": " + lib.errorString().toStdString());
 	
-	return V1::LoadPlugin(factory, config, m_ctx);
+	return {symbol, lib.fileName()};
 }
 
 } // end of namespace

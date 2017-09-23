@@ -32,11 +32,19 @@ class PluginManager
 public:
 	explicit PluginManager(V1::Context& ctx);
 	
-	void LoadPersonaFactory(const QJsonObject& config);
 	V1::GeneralPluginPtr LoadPlugin(const QJsonObject& config);
-	V1::PersonaPtr NewPersona(const QString& name) const;
 	
+	void LoadPersonaFactory(const QJsonObject& config);
+	V1::PersonaPtr NewPersona(const QString& name) const;
 	std::vector<QString> Persona() const;
+	
+private:
+	struct Lib
+	{
+		QFunctionPointer func;
+		QString          filename;
+	};
+	static Lib Resolve(const QJsonObject& config);
 	
 private:
 	struct Hash
