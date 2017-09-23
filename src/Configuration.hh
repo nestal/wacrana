@@ -15,12 +15,16 @@
 #include <QObject>
 
 #include "OwnedFuture.hh"
+#include "PluginManager.hh"
+#include "Exception.hh"
+
 #include "Persona.hpp"
 #include "GeneralPlugin.hpp"
-#include "PluginManager.hh"
 
 #include <functional>
 #include <unordered_map>
+
+#include <boost/exception/error_info.hpp>
 
 class QString;
 class QJsonObject;
@@ -47,6 +51,13 @@ namespace wacrana {
 class Configuration : public QObject
 {
 	Q_OBJECT
+
+public:
+	struct Error : Exception {};
+	struct FileReadError : Error {};
+	struct JsonParseError : Error {};
+
+	using ErrorString   = boost::error_info<struct ErrorString_, QString>;
 	
 public:
 	Configuration(const QString& path, V1::Context& ctx);

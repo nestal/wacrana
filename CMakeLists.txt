@@ -20,8 +20,9 @@ find_package(Doxygen)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc include/*.hpp)
-add_executable(wacrana ${SOURCE_FILES} src/ProgressTimer.cc src/ProgressTimer.hh src/PluginManager.cc src/PluginManager.hh)
+file(GLOB INCLUDE_FILES include/*.hpp)
+file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc)
+add_executable(wacrana ${SOURCE_FILES} ${INCLUDE_FILES})
 
 target_link_libraries(
 	wacrana
@@ -55,10 +56,18 @@ endif()
 
 # plugins
 # need to include Qt5 core only in windows
-add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc plugins/ResourceLoader.hh)
+add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc plugins/ResourceLoader.hh ${INCLUDE_FILES})
 target_link_libraries(SimpleHome Qt5::Core Qt5::Gui)
 set_target_properties(SimpleHome PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-add_library(Beethoven SHARED plugins/Beethoven.hh plugins/Beethoven.cc plugins/ResourceLoader.hh plugins/res/Beethoven.qrc plugins/Wait.cc plugins/Wait.hh include/Context.hpp include/GeneralPlugin.hpp include/Export.hpp)
+add_library(Beethoven SHARED
+	plugins/Beethoven.hh
+	plugins/Beethoven.cc
+	plugins/ResourceLoader.hh
+	plugins/res/Beethoven.qrc
+	plugins/Wait.cc
+	plugins/Wait.hh
+	${INCLUDE_FILES}
+)
 target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)

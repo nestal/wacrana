@@ -21,7 +21,10 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QDebug>
 
-#include <boost/filesystem/path.hpp>
+#include <boost/throw_exception.hpp>
+#include <boost/exception/info.hpp>
+#include <boost/exception/errinfo_file_name.hpp>
+#include <boost/exception/errinfo_api_function.hpp>
 
 #include <memory>
 #include <stdexcept>
@@ -68,15 +71,25 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 		try
 		{
 			QFile file(path);
-			file.open(QFile::ReadOnly);
-			auto doc = QJsonDocument::fromJson(file.readAll());
+			if (!file.open(QFile::ReadOnly))
+				BOOST_THROW_EXCEPTION(FileReadError()
+					<< boost::errinfo_file_name{path.toStdString()}
+					<< boost::errinfo_api_function{"QFile::open"}
+					<< ErrorString{file.errorString()}
+				);
+				
+			QJsonParseError err;
+			auto doc = QJsonDocument::fromJson(file.readAll(), &err);
 			
 			if (doc.isNull())
-				throw std::runtime_error("can't read " + path.toUtf8());
+				BOOST_THROW_EXCEPTION(JsonParseError()
+					<< boost::errinfo_file_name{path.toStdString()}
+					<< boost::errinfo_api_function{"QJsonDocument::fromJson"}
+					<< ErrorString{err.errorString()}
+				);
 			
 			// default zoom
 			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
-			
 			
 			// home page configuration
 			PluginManager plugin_mgr{ctx};
