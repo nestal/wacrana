@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include <future>
 #include <memory>
@@ -62,9 +62,9 @@ public:
 	}
 	
 private:
-	mutable boost::optional<T>      m_value{};
-	std::promise<T>                 m_promise;
-	mutable std::future<T>          m_future{m_promise.get_future()};
+	mutable std::optional<T>    m_value{};
+	std::promise<T>             m_promise;
+	mutable std::future<T>      m_future{m_promise.get_future()};
 };
 
 } // end of namespace

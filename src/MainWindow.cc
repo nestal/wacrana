@@ -105,6 +105,7 @@ BrowserTab& MainWindow::NewTab()
 	{
 		SetLocation(tab->Location().url());
 		m_ui->m_tabs->setTabText(IndexOf(*tab), tab->Title());
+		setWindowTitle(tab->Title());
 
 		// need to reset zoom factor after loading a site
 		tab->ZoomFactor(m_config.DefaultZoom());
