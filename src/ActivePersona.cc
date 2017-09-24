@@ -10,7 +10,7 @@
 // Created by nestal on 9/24/17.
 //
 
-#include "ActionPersona.hh"
+#include "ActivePersona.hh"
 #include "FunctorEvent.hh"
 
 #include <QCoreApplication>
@@ -32,7 +32,7 @@ public:
 	QString Title() const override;
 	
 	// script injection
-	void InjectScript(const QString& javascript, ScriptCallback&& callback) override;
+	void InjectScript(const QString& js, ScriptCallback&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
@@ -68,6 +68,12 @@ QIcon ActivePersona::Icon() const
 	return m_adaptee->Icon();
 }
 
+ActivePersona::~ActivePersona()
+{
+	m_ios.stop();
+	m_thread.join();
+}
+
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
 	m_parent{parent},
 	m_location{m_parent.Location()},
@@ -95,9 +101,9 @@ void ActivePersona::BrowserTabProxy::InjectScript(const QString& js, ScriptCallb
 	Post(qApp, [&parent=this->m_parent, js, cb=std::move(callback)]()mutable{parent.InjectScript(js, std::move(cb));});
 }
 
-void ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& file)
+void ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& path)
 {
-	Post(qApp, [&parent=this->m_parent, file]{parent.InjectScriptFile(file);});
+	Post(qApp, [&parent=this->m_parent, path]{parent.InjectScriptFile(path);});
 }
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)

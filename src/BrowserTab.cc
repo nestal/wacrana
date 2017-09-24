@@ -13,7 +13,7 @@
 #include "BrowserTab.hh"
 
 #include "Persona.hpp"
-#include "ActionPersona.hh"
+#include "ActivePersona.hh"
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>

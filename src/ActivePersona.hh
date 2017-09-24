@@ -27,6 +27,7 @@ class ActivePersona : public V1::Persona
 {
 public:
 	explicit ActivePersona(V1::PersonaPtr&& adaptee);
+	~ActivePersona();
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
