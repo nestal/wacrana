@@ -52,13 +52,8 @@ ActivePersona::ActivePersona(V1::PersonaPtr&& adaptee) :
 
 void ActivePersona::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 {
-	std::cout << "out worker " << std::this_thread::get_id() << std::endl;
 	BrowserTabProxy proxy{tab};
-	m_ios.post([tab=std::move(proxy), ok, this]()mutable
-	{
-		std::cout << "in worker " << std::this_thread::get_id() << std::endl;
-		m_adaptee->OnPageLoaded(tab, ok);
-	});
+	m_ios.post([tab=std::move(proxy), ok, this]()mutable{m_adaptee->OnPageLoaded(tab, ok);});
 }
 
 void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
