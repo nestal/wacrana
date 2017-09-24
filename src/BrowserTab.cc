@@ -146,7 +146,8 @@ void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
 
 void BrowserTab::OnTimeout()
 {
-	m_callback(*this);
+	if (m_persona)
+		m_persona->Post(*this, [this](V1::BrowserTab& proxy){m_callback(proxy);});
 }
 
 void BrowserTab::OnIdle()

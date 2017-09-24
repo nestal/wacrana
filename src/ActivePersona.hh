@@ -33,14 +33,16 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
+	void Post(V1::BrowserTab& tab, std::function<void (V1::BrowserTab& proxy)>&& callback);
+	
 private:
 	class BrowserTabProxy;
 	
 private:
-	V1::PersonaPtr          m_adaptee;
-	boost::asio::io_service m_ios;
-	boost::asio::io_service::work m_work;
-	std::thread             m_thread;
+	V1::PersonaPtr                  m_adaptee;
+	boost::asio::io_service         m_ios;
+	boost::asio::io_service::work   m_work;
+	std::thread                     m_thread;
 };
 
 } // end of namespace

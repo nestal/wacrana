@@ -33,6 +33,8 @@ namespace V1 {
 class Persona;
 }
 
+class ActivePersona;
+
 class BrowserTab : public QWidget, public V1::BrowserTab
 {
 	Q_OBJECT
@@ -76,7 +78,7 @@ private:
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;
-	V1::PersonaPtr   m_persona;
+	std::unique_ptr<ActivePersona>  m_persona;
 	ProgressTimer   *m_timer;
 	TimerCallback   m_callback;
 	QStatusBar      *m_status;

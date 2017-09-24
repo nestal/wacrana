@@ -41,7 +41,7 @@ private:
 };
 
 template <typename Func>
-void Post(QObject *dest, Func&& func)
+void PostMain(Func&& func, QObject *dest = qApp)
 {
 	QCoreApplication::postEvent(dest, new FunctorEvent<Func>(std::forward<Func>(func)));
 }
