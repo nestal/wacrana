@@ -13,26 +13,53 @@
 #pragma once
 
 #include "Persona.hpp"
-#include "GeneralPlugin.hpp"
-#include "MainWindow.hpp"
 #include "BrowserTab.hpp"
 
+#include <QtCore/QUrl>
+#include <QtCore/QString>
+
 #include <boost/asio.hpp>
+#include <thread>
 
 namespace wacrana {
 
-class PersonaProxy : public V1::Persona
+class ActivePersona : public V1::Persona
 {
 public:
-	PersonaProxy(boost::asio::io_service& ios, V1::PersonaPtr&& adaptee, V1::BrowserTab& parent);
+	explicit ActivePersona(V1::PersonaPtr&& adaptee);
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
+
 private:
-	boost::asio::io_service& m_ios;
-	V1::PersonaPtr m_adaptee;
+	V1::PersonaPtr          m_adaptee;
+	boost::asio::io_service m_ios;
+	std::thread             m_thread;
+};
+
+class BrowserTabProxy : public V1::BrowserTab
+{
+public:
+	explicit BrowserTabProxy(V1::BrowserTab& parent);
+	BrowserTabProxy(const BrowserTabProxy&) = default;
+	BrowserTabProxy(BrowserTabProxy&&) = default;
+	
+	void Load(const QUrl& url) override;
+	QUrl Location() const override;
+	QString Title() const override;
+	
+	// script injection
+	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
+	void InjectScriptFile(const QString& path) override;
+	
+	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
+	
+private:
+	V1::BrowserTab& m_parent;
+	QUrl            m_location;
+	QString         m_title;
 };
 
 } // end of namespace

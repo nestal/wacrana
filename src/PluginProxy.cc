@@ -11,30 +11,66 @@
 //
 
 #include "PluginProxy.hh"
+
 #include <QtGui/QIcon>
 
 namespace wacrana {
 
-PersonaProxy::PersonaProxy(boost::asio::io_service& ios, V1::PersonaPtr&& adaptee, V1::BrowserTab&) :
-	m_ios{ios},
-	m_adaptee{std::move(adaptee)}
+ActivePersona::ActivePersona(V1::PersonaPtr&& adaptee) :
+	m_adaptee{std::move(adaptee)},
+	m_thread([this]{m_ios.run();})
 {
 }
 
-void PersonaProxy::OnPageLoaded(V1::BrowserTab& tab, bool ok)
+void ActivePersona::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 {
-	m_ios.post([&tab, ok, this]{m_adaptee->OnPageLoaded(tab, ok);});
+	BrowserTabProxy proxy{tab};
+	m_ios.post([tab=std::move(proxy), ok, this]()mutable{m_adaptee->OnPageLoaded(tab, ok);});
 }
 
-void PersonaProxy::OnPageIdle(V1::BrowserTab& tab)
+void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
 {
-	m_ios.post([&tab, this]{m_adaptee->OnPageIdle(tab);});
+	BrowserTabProxy proxy{tab};
+	m_ios.post([tab=std::move(proxy), this]()mutable{m_adaptee->OnPageIdle(tab);});
 }
 
-QIcon PersonaProxy::Icon() const
+QIcon ActivePersona::Icon() const
 {
 	// constant function should be thread-safe
 	return m_adaptee->Icon();
+}
+
+BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
+	m_parent{parent},
+	m_location{m_parent.Location()},
+	m_title{m_parent.Title()}
+{
+}
+
+void BrowserTabProxy::Load(const QUrl&)
+{
+}
+
+QUrl BrowserTabProxy::Location() const
+{
+	return m_location;
+}
+
+QString BrowserTabProxy::Title() const
+{
+	return m_title;
+}
+
+void BrowserTabProxy::InjectScript(const QString&, std::function<void(const QVariant&)>&&)
+{
+}
+
+void BrowserTabProxy::InjectScriptFile(const QString&)
+{
+}
+
+void BrowserTabProxy::SingleShotTimer(TimeDuration, TimerCallback&&)
+{
 }
 
 } // end of namespace
