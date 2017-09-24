@@ -26,12 +26,13 @@ add_executable(wacrana ${SOURCE_FILES} ${INCLUDE_FILES})
 
 target_link_libraries(
 	wacrana
-	Threads::Threads
 	Qt5::Widgets
 	Qt5::WebEngine
 	Qt5::WebEngineWidgets
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
+	Threads::Threads
+	${CMAKE_DL_LIBS}
 )
 
 add_executable(headless headless/headless.cc)

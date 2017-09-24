@@ -85,6 +85,7 @@ public:
  * function must be exported by the DLL, it cannot return a smart pointer.
  */
 typedef Persona* (*PersonaFactory)(const QJsonObject&, Context&);
+using PersonaFactoryType = PersonaPtr(const QJsonObject&, Context&);
 
 inline PersonaPtr LoadPersona(PersonaFactory func, const QJsonObject& config, Context& ctx)
 {

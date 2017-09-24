@@ -36,6 +36,8 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
+	static V1::PersonaPtr Create(const QJsonObject& config, V1::Context& ctx);
+	
 private:
 	void OnTimer(V1::BrowserTab& tab);
 	

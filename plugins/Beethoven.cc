@@ -19,6 +19,9 @@
 #include <QtCore/QUrl>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
+
+#include <boost/dll/alias.hpp> // for BOOST_DLL_ALIAS
+
 #include <set>
 
 namespace wacrana {
@@ -137,12 +140,17 @@ void Beethoven::OnPageIdle(V1::BrowserTab& tab)
 	OnTimer(tab);
 }
 
+V1::PersonaPtr Beethoven::Create(const QJsonObject& config, V1::Context& ctx)
+{
+	return std::make_unique<Beethoven>(config, ctx.RandomGenerator()());
+}
+
+BOOST_DLL_ALIAS(
+    wacrana::Beethoven::Create, // <-- this function is exported with...
+    Load                        // <-- ...this alias name
+)
+
 } // end of namespace
 
 #include "ResourceLoader.hh"
 WCAPI_RESOURCE_LOADER(Beethoven)
-
-extern "C" WCAPI wacrana::V1::Persona* Load(const QJsonObject& config, wacrana::V1::Context& ctx)
-{
-	return new wacrana::Beethoven{config, ctx.RandomGenerator()()};
-}

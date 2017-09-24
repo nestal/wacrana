@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Persona.hpp"
+#include <boost/dll.hpp>
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
@@ -55,7 +56,7 @@ private:
 	struct PackedPersonaFactory
 	{
 		QJsonObject config;
-		V1::PersonaFactory factory;
+		std::function<V1::PersonaFactoryType> factory;
 	};
 	
 	V1::Context&    m_ctx;
