@@ -40,15 +40,23 @@ class Google
 
 	static SearchResults()
 	{
+		console.log(document.body.getBoundingClientRect().width, document.body.getBoundingClientRect().height);
 		let result = [];
 		document.querySelectorAll("h3 > a").forEach(node =>
 		{
-			if (node)
+			if (node !== null && node !== undefined)
 			{
+				const rect = node.getBoundingClientRect();
+				const desc = node.parentNode.nextSibling ? node.parentNode.nextSibling.textContent : "";
+
                 result.push({
                     text: node.textContent,
                     href: node.href,
-                    desc: node.parentNode.nextSibling.textContent
+                    desc: desc,
+					top: rect.top,
+					left: rect.left,
+					width: rect.width,
+					height: rect.height
                 });
             }
 		});

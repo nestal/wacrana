@@ -79,20 +79,25 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
-			tab.InjectScript("Google.SearchResults();", [this](const QVariant& results)
+			tab.InjectScript("Google.SearchResults();", [this, &tab](const QVariant& results)
 			{
 				for (auto&& result : results.toList())
 				{
 					auto&& map = result.toMap();
-					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["desc"].toString() << ")";
+//					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["top"].toInt() << ", " << map["left"].toInt() << ")";
+					
+					QRect rect{map["left"].toInt(), map["top"].toInt(), map["width"].toInt(), map["height"].toInt()};
+					qDebug() << map["href"].toString() << ": " << rect;
+					
+					tab.SingleShotTimer(m_result.Random(m_rand), [this, rect](V1::BrowserTab& tab)
+					{
+//				        tab.InjectScript("Google.IAmFeelingLucky();", {});
+						tab.LeftClick(rect.center());
+					});
+					break;
 				}
 			});
 			
-			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab)
-			{
-//				tab.InjectScript("Google.IAmFeelingLucky();", {});
-				tab.LeftClick({100,100});
-			});
 		}
 		else if (ok)
 		{
