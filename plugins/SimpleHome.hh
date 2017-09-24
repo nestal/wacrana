@@ -25,6 +25,8 @@ public:
 	
 	void OnAction(V1::MainWindow&, const QString& arg) override ;
 	
+	static V1::GeneralPluginPtr Create(const QJsonObject& config, V1::Context& ctx);
+	
 private:
 	QUrl    m_home{"http://localhost"};
 };

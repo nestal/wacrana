@@ -13,6 +13,8 @@
 #pragma once
 
 #include "Persona.hpp"
+#include "GeneralPlugin.hpp"
+
 #include <boost/dll.hpp>
 
 #include <QtCore/QString>
@@ -38,15 +40,7 @@ public:
 	void LoadPersonaFactory(const QJsonObject& config);
 	V1::PersonaPtr NewPersona(const QString& name) const;
 	std::vector<QString> Persona() const;
-	
-private:
-	struct Lib
-	{
-		QFunctionPointer func;
-		QString          filename;
-	};
-	static Lib Resolve(const QJsonObject& config);
-	
+
 private:
 	struct Hash
 	{
@@ -56,11 +50,23 @@ private:
 	struct PackedPersonaFactory
 	{
 		QJsonObject config;
-		std::function<V1::PersonaFactoryType> factory;
+		std::function<V1::PersonaFactory> factory;
 	};
 	
-	V1::Context&    m_ctx;
+	template <typename FunctionType>
+	struct ImportResult
+	{
+		boost::filesystem::path     path;
+		std::function<FunctionType> func;
+	};
 	
+	template <typename FunctionType>
+	static ImportResult<FunctionType> Import(const QJsonObject& config);
+
+private:
+	std::vector<std::function<V1::GeneralPluginFactory>> m_plugins;
+	V1::Context&    m_ctx;
+
 	std::unordered_map<
 		QString,
 		PackedPersonaFactory,

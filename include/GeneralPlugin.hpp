@@ -13,7 +13,6 @@
 #pragma once
 
 #include "Export.hpp"
-
 #include <cassert>
 
 class QJsonObject;
@@ -40,16 +39,6 @@ public:
 	virtual void OnAction(MainWindow&, const QString& arg) = 0;
 };
 
-/**
- * In windows, DLL export functions cannot return C++ classes. Since the factory
- * function must be exported by the DLL, it cannot return a smart pointer.
- */
-typedef GeneralPlugin* (*PluginFactory)(const QJsonObject&, Context&);
-
-inline GeneralPluginPtr LoadPlugin(PluginFactory func, const QJsonObject& config, Context& ctx)
-{
-	assert(func);
-	return GeneralPluginPtr{(*func)(config, ctx)};
-}
+using GeneralPluginFactory = GeneralPluginPtr(const QJsonObject&, Context&);
 
 } } // end of namespace

@@ -80,18 +80,7 @@ public:
 	virtual QIcon Icon() const = 0;
 };
 
-/**
- * In windows, DLL export functions cannot return C++ classes. Since the factory
- * function must be exported by the DLL, it cannot return a smart pointer.
- */
-typedef Persona* (*PersonaFactory)(const QJsonObject&, Context&);
-using PersonaFactoryType = PersonaPtr(const QJsonObject&, Context&);
-
-inline PersonaPtr LoadPersona(PersonaFactory func, const QJsonObject& config, Context& ctx)
-{
-	assert(func);
-	return PersonaPtr{(*func)(config, ctx)};
-}
+using PersonaFactory = PersonaPtr(const QJsonObject&, Context&);
 
 }} // end of namespace
 

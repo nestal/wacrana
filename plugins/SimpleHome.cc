@@ -17,6 +17,8 @@
 #include <QtCore/QJsonObject>
 #include <QtGui/QIcon>
 
+#include <boost/dll/alias.hpp> // for BOOST_DLL_ALIAS
+
 namespace wacrana {
 
 SimpleHome::SimpleHome(const QJsonObject& config) :
@@ -29,9 +31,14 @@ void SimpleHome::OnAction(V1::MainWindow& browser, const QString&)
 	browser.Current().Load(m_home);
 }
 
-extern "C" WCAPI V1::GeneralPlugin* Load(const QJsonObject& config, wacrana::V1::Context&)
+V1::GeneralPluginPtr SimpleHome::Create(const QJsonObject& config, V1::Context&)
 {
-	return new SimpleHome{config};
+	return std::make_unique<SimpleHome>(config);
 }
+
+BOOST_DLL_ALIAS(
+    wacrana::SimpleHome::Create, // <-- this function is exported with...
+    Load                         // <-- ...this alias name
+)
 
 } // end of namespace
