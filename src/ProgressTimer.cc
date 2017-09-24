@@ -11,15 +11,17 @@
 //
 
 #include "ProgressTimer.hh"
+#include "TimerEventCallback.hh"
 
 #include <QDebug>
 
 namespace wacrana {
 
-ProgressTimer::ProgressTimer(QObject *parent, wacrana::ProgressTimer::Duration idle) :
+ProgressTimer::ProgressTimer(QObject *parent, TimerEventCallback& callback, wacrana::ProgressTimer::Duration idle) :
 	QObject{parent},
 	m_idle{idle},
-	m_deadline{std::chrono::steady_clock::now() + m_idle}
+	m_deadline{std::chrono::steady_clock::now() + m_idle},
+	m_callback{callback}
 {
 	static const auto intervalMs = 500;
 	startTimer(intervalMs);
@@ -33,16 +35,16 @@ void ProgressTimer::timerEvent(QTimerEvent *event)
 	if (now < m_deadline)
 	{
 		if (!m_is_idle)
-			Q_EMIT Update(Remains());
+			m_callback.OnTimerUpdate(Remains());
 	}
 	else if (m_is_idle)
 	{
-		Q_EMIT OnIdle();
+		m_callback.OnIdle();
 		m_deadline += m_idle;
 	}
 	else
 	{
-		Q_EMIT Timeout();
+		m_callback.OnTimeout();
 		
 		m_is_idle = true;
 		m_deadline += m_idle;

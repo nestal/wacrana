@@ -71,7 +71,7 @@ ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
 
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
-	PostMain([&parent=this->m_parent, url]{parent.Load(url);});
+	PostMain([&parent=m_parent, url]{parent.Load(url);});
 }
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
@@ -88,7 +88,7 @@ void ActivePersona::BrowserTabProxy::InjectScript(const QString& js, ScriptCallb
 {
 	// BrowserTabProxy is a temporary object. "this" will be destroyed when the callback
 	// is invoked. Therefore we capture &parent instead of capturing "this".
-	PostMain([&parent=this->m_parent, js, cb=std::move(callback)]() mutable
+	PostMain([&parent=m_parent, js, cb=std::move(callback)]() mutable
 	{
 		parent.InjectScript(js, std::move(cb));
 	});
@@ -96,12 +96,12 @@ void ActivePersona::BrowserTabProxy::InjectScript(const QString& js, ScriptCallb
 
 void ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& path)
 {
-	PostMain([&parent=this->m_parent, path]{parent.InjectScriptFile(path);});
+	PostMain([&parent=m_parent, path]{parent.InjectScriptFile(path);});
 }
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
 {
-	PostMain([&parent=this->m_parent, duration, cb=std::move(callback)]() mutable
+	PostMain([&parent=m_parent, duration, cb=std::move(callback)]() mutable
 	{
 		parent.SingleShotTimer(duration, std::move(cb));
 	});

@@ -25,6 +25,12 @@
 
 namespace wacrana {
 
+/**
+ * \brief Wrapper around a persona that uses a separate threads to run it.
+ *
+ * This class is the heart of the multi-thread architecture of the wacrana
+ * personas. Is is the "active" version of a persona
+ */
 class ActivePersona : public V1::Persona
 {
 public:
@@ -38,8 +44,21 @@ public:
 	template <typename Func>
 	void Post(V1::BrowserTab& tab, Func&& callback)
 	{
+		// The BrowserTabProxy construct must be called in the GUI thread
+		// because it will copy some GUI-related stuff, e.g. browser location
+		// and web page title.
+		assert(std::this_thread::get_id() != m_thread.get_id());
 		BrowserTabProxy proxy{tab};
-		m_ios.post([px=std::move(proxy), cb=std::forward<Func>(callback)]() mutable {cb(px);});
+		
+		// Move the callback function and the BrowserTabProxy to the lambda
+		// function, and call use callback function in the persona thread.
+		m_ios.post([
+			proxy=std::move(proxy),
+			cb=std::forward<Func>(callback)
+		]() mutable
+		{
+			cb(proxy);
+		});
 	}
 	
 private:

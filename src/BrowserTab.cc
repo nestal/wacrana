@@ -27,7 +27,7 @@ namespace wacrana {
 BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	QWidget{parent},
 	m_ui{std::make_unique<Ui::BrowserTab>()},
-	m_timer{new ProgressTimer{this}}
+	m_timer{new ProgressTimer{this, *this}}
 {
 	m_ui->setupUi(this);
 	m_ui->m_page->setZoomFactor(zoom);
@@ -39,9 +39,6 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
-	connect(m_timer, &ProgressTimer::OnIdle, this, &BrowserTab::OnIdle);
-	connect(m_timer, &ProgressTimer::Update, this, &BrowserTab::OnTimerUpdate);
-	connect(m_timer, &ProgressTimer::Timeout, this, &BrowserTab::OnTimeout);
 }
 
 BrowserTab::~BrowserTab() = default;

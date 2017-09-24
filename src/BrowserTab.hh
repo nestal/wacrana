@@ -18,6 +18,7 @@
 #include "Persona.hpp"
 
 #include "ProgressTimer.hh"
+#include "TimerEventCallback.hh"
 
 #include "ui_BrowserTab.h"
 #include <memory>
@@ -35,7 +36,7 @@ class Persona;
 
 class ActivePersona;
 
-class BrowserTab : public QWidget, public V1::BrowserTab
+class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCallback
 {
 	Q_OBJECT
 
@@ -72,9 +73,9 @@ Q_SIGNALS:
 	
 private:
 	void OnLoad(bool ok);
-	void OnTimerUpdate(ProgressTimer::Duration remain);
-	void OnTimeout();
-	void OnIdle();
+	void OnTimerUpdate(Clock::duration remain) override;
+	void OnTimeout() override;
+	void OnIdle() override;
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;

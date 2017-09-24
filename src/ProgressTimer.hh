@@ -21,6 +21,8 @@ class QTimerEvent;
 
 namespace wacrana {
 
+class TimerEventCallback;
+
 class ProgressTimer : public QObject
 {
 	Q_OBJECT
@@ -30,17 +32,13 @@ public:
 	using TimePoint = std::chrono::steady_clock::time_point;
 
 public:
-	explicit ProgressTimer(QObject *parent, Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30}));
+	explicit ProgressTimer(QObject *parent, TimerEventCallback& callback,
+		Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30}));
 	
 	void Start(Duration timeout);
 	Duration Remains() const;
 	Duration Total() const;
 	double Progress() const;
-	
-Q_SIGNALS:
-	void Update(Duration remains);
-	void Timeout();
-	void OnIdle();
 	
 private:
 	bool m_is_idle{true};
@@ -49,6 +47,8 @@ private:
 
 	Duration m_idle;
 	TimePoint m_start, m_deadline;
+	
+	TimerEventCallback& m_callback;
 };
 
 } // end of namespace
