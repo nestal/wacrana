@@ -32,7 +32,9 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
-
+private:
+	class BrowserTabProxy;
+	
 private:
 	V1::PersonaPtr          m_adaptee;
 	boost::asio::io_service m_ios;

@@ -20,7 +20,7 @@
 
 namespace wacrana {
 
-class BrowserTabProxy : public V1::BrowserTab
+class ActivePersona::BrowserTabProxy : public V1::BrowserTab
 {
 public:
 	explicit BrowserTabProxy(V1::BrowserTab& parent);
@@ -68,39 +68,39 @@ QIcon ActivePersona::Icon() const
 	return m_adaptee->Icon();
 }
 
-BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
+ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
 	m_parent{parent},
 	m_location{m_parent.Location()},
 	m_title{m_parent.Title()}
 {
 }
 
-void BrowserTabProxy::Load(const QUrl& url)
+void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
 	Post(qApp, [&parent=this->m_parent, url]{parent.Load(url);});
 }
 
-QUrl BrowserTabProxy::Location() const
+QUrl ActivePersona::BrowserTabProxy::Location() const
 {
 	return m_location;
 }
 
-QString BrowserTabProxy::Title() const
+QString ActivePersona::BrowserTabProxy::Title() const
 {
 	return m_title;
 }
 
-void BrowserTabProxy::InjectScript(const QString& js, ScriptCallback&& callback)
+void ActivePersona::BrowserTabProxy::InjectScript(const QString& js, ScriptCallback&& callback)
 {
 	Post(qApp, [&parent=this->m_parent, js, cb=std::move(callback)]()mutable{parent.InjectScript(js, std::move(cb));});
 }
 
-void BrowserTabProxy::InjectScriptFile(const QString& file)
+void ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& file)
 {
 	Post(qApp, [&parent=this->m_parent, file]{parent.InjectScriptFile(file);});
 }
 
-void BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
+void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
 {
 	Post(qApp, [&parent=this->m_parent, duration, cb=std::move(callback)]() mutable
 	{
