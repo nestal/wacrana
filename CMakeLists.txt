@@ -72,3 +72,7 @@ add_library(Beethoven SHARED
 )
 target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
+set(CMAKE_CXX_STANDARD 11)
+add_executable(rvm_test dlib/rvm_test.cc)
+target_link_libraries(rvm_test dlib)
