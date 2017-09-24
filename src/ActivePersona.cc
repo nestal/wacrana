@@ -19,11 +19,17 @@
 
 namespace wacrana {
 
+namespace {
+const std::chrono::milliseconds timer_interval{500};
+}
+
 ActivePersona::ActivePersona(V1::PersonaPtr&& adaptee) :
 	m_work{m_ios},
+	m_timer{m_ios, timer_interval},
 	m_persona{std::move(adaptee)},
 	m_thread([this]{m_ios.run();})
 {
+	m_timer.async_wait([this](auto ec){OnTimer(ec);});
 }
 
 void ActivePersona::OnPageLoaded(V1::BrowserTab& tab, bool ok)
@@ -46,6 +52,14 @@ ActivePersona::~ActivePersona()
 {
 	m_ios.stop();
 	m_thread.join();
+}
+
+void ActivePersona::OnTimer(boost::system::error_code)
+{
+	assert(std::this_thread::get_id() == m_thread.get_id());
+	
+	m_timer.expires_from_now(timer_interval);
+	m_timer.async_wait([this](auto ec){OnTimer(ec);});
 }
 
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :

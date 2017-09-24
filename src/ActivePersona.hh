@@ -19,6 +19,8 @@
 #include <QtCore/QString>
 
 #include <boost/asio.hpp>
+#include <boost/asio/steady_timer.hpp>
+
 #include <thread>
 
 namespace wacrana {
@@ -27,7 +29,7 @@ class ActivePersona : public V1::Persona
 {
 public:
 	explicit ActivePersona(V1::PersonaPtr&& adaptee);
-	~ActivePersona();
+	~ActivePersona() override;
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
@@ -62,10 +64,15 @@ private:
 		QString         m_title;
 	};
 	
+	void OnTimer(boost::system::error_code ec);
+	
 private:
 	V1::PersonaPtr                  m_persona;
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
+	boost::asio::steady_timer       m_timer;
+	
+	// this must be the last
 	std::thread                     m_thread;
 };
 
