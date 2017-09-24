@@ -90,7 +90,8 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 			
 			tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab)
 			{
-				tab.InjectScript("Google.IAmFeelingLucky();", {});
+//				tab.InjectScript("Google.IAmFeelingLucky();", {});
+				tab.LeftClick({100,100});
 			});
 		}
 		else if (ok)

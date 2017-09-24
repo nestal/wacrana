@@ -54,6 +54,7 @@ public :
 	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
+	void LeftClick(const QPoint& pos) override;
 	
 	void SetPersona(V1::PersonaPtr&& persona);
 	double WaitProgress() const;

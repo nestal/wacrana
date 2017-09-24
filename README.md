@@ -8,4 +8,7 @@ features if they don't need them, saving memory and CPU time.
 
 ## Plugins Support
 
- 
+To keep the memory footprint of the browser small, most optional features
+are implemented as plugins. Unlike "add-ons" from other browser, these
+plugins are written in C++, using a well-defined stable interface provided
+by the browser.

@@ -16,6 +16,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
+#include <QMouseEvent>
 
 #include <stdexcept>
 
@@ -155,6 +156,42 @@ void BrowserTab::OnIdle()
 double BrowserTab::WaitProgress() const
 {
 	return m_timer->Progress();
+}
+
+void BrowserTab::LeftClick(const QPoint& pos)
+{
+	auto click = [pos](QWidget *dest)
+	{
+		qDebug() << "clicking " << pos;
+
+        QCoreApplication::postEvent(dest, new QMouseEvent{
+	        QEvent::MouseButtonPress,
+			pos,
+			Qt::LeftButton,
+			Qt::MouseButton::NoButton,
+			Qt::NoModifier
+        });
+	    // Some delay
+	    QTimer::singleShot(300, [pos, dest]()
+	    {
+			QCoreApplication::postEvent(dest, new QMouseEvent{
+				QEvent::MouseButtonRelease,
+				pos,
+				Qt::LeftButton,
+				Qt::MouseButton::NoButton,
+				Qt::NoModifier
+			});
+	    });
+	};
+	
+	for (auto&& child : m_ui->m_page->children())
+	{
+		if (QWidget* wgt = qobject_cast<QWidget*>(child))
+	    {
+	        click(wgt);
+	        break;
+	    }
+	}
 }
 
 } // end of namespace

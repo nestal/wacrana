@@ -19,6 +19,7 @@ class QUrl;
 class QIcon;
 class QString;
 class QVariant;
+class QPoint;
 
 namespace wacrana {
 namespace V1 {
@@ -42,6 +43,7 @@ public:
 	virtual double ZoomFactor() const = 0;
 	virtual void ZoomFactor(double) = 0;
 	virtual void Reload() = 0;
+	virtual void LeftClick(const QPoint& pos) = 0;
 	
 	// script injection
 	virtual void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) = 0;
