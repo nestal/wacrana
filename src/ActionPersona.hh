@@ -36,30 +36,8 @@ public:
 private:
 	V1::PersonaPtr          m_adaptee;
 	boost::asio::io_service m_ios;
+	boost::asio::io_service::work m_work;
 	std::thread             m_thread;
-};
-
-class BrowserTabProxy : public V1::BrowserTab
-{
-public:
-	explicit BrowserTabProxy(V1::BrowserTab& parent);
-	BrowserTabProxy(const BrowserTabProxy&) = default;
-	BrowserTabProxy(BrowserTabProxy&&) = default;
-	
-	void Load(const QUrl& url) override;
-	QUrl Location() const override;
-	QString Title() const override;
-	
-	// script injection
-	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
-	void InjectScriptFile(const QString& path) override;
-	
-	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
-	
-private:
-	V1::BrowserTab& m_parent;
-	QUrl            m_location;
-	QString         m_title;
 };
 
 } // end of namespace

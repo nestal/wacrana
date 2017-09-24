@@ -52,7 +52,7 @@ public :
 	double ZoomFactor() const  ;
 	void ZoomFactor(double zoom) ;
 	void Reload() ;
-	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
+	void InjectScript(const QString& javascript, ScriptCallback&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	void LeftClick(const QPoint& pos) ;

@@ -13,6 +13,7 @@
 #include "BrowserTab.hh"
 
 #include "Persona.hpp"
+#include "ActionPersona.hh"
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -106,12 +107,12 @@ void BrowserTab::Reload()
 	m_ui->m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
 }
 
-void BrowserTab::InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback)
+void BrowserTab::InjectScript(const QString& javascript, ScriptCallback&& callback)
 {
-	m_ui->m_page->page()->runJavaScript(javascript, [cb=std::move(callback)](const QVariant &v)
+	m_ui->m_page->page()->runJavaScript(javascript, [cb=std::move(callback), this](const QVariant &v)
 	{
 		if (cb)
-			cb(v);
+			cb(v, *this);
 	});
 }
 
@@ -124,7 +125,7 @@ void BrowserTab::InjectScriptFile(const QString& path)
 	InjectScript(QString{script.readAll()}, {});
 }
 
-void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::BrowserTab&)>&& callback)
+void BrowserTab::SingleShotTimer(TimeDuration timeout, TimerCallback&& callback)
 {
 	using namespace std::chrono;
 	qDebug() << "waiting for " << duration_cast<duration<double, seconds::period>>(timeout).count() << " seconds";
@@ -135,7 +136,7 @@ void BrowserTab::SingleShotTimer(TimeDuration timeout, std::function<void(V1::Br
 
 void BrowserTab::SetPersona(V1::PersonaPtr&& persona)
 {
-	m_persona = std::move(persona);
+	m_persona = std::make_unique<ActivePersona>(std::move(persona));
 }
 
 void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)

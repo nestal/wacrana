@@ -60,7 +60,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		if (loc.fileName() == "search")
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
-			tab.InjectScript("Google.RelatedWords();", [this](const QVariant& terms)
+			tab.InjectScript("Google.RelatedWords();", [this](const QVariant& terms, V1::BrowserTab& tab)
 			{
 				for (auto&& var : terms.toList())
 				{
@@ -79,7 +79,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
-			tab.InjectScript("Google.SearchResults();", [this, &tab](const QVariant& results)
+			tab.InjectScript("Google.SearchResults();", [this](const QVariant& results, V1::BrowserTab& tab)
 			{
 				for (auto&& result : results.toList())
 				{
@@ -89,7 +89,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 //					QRect rect{map["left"].toInt(), map["top"].toInt(), map["width"].toInt(), map["height"].toInt()};
 //					qDebug() << map["href"].toString() << ": " << rect;
 					auto url = map["href"].toString();
-					
+
 					tab.SingleShotTimer(m_result.Random(m_rand), [this, url](V1::BrowserTab& tab)
 					{
 //				        tab.InjectScript("Google.IAmFeelingLucky();", {});
