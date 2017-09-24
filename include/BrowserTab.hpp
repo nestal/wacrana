@@ -44,8 +44,6 @@ public:
 	virtual void InjectScriptFile(const QString& path) = 0;
 	
 	virtual void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) = 0;
-	
-	std::string m_safe{"haha"};
 };
 
 }} // end of namespace

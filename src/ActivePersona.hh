@@ -33,13 +33,37 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
-	void Post(V1::BrowserTab& tab, std::function<void (V1::BrowserTab& proxy)>&& callback);
+	template <typename Func>
+	void Post(V1::BrowserTab& tab, Func&& callback)
+	{
+		BrowserTabProxy proxy{tab};
+		m_ios.post([px=std::move(proxy), cb=std::forward<Func>(callback)]() mutable {cb(px);});
+	}
 	
 private:
-	class BrowserTabProxy;
+	class BrowserTabProxy : public V1::BrowserTab
+	{
+	public:
+		explicit BrowserTabProxy(V1::BrowserTab& parent);
+		
+		void Load(const QUrl& url) override;
+		QUrl Location() const override;
+		QString Title() const override;
+		
+		// script injection
+		void InjectScript(const QString& js, ScriptCallback&& callback) override;
+		void InjectScriptFile(const QString& path) override;
+		
+		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
+		
+	private:
+		V1::BrowserTab& m_parent;
+		QUrl            m_location;
+		QString         m_title;
+	};
 	
 private:
-	V1::PersonaPtr                  m_adaptee;
+	V1::PersonaPtr                  m_persona;
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	std::thread                     m_thread;

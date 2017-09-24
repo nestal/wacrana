@@ -148,6 +148,8 @@ void BrowserTab::OnTimeout()
 {
 	if (m_persona)
 		m_persona->Post(*this, [this](V1::BrowserTab& proxy){m_callback(proxy);});
+	else
+		m_callback(*this);
 }
 
 void BrowserTab::OnIdle()
@@ -165,8 +167,6 @@ void BrowserTab::LeftClick(const QPoint& pos)
 {
 	auto click = [pos](QWidget *dest)
 	{
-		qDebug() << "clicking " << pos << "out of" << dest->size();
-
         QCoreApplication::postEvent(dest, new QMouseEvent{
 	        QEvent::MouseButtonPress,
 			pos,
@@ -191,9 +191,6 @@ void BrowserTab::LeftClick(const QPoint& pos)
 	{
 		if (QWidget* wgt = qobject_cast<QWidget*>(child))
 	    {
-//		    QPainter painter{wgt};
-//		    painter.drawRect(pos.x() - 10, pos.y() - 10, 20, 20);
-		    
 	        click(wgt);
 	        break;
 	    }
