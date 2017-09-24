@@ -46,16 +46,16 @@ public :
 	void Load(const QUrl& url) override;
 	QUrl Location() const override;
 	QString Title() const override;
-	QIcon Icon() const override;
-	void Back() override;
-	void Forward() override;
-	double ZoomFactor() const override ;
-	void ZoomFactor(double zoom) override;
-	void Reload() override;
+	QIcon Icon() const ;
+	void Back() ;
+	void Forward() ;
+	double ZoomFactor() const  ;
+	void ZoomFactor(double zoom) ;
+	void Reload() ;
 	void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
-	void LeftClick(const QPoint& pos) override;
+	void LeftClick(const QPoint& pos) ;
 	
 	void SetPersona(V1::PersonaPtr&& persona);
 	double WaitProgress() const;

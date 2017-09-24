@@ -35,15 +35,8 @@ public:
 	
 public:
 	virtual void Load(const QUrl& url) = 0;
-	virtual QIcon Icon() const = 0;
 	virtual QUrl Location() const = 0;
 	virtual QString Title() const = 0;
-	virtual void Back() = 0;
-	virtual void Forward() = 0;
-	virtual double ZoomFactor() const = 0;
-	virtual void ZoomFactor(double) = 0;
-	virtual void Reload() = 0;
-	virtual void LeftClick(const QPoint& pos) = 0;
 	
 	// script injection
 	virtual void InjectScript(const QString& javascript, std::function<void(const QVariant&)>&& callback) = 0;
