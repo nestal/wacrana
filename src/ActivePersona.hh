@@ -42,13 +42,13 @@ public:
 	QIcon Icon() const override;
 
 	template <typename Func>
-	void Post(V1::BrowserTab& tab, Func&& callback)
+	void Post(V1::BrowserTab& real, Func&& callback)
 	{
 		// The BrowserTabProxy construct must be called in the GUI thread
 		// because it will copy some GUI-related stuff, e.g. browser location
 		// and web page title.
 		assert(std::this_thread::get_id() != m_thread.get_id());
-		BrowserTabProxy proxy{tab};
+		BrowserTabProxy proxy{real};
 		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.

@@ -12,7 +12,6 @@
 
 #include "BrowserTab.hh"
 
-#include "Persona.hpp"
 #include "ActivePersona.hh"
 
 #include <QtCore/QFile>
@@ -27,7 +26,7 @@ namespace wacrana {
 BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	QWidget{parent},
 	m_ui{std::make_unique<Ui::BrowserTab>()},
-	m_timer{new ProgressTimer{this, *this}}
+	m_timer{new ProgressTimer{*this}}
 {
 	m_ui->setupUi(this);
 	m_ui->m_page->setZoomFactor(zoom);
@@ -39,6 +38,9 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
+	
+	static const auto intervalMs = 500;
+	startTimer(intervalMs);
 }
 
 BrowserTab::~BrowserTab() = default;
@@ -192,6 +194,12 @@ void BrowserTab::LeftClick(const QPoint& pos)
 	        break;
 	    }
 	}
+}
+
+void BrowserTab::timerEvent(QTimerEvent *event)
+{
+	m_timer->OnTimerInterval();
+	QObject::timerEvent(event);
 }
 
 } // end of namespace

@@ -12,38 +12,32 @@
 
 #pragma once
 
-#include <QObject>
-
 #include <chrono>
 #include <functional>
-
-class QTimerEvent;
 
 namespace wacrana {
 
 class TimerEventCallback;
 
-class ProgressTimer : public QObject
+class ProgressTimer
 {
-	Q_OBJECT
-	
 public:
 	using Duration = std::chrono::steady_clock::duration;
 	using TimePoint = std::chrono::steady_clock::time_point;
 
 public:
-	explicit ProgressTimer(QObject *parent, TimerEventCallback& callback,
+	explicit ProgressTimer(TimerEventCallback& callback,
 		Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30}));
 	
 	void Start(Duration timeout);
 	Duration Remains() const;
 	Duration Total() const;
 	double Progress() const;
-	
+
+    void OnTimerInterval();
+
 private:
 	bool m_is_idle{true};
-	
-    void timerEvent(QTimerEvent *event) override;
 
 	Duration m_idle;
 	TimePoint m_start, m_deadline;

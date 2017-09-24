@@ -17,17 +17,14 @@
 
 namespace wacrana {
 
-ProgressTimer::ProgressTimer(QObject *parent, TimerEventCallback& callback, wacrana::ProgressTimer::Duration idle) :
-	QObject{parent},
+ProgressTimer::ProgressTimer(TimerEventCallback& callback, wacrana::ProgressTimer::Duration idle) :
 	m_idle{idle},
 	m_deadline{std::chrono::steady_clock::now() + m_idle},
 	m_callback{callback}
 {
-	static const auto intervalMs = 500;
-	startTimer(intervalMs);
 }
 
-void ProgressTimer::timerEvent(QTimerEvent *event)
+void ProgressTimer::OnTimerInterval()
 {
 	using namespace std::chrono_literals;
 	
@@ -49,8 +46,6 @@ void ProgressTimer::timerEvent(QTimerEvent *event)
 		m_is_idle = true;
 		m_deadline += m_idle;
 	}
-	
-	QObject::timerEvent(event);
 }
 
 void ProgressTimer::Start(ProgressTimer::Duration timeout)

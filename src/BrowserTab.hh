@@ -25,8 +25,8 @@
 
 class QUrl;
 class QWebEnginePage;
-class QTimer;
 class QStatusBar;
+class QTimerEvent;
 
 namespace wacrana {
 
@@ -76,6 +76,8 @@ private:
 	void OnTimerUpdate(Clock::duration remain) override;
 	void OnTimeout() override;
 	void OnIdle() override;
+	
+	void timerEvent(QTimerEvent *event) override;
 	
 private:
 	std::unique_ptr<Ui::BrowserTab> m_ui;
