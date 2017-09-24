@@ -17,6 +17,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QMouseEvent>
+#include <QStatusBar>
 
 #include <stdexcept>
 
@@ -162,7 +163,7 @@ void BrowserTab::LeftClick(const QPoint& pos)
 {
 	auto click = [pos](QWidget *dest)
 	{
-		qDebug() << "clicking " << pos;
+		qDebug() << "clicking " << pos << "out of" << dest->size();
 
         QCoreApplication::postEvent(dest, new QMouseEvent{
 	        QEvent::MouseButtonPress,
@@ -172,7 +173,7 @@ void BrowserTab::LeftClick(const QPoint& pos)
 			Qt::NoModifier
         });
 	    // Some delay
-	    QTimer::singleShot(300, [pos, dest]()
+	    QTimer::singleShot(100, [pos, dest]()
 	    {
 			QCoreApplication::postEvent(dest, new QMouseEvent{
 				QEvent::MouseButtonRelease,
@@ -188,6 +189,9 @@ void BrowserTab::LeftClick(const QPoint& pos)
 	{
 		if (QWidget* wgt = qobject_cast<QWidget*>(child))
 	    {
+//		    QPainter painter{wgt};
+//		    painter.drawRect(pos.x() - 10, pos.y() - 10, 20, 20);
+		    
 	        click(wgt);
 	        break;
 	    }

@@ -86,13 +86,15 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 					auto&& map = result.toMap();
 //					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["top"].toInt() << ", " << map["left"].toInt() << ")";
 					
-					QRect rect{map["left"].toInt(), map["top"].toInt(), map["width"].toInt(), map["height"].toInt()};
-					qDebug() << map["href"].toString() << ": " << rect;
+//					QRect rect{map["left"].toInt(), map["top"].toInt(), map["width"].toInt(), map["height"].toInt()};
+//					qDebug() << map["href"].toString() << ": " << rect;
+					auto url = map["href"].toString();
 					
-					tab.SingleShotTimer(m_result.Random(m_rand), [this, rect](V1::BrowserTab& tab)
+					tab.SingleShotTimer(m_result.Random(m_rand), [this, url](V1::BrowserTab& tab)
 					{
 //				        tab.InjectScript("Google.IAmFeelingLucky();", {});
-						tab.LeftClick(rect.center());
+//						tab.LeftClick(rect.center());
+						tab.InjectScript("Google.ClickSearchResult('" + url + "');", {});
 					});
 					break;
 				}

@@ -25,6 +25,7 @@
 class QUrl;
 class QWebEnginePage;
 class QTimer;
+class QStatusBar;
 
 namespace wacrana {
 
@@ -78,7 +79,7 @@ private:
 	V1::PersonaPtr   m_persona;
 	ProgressTimer   *m_timer;
 	TimerCallback   m_callback;
-	
+	QStatusBar      *m_status;
 };
 
 } // end of namespace

@@ -44,7 +44,7 @@ class Google
 		let result = [];
 		document.querySelectorAll("h3 > a").forEach(node =>
 		{
-			if (node !== null && node !== undefined)
+			if (node)
 			{
 				const rect = node.getBoundingClientRect();
 				const desc = node.parentNode.nextSibling ? node.parentNode.nextSibling.textContent : "";
@@ -71,5 +71,14 @@ class Google
 			console.log("clicking = " + node.href);
 			node.click();
 		}
+	}
+
+	static ClickSearchResult(url)
+	{
+		document.querySelectorAll("h3 > a").forEach(node =>
+		{
+			if (node && url == node.href)
+				node.click();
+		});
 	}
 }
