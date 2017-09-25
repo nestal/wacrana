@@ -59,6 +59,7 @@ public :
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	void ReportProgress(double percent) override;
+	std::size_t SequenceNumber() const override;
 	void LeftClick(const QPoint& pos) ;
 	
 	void SetPersona(V1::PersonaPtr&& persona);
@@ -87,6 +88,7 @@ private:
 	ProgressTimer   *m_timer;
 	TimerCallback   m_callback;
 	QStatusBar      *m_status;
+	std::size_t     m_seqnum{0};
 };
 
 } // end of namespace

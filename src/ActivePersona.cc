@@ -65,7 +65,8 @@ void ActivePersona::OnTimer(boost::system::error_code)
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
 	m_parent{parent},
 	m_location{m_parent.Location()},
-	m_title{m_parent.Title()}
+	m_title{m_parent.Title()},
+	m_seqnum{m_parent.SequenceNumber()}
 {
 }
 
@@ -123,6 +124,11 @@ void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 
 		// perhaps update the fields in BrowserTabProxy?
 	});
+}
+
+std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
+{
+	return m_seqnum;
 }
 
 } // end of namespace

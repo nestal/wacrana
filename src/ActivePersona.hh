@@ -77,11 +77,13 @@ private:
 		
 		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 		void ReportProgress(double percent) override;
+		std::size_t SequenceNumber() const override;
 
 	private:
 		V1::BrowserTab& m_parent;
 		QUrl            m_location;
 		QString         m_title;
+		std::size_t     m_seqnum;
 	};
 	
 	void OnTimer(boost::system::error_code ec);

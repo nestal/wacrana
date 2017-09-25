@@ -53,8 +53,9 @@ void BrowserTab::OnLoadFinished(bool ok)
 	
 	if (m_persona)
 		m_persona->OnPageLoaded(*this, ok);
-	
+
 	Q_EMIT LoadFinished(ok);
+	m_seqnum++;
 }
 
 void BrowserTab::Load(const QUrl& url)
@@ -217,6 +218,11 @@ void BrowserTab::OnLoadStarted()
 	// by a previous OnPageLoad() should not be triggered.
 	if (m_persona)
 		m_timer->Cancel();
+}
+
+std::size_t BrowserTab::SequenceNumber() const
+{
+	return m_seqnum;
 }
 
 } // end of namespace

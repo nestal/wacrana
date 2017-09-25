@@ -14,6 +14,7 @@
 
 #include <functional>
 #include <chrono>
+#include <cstddef>
 
 class QUrl;
 class QIcon;
@@ -45,6 +46,7 @@ public:
 	
 	virtual void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) = 0;
 	virtual void ReportProgress(double percent) = 0;
+	virtual std::size_t SequenceNumber() const = 0;
 };
 
 }} // end of namespace
