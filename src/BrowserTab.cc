@@ -163,6 +163,11 @@ double BrowserTab::WaitProgress() const
 	return m_timer->Progress();
 }
 
+void BrowserTab::ReportProgress(double percent)
+{
+	qDebug() << "progress = " << percent;
+}
+
 void BrowserTab::LeftClick(const QPoint& pos)
 {
 	auto click = [pos](QWidget *dest)

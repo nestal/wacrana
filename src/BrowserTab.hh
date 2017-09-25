@@ -58,6 +58,7 @@ public :
 	void InjectScript(const QString& javascript, ScriptCallback&& callback) override;
 	void InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
+	void ReportProgress(double percent) override;
 	void LeftClick(const QPoint& pos) ;
 	
 	void SetPersona(V1::PersonaPtr&& persona);

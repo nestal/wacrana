@@ -27,7 +27,6 @@ ActivePersona::ActivePersona(V1::PersonaPtr&& adaptee) :
 	m_work{m_ios},
 	m_timer{m_ios, timer_interval},
 	m_persona{std::move(adaptee)},
-	m_progress_timer{*this},
 	m_thread([this]{m_ios.run();})
 {
 	m_timer.async_wait([this](auto ec){OnTimer(ec);});
@@ -61,28 +60,6 @@ void ActivePersona::OnTimer(boost::system::error_code)
 	
 	m_timer.expires_from_now(timer_interval);
 	m_timer.async_wait([this](auto ec){OnTimer(ec);});
-}
-
-void ActivePersona::SingleShotTimer(TimeDuration timeout, TimerCallback&& callback)
-{
-	// need to pass the real parent tab here
-}
-
-void ActivePersona::OnTimerUpdate(std::chrono::duration)
-{
-	// notify main thread
-}
-
-void ActivePersona::OnTimeout()
-{
-	// this is in plugin thread
-	// how can I create BrowserTabProxy here?
-}
-
-void ActivePersona::OnIdle()
-{
-	// similar to OnTimer()
-	// notify main thread to get a BrowserTabProxy
 }
 
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
@@ -135,6 +112,16 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 	PostMain([&parent=m_parent, duration, cb=std::move(callback)]() mutable
 	{
 		parent.SingleShotTimer(duration, std::move(cb));
+	});
+}
+
+void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
+{
+	PostMain([&parent=m_parent, percent]() mutable
+	{
+		parent.ReportProgress(percent);
+
+		// perhaps update the fields in BrowserTabProxy?
 	});
 }
 

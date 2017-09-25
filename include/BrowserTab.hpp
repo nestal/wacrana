@@ -44,6 +44,7 @@ public:
 	virtual void InjectScriptFile(const QString& path) = 0;
 	
 	virtual void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) = 0;
+	virtual void ReportProgress(double percent) = 0;
 };
 
 }} // end of namespace
