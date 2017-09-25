@@ -18,6 +18,7 @@
 
 #include <QtCore/QFileInfo>
 
+#include <boost/dll.hpp>
 #include <boost/dll/import.hpp> // for import_alias
 
 namespace wacrana {
@@ -27,15 +28,10 @@ std::size_t PluginManager::Hash::operator()(const QString& s) const
 	return qHash(s);
 }
 
-PluginManager::PluginManager(V1::Context& ctx) :
-	m_ctx{ctx}
-{
-}
-
-V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config)
+V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config, V1::Context& ctx)
 {
 	m_plugins.push_back(std::move(Import<V1::GeneralPluginFactory>(config).func));
-	return m_plugins.back()(config, m_ctx);
+	return m_plugins.back()(config, ctx);
 }
 
 template <typename FunctionType>
@@ -68,10 +64,11 @@ void PluginManager::LoadPersonaFactory(const QJsonObject& config)
 	);
 }
 
-V1::PersonaPtr PluginManager::NewPersona(const QString& name) const
+V1::PersonaPtr PluginManager::NewPersona(const QString& name, V1::Context& ctx) const
 {
-	if (auto it = m_persona.find(name); it != m_persona.end())
-		return it->second.factory(it->second.config, m_ctx);
+	auto it = m_persona.find(name);
+	if (it != m_persona.end())
+		return it->second.factory(it->second.config, ctx);
 	else
 		throw std::runtime_error("not found");
 }

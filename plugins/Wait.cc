@@ -31,7 +31,8 @@ Wait::Wait(const QJsonObject& config) :
 
 std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 {
-	auto sec = std::clamp(m_range(gen), m_min, m_max);
+	auto sec = m_range(gen);
+	sec = (sec < m_min ? m_min : (sec > m_max ? m_max : sec));
 
 	using namespace std::chrono;
 	return round<system_clock::duration>(duration<double, seconds::period>{sec});

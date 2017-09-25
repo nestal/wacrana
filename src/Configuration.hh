@@ -58,7 +58,7 @@ public:
 	struct JsonParseError : Error {};
 
 	using ErrorString   = boost::error_info<struct ErrorString_, QString>;
-	
+
 public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
@@ -87,6 +87,8 @@ Q_SIGNALS:
 	 */
 	void Finish();
 private:
+	V1::Context&                    m_ctx;
+
 	std::future<void>               m_loaded;
 	OwnedFuture<double>             m_default_zoom;
 	

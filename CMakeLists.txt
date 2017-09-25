@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(wacrana VERSION 0.1)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 # required for Qt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -9,12 +9,16 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5WebEngine REQUIRED)
 find_package(Qt5WebEngineWidgets REQUIRED)
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 find_package(Doxygen)
 
@@ -29,8 +33,8 @@ target_link_libraries(
 	Qt5::Widgets
 	Qt5::WebEngine
 	Qt5::WebEngineWidgets
-	${Boost_FILESYSTEM_LIBRARY}
-	${Boost_SYSTEM_LIBRARY}
+	Boost::disable_autolinking
+	Boost::filesystem
 	Threads::Threads
 	${CMAKE_DL_LIBS}
 )
@@ -74,5 +78,5 @@ target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_CXX_STANDARD 11)
-add_executable(rvm_test dlib/rvm_test.cc)
-target_link_libraries(rvm_test dlib)
+#add_executable(rvm_test dlib/rvm_test.cc)
+#target_link_libraries(rvm_test dlib)

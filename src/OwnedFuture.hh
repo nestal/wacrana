@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <optional>
+#include <boost/optional.hpp>
 
 #include <future>
 #include <memory>
@@ -62,7 +62,7 @@ public:
 	}
 	
 private:
-	mutable std::optional<T>    m_value{};
+	mutable boost::optional<T>  m_value{};
 	std::promise<T>             m_promise;
 	mutable std::future<T>      m_future{m_promise.get_future()};
 };

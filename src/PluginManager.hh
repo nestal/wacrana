@@ -15,14 +15,15 @@
 #include "Persona.hpp"
 #include "GeneralPlugin.hpp"
 
-#include <boost/dll.hpp>
-
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
+
+#include <boost/filesystem/path.hpp>
 
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 namespace wacrana {
 
@@ -33,12 +34,12 @@ class Context;
 class PluginManager
 {
 public:
-	explicit PluginManager(V1::Context& ctx);
+	PluginManager() = default;
 	
-	V1::GeneralPluginPtr LoadPlugin(const QJsonObject& config);
+	V1::GeneralPluginPtr LoadPlugin(const QJsonObject& config, V1::Context& ctx);
 	
 	void LoadPersonaFactory(const QJsonObject& config);
-	V1::PersonaPtr NewPersona(const QString& name) const;
+	V1::PersonaPtr NewPersona(const QString& name, V1::Context& ctx) const;
 	std::vector<QString> Persona() const;
 
 private:
@@ -65,8 +66,6 @@ private:
 
 private:
 	std::vector<std::function<V1::GeneralPluginFactory>> m_plugins;
-	V1::Context&    m_ctx;
-
 	std::unordered_map<
 		QString,
 		PackedPersonaFactory,

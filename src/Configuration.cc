@@ -12,13 +12,10 @@
 
 #include "Configuration.hh"
 
-#include "Persona.hpp"
-
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
-#include <QtCore/QLibrary>
 #include <QtCore/QDebug>
 
 #include <boost/throw_exception.hpp>
@@ -28,7 +25,6 @@
 
 #include <memory>
 #include <stdexcept>
-#include <iostream>
 
 namespace wacrana {
 
@@ -50,7 +46,7 @@ namespace wacrana {
  * Therefore, this function should load the configuration values in the
  * same order as they are needed to ensure maximum performance.
  */
-Configuration::Configuration(const QString& path, V1::Context& ctx)
+Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 {
 	// Make sure the PreFinish() signal is emitted before the async function starts.
 	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
@@ -60,7 +56,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_loaded = std::async(std::launch::async, [this, path, &ctx]
+	m_loaded = std::async(std::launch::async, [this, path]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -92,8 +88,8 @@ Configuration::Configuration(const QString& path, V1::Context& ctx)
 			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
 			
 			// home page configuration
-			PluginManager plugin_mgr{ctx};
-			m_home_page.Set(plugin_mgr.LoadPlugin(doc.object()["homepage"].toObject()));
+			PluginManager plugin_mgr;
+			m_home_page.Set(plugin_mgr.LoadPlugin(doc.object()["homepage"].toObject(), m_ctx));
 			
 			// persona
 			auto persona_json = doc.object()["persona"].toArray();
@@ -167,7 +163,7 @@ double Configuration::DefaultZoom() const
 
 V1::PersonaPtr Configuration::MakePersona(const QString& name) const
 {
-	return m_plugin_mgr.Get().NewPersona(name);
+	return m_plugin_mgr.Get().NewPersona(name, m_ctx);
 }
 
 std::vector<QString> Configuration::Persona() const
