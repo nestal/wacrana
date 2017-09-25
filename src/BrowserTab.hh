@@ -72,7 +72,8 @@ Q_SIGNALS:
 	void WaitProgressUpdated(double progress, ProgressTimer::Duration remain, ProgressTimer::Duration total);
 	
 private:
-	void OnLoad(bool ok);
+	void OnLoadStarted();
+	void OnLoadFinished(bool ok);
 	void OnTimerUpdate(Clock::duration remain) override;
 	void OnTimeout() override;
 	void OnIdle() override;

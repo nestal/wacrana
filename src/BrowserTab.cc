@@ -31,7 +31,8 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	m_ui->setupUi(this);
 	m_ui->m_page->setZoomFactor(zoom);
 	
-	connect(m_ui->m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoad);
+	connect(m_ui->m_page, &QWebEngineView::loadStarted,  this, &BrowserTab::OnLoadStarted);
+	connect(m_ui->m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoadFinished);
 	connect(m_ui->m_page, &QWebEngineView::iconChanged,  [this](const QIcon& icon)
 	{
 		Q_EMIT IconChanged(m_persona ? m_persona->Icon() : icon);
@@ -45,22 +46,13 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 
 BrowserTab::~BrowserTab() = default;
 
-void BrowserTab::OnLoad(bool ok)
+void BrowserTab::OnLoadFinished(bool ok)
 {
 	if (ok)
 		setWindowTitle(m_ui->m_page->title());
 	
 	if (m_persona)
-	{
-		// Cancel the timer and expect the persona will set it inside OnPageLoad().
-		// Any timer function will be called only when the page that triggers them
-		// is still on the browser.
-		// In other words, if the user navigates aways from the page, the timer set
-		// by a previous OnPageLoad() should not be triggered.
-		m_timer->Cancel();
-		
 		m_persona->OnPageLoaded(*this, ok);
-	}
 	
 	Q_EMIT LoadFinished(ok);
 }
@@ -209,6 +201,17 @@ void BrowserTab::timerEvent(QTimerEvent *event)
 {
 	m_timer->OnTimerInterval();
 	QObject::timerEvent(event);
+}
+
+void BrowserTab::OnLoadStarted()
+{
+	// Cancel the timer and expect the persona will set it inside OnPageLoad().
+	// Any timer function will be called only when the page that triggers them
+	// is still on the browser.
+	// In other words, if the user navigates aways from the page, the timer set
+	// by a previous OnPageLoad() should not be triggered.
+	if (m_persona)
+		m_timer->Cancel();
 }
 
 } // end of namespace

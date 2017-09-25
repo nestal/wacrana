@@ -66,12 +66,29 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				{
 					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
 					{
+						auto wanted = 0;
+						std::vector<QString> keywords;
 						for (auto&& s : term.split(" ", QString::SkipEmptyParts))
 						{
 							auto r = std::equal_range(m_blacklist.begin(), m_blacklist.end(), s);
 							if (r.first == r.second)
-								m_keywords.push_back(s);
+							{
+								auto r2 = std::equal_range(m_keywords.begin(), m_keywords.end(), s);
+								if (r2.first != r2.second)
+									wanted++;
+								else
+									keywords.push_back(std::move(s));
+							}
 						}
+
+						qDebug() << wanted << " keywords found in related term";
+						
+						if (wanted > 1)
+							for (auto&& k : keywords)
+							{
+								qDebug() << "adding keyword: " << k;
+								m_keywords.push_back(std::move(k));
+							}
 					}
 				}
 				
