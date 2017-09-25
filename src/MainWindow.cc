@@ -129,8 +129,8 @@ BrowserTab& MainWindow::NewTab()
 		// round to millisecond to avoid overflowing the "int" type
 		using namespace std::chrono;
 		using MilliSec = duration<int, milliseconds::period>;
-		m_timer_progress->setMaximum(round<MilliSec>(total).count());
-		m_timer_progress->setValue(round<MilliSec>(remain).count());
+		m_timer_progress->setMaximum(duration_cast<MilliSec>(total).count());
+		m_timer_progress->setValue(duration_cast<MilliSec>(remain).count());
 	});
 	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);

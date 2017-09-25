@@ -16,6 +16,7 @@
 #include <QDebug>
 
 #include <algorithm>
+#include <chrono>
 
 namespace wacrana {
 
@@ -35,7 +36,7 @@ std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 	sec = (sec < m_min ? m_min : (sec > m_max ? m_max : sec));
 
 	using namespace std::chrono;
-	return round<system_clock::duration>(duration<double, seconds::period>{sec});
+	return duration_cast<system_clock::duration>(duration<double, seconds::period>{sec});
 }
 
 } // end of namespace
