@@ -15,12 +15,15 @@
 				"search":			{"mean": 5.0,  "stddev": 2.0,  "min": 0,   "max": 60}
 			},
 			"keywords"	: [
-				"beethoven", "classical", "symphony", "mozart", "nocturne",
-				"moonlight", "music", "fur elise", "violin", "sonata", "movement"
+				"beethoven", "mozart", "chopin", "bach", "debussy",
+				"symphony", "nocturne", "sonata", "opera", "concerto",
+				"classical", "music", "movement", "allegro",
+				"moonlight", "fur elise",
+				"violin", "piano", "viola", "cello", "harp"
 			],
 			"blacklist" : [
-				"itunes", "sex", "xxx", "porn", "adult", "for", "in", "of", "the", "or", "search",
-				"搜尋", "download", "mp3", "意思", "中文", "meaning", "who", "is", "what"
+				"itunes", "sex", "xxx", "porn", "adult", "for", "the", "search",
+				"搜尋", "download", "mp3", "意思", "中文", "meaning", "who", "is", "what", "downloads"
 			]
 		}
 	]
