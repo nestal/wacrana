@@ -27,8 +27,10 @@ public:
 	using TimePoint = Clock::time_point;
 
 public:
-	explicit ProgressTimer(TimerEventCallback& callback,
-		Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30}));
+	explicit ProgressTimer(
+		TimerEventCallback& callback,
+		Duration idle = std::chrono::duration_cast<Duration>(std::chrono::seconds{30})
+	);
 	
 	void Start(Duration timeout);
 	Duration Remains() const;

@@ -14,6 +14,9 @@
 
 #include "Persona.hpp"
 #include "BrowserTab.hpp"
+#include "Timer.hpp"
+#include "ProgressTimer.hh"
+#include "TimerEventCallback.hh"
 
 #include <QtCore/QUrl>
 #include <QtCore/QString>
@@ -31,7 +34,7 @@ namespace wacrana {
  * This class is the heart of the multi-thread architecture of the wacrana
  * personas. Is is the "active" version of a persona
  */
-class ActivePersona : public V1::Persona
+class ActivePersona : public V1::Persona, public V1::Timer, private TimerEventCallback
 {
 public:
 	explicit ActivePersona(V1::PersonaPtr&& adaptee);
@@ -40,6 +43,8 @@ public:
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
+
+	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
@@ -60,7 +65,12 @@ public:
 			cb(proxy);
 		});
 	}
-	
+
+private:
+	void OnTimerUpdate(Clock::duration remains) override;
+	void OnTimeout() override;
+	void OnIdle() override;
+
 private:
 	class BrowserTabProxy : public V1::BrowserTab
 	{
@@ -90,7 +100,10 @@ private:
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
-	
+
+	TimerCallback                   m_timer_callback;
+	ProgressTimer                   m_progress_timer;
+
 	// this must be the last
 	std::thread                     m_thread;
 };
