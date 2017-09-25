@@ -51,7 +51,16 @@ void BrowserTab::OnLoad(bool ok)
 		setWindowTitle(m_ui->m_page->title());
 	
 	if (m_persona)
+	{
+		// Cancel the timer and expect the persona will set it inside OnPageLoad().
+		// Any timer function will be called only when the page that triggers them
+		// is still on the browser.
+		// In other words, if the user navigates aways from the page, the timer set
+		// by a previous OnPageLoad() should not be triggered.
+		m_timer->Cancel();
+		
 		m_persona->OnPageLoaded(*this, ok);
+	}
 	
 	Q_EMIT LoadFinished(ok);
 }

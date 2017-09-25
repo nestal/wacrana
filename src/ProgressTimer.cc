@@ -19,7 +19,7 @@ namespace wacrana {
 
 ProgressTimer::ProgressTimer(TimerEventCallback& callback, wacrana::ProgressTimer::Duration idle) :
 	m_idle{idle},
-	m_deadline{std::chrono::steady_clock::now() + m_idle},
+	m_deadline{Clock::now() + m_idle},
 	m_callback{callback}
 {
 }
@@ -28,7 +28,7 @@ void ProgressTimer::OnTimerInterval()
 {
 	using namespace std::chrono_literals;
 	
-	auto now = std::chrono::steady_clock::now();
+	auto now = Clock::now();
 	if (now < m_deadline)
 	{
 		if (!m_is_idle)
@@ -50,14 +50,14 @@ void ProgressTimer::OnTimerInterval()
 
 void ProgressTimer::Start(ProgressTimer::Duration timeout)
 {
-	m_start     = std::chrono::steady_clock::now();
+	m_start     = Clock::now();
 	m_deadline  = m_start + timeout;
 	m_is_idle   = false;
 }
 
 ProgressTimer::Duration ProgressTimer::Remains() const
 {
-	return m_deadline - std::chrono::steady_clock::now();
+	return m_deadline - Clock::now();
 }
 
 double ProgressTimer::Progress() const
@@ -68,6 +68,16 @@ double ProgressTimer::Progress() const
 ProgressTimer::Duration ProgressTimer::Total() const
 {
 	return m_deadline - m_start;
+}
+
+void ProgressTimer::Cancel()
+{
+	// as if the timer just fired
+	if (!m_is_idle)
+	{
+		m_is_idle = true;
+		m_deadline = Clock::now() + m_idle;
+	}
 }
 
 } // end of namespace

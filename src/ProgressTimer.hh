@@ -22,8 +22,9 @@ class TimerEventCallback;
 class ProgressTimer
 {
 public:
-	using Duration = std::chrono::steady_clock::duration;
-	using TimePoint = std::chrono::steady_clock::time_point;
+	using Clock = std::chrono::steady_clock;
+	using Duration = Clock::duration;
+	using TimePoint = Clock::time_point;
 
 public:
 	explicit ProgressTimer(TimerEventCallback& callback,
@@ -33,6 +34,7 @@ public:
 	Duration Remains() const;
 	Duration Total() const;
 	double Progress() const;
+	void Cancel();
 
     void OnTimerInterval();
 
