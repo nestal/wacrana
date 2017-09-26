@@ -3,6 +3,8 @@ project(wacrana VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 14)
 
+include(${DLIB_DIR}/dlib/cmake)
+
 # required for Qt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -24,7 +26,7 @@ find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 find_package(Doxygen)
 
-include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include ${DLIB_DIR})
 
 file(GLOB INCLUDE_FILES include/*.hpp)
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc)
@@ -80,5 +82,5 @@ target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_CXX_STANDARD 11)
-#add_executable(rvm_test dlib/rvm_test.cc)
+add_executable(rvm_test dlib/rvm_test.cc)
 #target_link_libraries(rvm_test dlib)
