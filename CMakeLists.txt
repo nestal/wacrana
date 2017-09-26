@@ -3,8 +3,6 @@ project(wacrana VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include(${DLIB_DIR}/dlib/cmake)
-
 # required for Qt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
