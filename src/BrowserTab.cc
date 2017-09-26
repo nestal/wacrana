@@ -48,6 +48,8 @@ BrowserTab::~BrowserTab() = default;
 
 void BrowserTab::OnLoadFinished(bool ok)
 {
+	m_seqnum++;
+
 	if (ok)
 		setWindowTitle(m_ui->m_page->title());
 	
@@ -55,7 +57,6 @@ void BrowserTab::OnLoadFinished(bool ok)
 		m_persona->OnPageLoaded(*this, ok);
 
 	Q_EMIT LoadFinished(ok);
-	m_seqnum++;
 }
 
 void BrowserTab::Load(const QUrl& url)
