@@ -15,7 +15,7 @@
 #include "MainWindow.hh"
 #include "Context.hh"
 
-#include <random>
+#include <QtWidgets/QMessageBox>
 
 using namespace wacrana;
 
@@ -28,12 +28,20 @@ int main(int argc, char **argv)
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationVersion(QT_VERSION_STR);
 	
-	Context ctx;
-	Configuration config{"wacrana.json", ctx};
-	QtWebEngine::initialize();
-	
-	MainWindow wnd{config};
-	wnd.show();
-
-	return app.exec();
+	try
+	{
+		Context ctx;
+		Configuration config{"wacrana.json", ctx};
+		QtWebEngine::initialize();
+		
+		MainWindow wnd{config};
+		wnd.show();
+		
+		return app.exec();
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox::critical(nullptr, QObject::tr("Exception"), QString::fromUtf8(e.what()));
+		return -1;
+	}
 }

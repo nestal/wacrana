@@ -60,7 +60,7 @@ public:
 
 public:
 	Configuration(const QString& path, V1::Context& ctx);
-	~Configuration() override;
+	~Configuration() override = default;
 	
 	double DefaultZoom() const;
 	

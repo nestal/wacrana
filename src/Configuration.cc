@@ -77,7 +77,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_plugin_mgr = std::async(std::launch::async, [this, doc]
+	m_plugin_mgr = std::async(std::launch::async, [this, plugins=doc.object()["plugins"].toArray()]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -85,14 +85,8 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 		auto finale = [this](void*){Q_EMIT PreFinish();};
 		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
 		
-		return PluginManager{doc.object()["plugins"].toArray()};
+		return PluginManager{plugins};
 	}).share();
-}
-
-Configuration::~Configuration()
-{
-	if (m_plugin_mgr.valid())
-		m_plugin_mgr.wait();
 }
 
 /**
