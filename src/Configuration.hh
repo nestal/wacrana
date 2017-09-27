@@ -91,8 +91,8 @@ private:
 	std::future<void>           m_loaded;
 	OwnedFuture<double>         m_default_zoom;
 	
-	OwnedFuture<V1::PersonaPtr> m_home_page;
 	OwnedFuture<PluginManager>  m_plugin_mgr;
+	OwnedFuture<V1::PersonaPtr> m_home_page;
 };
 
 } // end of namespace
