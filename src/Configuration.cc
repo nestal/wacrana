@@ -77,7 +77,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_loaded = std::async(std::launch::async, [this, doc]
+	m_plugin_mgr = std::async(std::launch::async, [this, doc]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -85,39 +85,14 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 		auto finale = [this](void*){Q_EMIT PreFinish();};
 		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
 		
-		try
-		{
-			// plugins
-			m_plugin_mgr.Set(PluginManager{doc.object()["plugins"].toArray()});
-		}
-		catch (...)
-		{
-			// this is not good, must remember to set exception to all config items
-			m_plugin_mgr.OnException(std::current_exception());
-			throw;
-		}
-	});
+		return PluginManager{doc.object()["plugins"].toArray()};
+	}).share();
 }
 
 Configuration::~Configuration()
 {
-	if (m_loaded.valid())
-		m_loaded.wait();
-}
-
-/**
- * \brief Check if there is any exception thrown when loading the configuration.
- * If an exception was thrown when the configuration was loaded asynchronously in a different
- * thread, those exception will be thrown by this function.
- *
- * If the configuration has not been finished loading, this function will block until it
- * does. Typically this function is called in the slot that connects to Finish() or any
- * time afterwards.
- */
-void Configuration::GetResult()
-{
-	if (m_loaded.valid())
-		m_loaded.get();
+	if (m_plugin_mgr.valid())
+		m_plugin_mgr.wait();
 }
 
 /**
@@ -137,12 +112,12 @@ double Configuration::DefaultZoom() const
 
 V1::PluginPtr Configuration::MakePersona(const QString& name) const
 {
-	return m_plugin_mgr.Get().NewPersona(name, m_ctx);
+	return m_plugin_mgr.get().NewPersona(name, m_ctx);
 }
 
 std::vector<QString> Configuration::Find(const QString& role) const
 {
-	return m_plugin_mgr.Get().Find(role);
+	return m_plugin_mgr.get().Find(role);
 }
 
 } // end of namespace

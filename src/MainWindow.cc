@@ -205,8 +205,6 @@ void MainWindow::OnConfigReady()
 	Q_ASSERT(QThread::currentThread() == thread());
 	try
 	{
-		m_config.GetResult();
-		
 		Q_ASSERT(m_tab_menu);
 		
 		auto hp_plugins = m_config.Find("homepage");

@@ -14,7 +14,6 @@
 
 #include <QObject>
 
-#include "OwnedFuture.hh"
 #include "PluginManager.hh"
 #include "Exception.hh"
 
@@ -22,6 +21,7 @@
 
 #include <functional>
 #include <unordered_map>
+#include <future>
 
 #include <boost/exception/error_info.hpp>
 
@@ -64,8 +64,6 @@ public:
 	
 	double DefaultZoom() const;
 	
-	void GetResult();
-	
 	V1::PluginPtr MakePersona(const QString& name) const;
 	std::vector<QString> Find(const QString& role) const;
 	
@@ -86,12 +84,10 @@ Q_SIGNALS:
 	void Finish();
 
 private:
-	V1::Context&                m_ctx;
-
-	std::future<void>   m_loaded;
-	double              m_default_zoom;
+	V1::Context&    m_ctx;
+	double          m_default_zoom;
 	
-	OwnedFuture<PluginManager>  m_plugin_mgr;
+	std::shared_future<PluginManager>  m_plugin_mgr;
 };
 
 } // end of namespace
