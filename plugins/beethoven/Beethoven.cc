@@ -168,7 +168,7 @@ void Beethoven::OnPageIdle(V1::BrowserTab& tab)
 
 V1::PluginPtr Beethoven::Create(const QJsonObject& config, V1::Context& ctx)
 {
-	return std::make_unique<Beethoven>(config, ctx.RandomGenerator()());
+	return std::make_unique<Beethoven>(config, ctx.Random());
 }
 
 } // end of namespace

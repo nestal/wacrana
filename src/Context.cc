@@ -17,14 +17,14 @@ Context::Context()
 	startTimer(3600 * 1000, Qt::VeryCoarseTimer);
 }
 
-std::mt19937& Context::RandomGenerator()
-{
-	return m_rand;
-}
-
 void Context::timerEvent(QTimerEvent*)
 {
 	m_rand.seed(m_dev());
+}
+
+std::uint_fast32_t Context::Random()
+{
+	return m_rand();
 }
 
 }

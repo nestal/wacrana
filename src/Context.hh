@@ -23,7 +23,7 @@ class Context : public QObject, public V1::Context
 public:
 	Context();
 
-	std::mt19937& RandomGenerator() override;
+	std::uint_fast32_t Random() override;
 	void timerEvent(QTimerEvent*) override;
 
 private:

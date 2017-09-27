@@ -21,7 +21,7 @@ class Context
 {
 public:
 	// random generator
-	virtual std::mt19937& RandomGenerator() = 0;
+	virtual std::uint_fast32_t Random() = 0;
 };
 
 }} // end of namespace
