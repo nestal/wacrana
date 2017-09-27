@@ -26,14 +26,23 @@ SimpleHome::SimpleHome(const QJsonObject& config) :
 {
 }
 
-void SimpleHome::OnAction(V1::MainWindow& browser, const QString&)
+void SimpleHome::OnPageLoaded(V1::BrowserTab& tab, bool)
 {
-	browser.Current().Load(m_home);
+	tab.Load(m_home);
 }
 
-V1::GeneralPluginPtr SimpleHome::Create(const QJsonObject& config, V1::Context&)
+void SimpleHome::OnPageIdle(V1::BrowserTab&)
+{
+}
+
+V1::PersonaPtr SimpleHome::Create(const QJsonObject& config, V1::Context&)
 {
 	return std::make_unique<SimpleHome>(config);
+}
+
+QIcon SimpleHome::Icon() const
+{
+	return {};
 }
 
 BOOST_DLL_ALIAS(

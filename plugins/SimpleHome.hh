@@ -12,20 +12,22 @@
 
 #pragma once
 
-#include "GeneralPlugin.hpp"
+#include "Persona.hpp"
 
 #include <QtCore/QUrl>
 
 namespace wacrana {
 
-class SimpleHome : public V1::GeneralPlugin
+class SimpleHome : public V1::Persona
 {
 public:
 	explicit SimpleHome(const QJsonObject& config);
 	
-	void OnAction(V1::MainWindow&, const QString& arg) override ;
+	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
+	void OnPageIdle(V1::BrowserTab& tab) override;
+	QIcon Icon() const override;
 	
-	static V1::GeneralPluginPtr Create(const QJsonObject& config, V1::Context& ctx);
+	static V1::PersonaPtr Create(const QJsonObject& config, V1::Context& ctx);
 	
 private:
 	QUrl    m_home{"http://localhost"};

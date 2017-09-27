@@ -49,7 +49,7 @@ MainWindow::MainWindow(Configuration& config) :
 	connect(m_ui->m_action_about,    &QAction::triggered, qApp, &QApplication::aboutQt);
 	connect(m_ui->m_action_home,     &QAction::triggered, [this]
 	{
-		m_config.HomePage()->OnAction(*this, {});
+		m_config.HomePage()->OnPageLoaded(Current(), true);
 	});
 	connect(m_ui->m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
 
@@ -92,8 +92,7 @@ MainWindow::MainWindow(Configuration& config) :
 	});
 	
 	// load home page
-	NewTab();
-	m_config.HomePage()->OnAction(*this, {});
+	m_config.HomePage()->OnPageLoaded(NewTab(), true);
 }
 
 MainWindow::~MainWindow() = default;

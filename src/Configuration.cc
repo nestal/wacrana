@@ -89,7 +89,8 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 			
 			// home page configuration
 			PluginManager plugin_mgr;
-			m_home_page.Set(plugin_mgr.LoadPlugin(doc.object()["homepage"].toObject(), m_ctx));
+			auto hp_name = plugin_mgr.LoadPersonaFactory(doc.object()["homepage"].toObject());
+			m_home_page.Set(plugin_mgr.NewPersona(hp_name, m_ctx));
 			
 			// persona
 			auto persona_json = doc.object()["persona"].toArray();
@@ -126,7 +127,7 @@ Configuration::~Configuration()
  * Like other getters in this class, this function will block until the homepage plugin is
  * finished loading asynchronously.
  */
-V1::GeneralPlugin *Configuration::HomePage()
+V1::Persona* Configuration::HomePage()
 {
 	return m_home_page.Get().get();
 }

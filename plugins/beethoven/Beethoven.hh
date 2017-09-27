@@ -30,7 +30,13 @@ class Beethoven : public QObject, public V1::Persona
 	
 public:
 	Beethoven(const QJsonObject& config, std::mt19937::result_type seed);
-	~Beethoven();
+	~Beethoven() override;
+	
+	// copy and moves are not allowed. no one uses these anyway.
+	Beethoven(const Beethoven&) = delete;
+	Beethoven(Beethoven&&) = delete;
+	Beethoven& operator=(const Beethoven&) = delete;
+	Beethoven& operator=(Beethoven&&) = delete;
 	
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnPageIdle(V1::BrowserTab& tab) override;

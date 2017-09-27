@@ -26,7 +26,4 @@ namespace V1 {
 class Persona;
 using PersonaPtr = std::unique_ptr<V1::Persona>;
 
-class GeneralPlugin;
-using GeneralPluginPtr = std::unique_ptr<V1::GeneralPlugin>;
-
 }} // end of namespace

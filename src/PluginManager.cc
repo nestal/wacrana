@@ -11,7 +11,6 @@
 //
 
 #include "PluginManager.hh"
-#include "GeneralPlugin.hpp"
 
 #include <QHash>
 #include <QtCore/QLibrary>
@@ -26,12 +25,6 @@ namespace wacrana {
 std::size_t PluginManager::Hash::operator()(const QString& s) const
 {
 	return qHash(s);
-}
-
-V1::GeneralPluginPtr PluginManager::LoadPlugin(const QJsonObject& config, V1::Context& ctx)
-{
-	m_plugins.push_back(std::move(Import<V1::GeneralPluginFactory>(config).func));
-	return m_plugins.back()(config, ctx);
 }
 
 template <typename FunctionType>
@@ -55,13 +48,13 @@ PluginManager::ImportResult<FunctionType> PluginManager::Import(const QJsonObjec
 	};
 }
 
-void PluginManager::LoadPersonaFactory(const QJsonObject& config)
+QString PluginManager::LoadPersonaFactory(const QJsonObject& config)
 {
 	auto result = Import<V1::PersonaFactory>(config);
-	m_persona.emplace(
+	return m_persona.emplace(
 		QString::fromStdString(result.path.filename().string()),
 		PackedPersonaFactory{config, std::move(result.func)}
-	);
+	).first->first;
 }
 
 V1::PersonaPtr PluginManager::NewPersona(const QString& name, V1::Context& ctx) const

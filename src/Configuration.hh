@@ -19,7 +19,6 @@
 #include "Exception.hh"
 
 #include "Persona.hpp"
-#include "GeneralPlugin.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -63,7 +62,7 @@ public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
-	V1::GeneralPlugin* HomePage();
+	V1::Persona* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();
@@ -87,13 +86,13 @@ Q_SIGNALS:
 	 */
 	void Finish();
 private:
-	V1::Context&                    m_ctx;
+	V1::Context&                m_ctx;
 
-	std::future<void>               m_loaded;
-	OwnedFuture<double>             m_default_zoom;
+	std::future<void>           m_loaded;
+	OwnedFuture<double>         m_default_zoom;
 	
-	OwnedFuture<V1::GeneralPluginPtr>   m_home_page;
-	OwnedFuture<PluginManager>          m_plugin_mgr;
+	OwnedFuture<V1::PersonaPtr> m_home_page;
+	OwnedFuture<PluginManager>  m_plugin_mgr;
 };
 
 } // end of namespace

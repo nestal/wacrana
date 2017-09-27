@@ -13,7 +13,6 @@
 #pragma once
 
 #include "Persona.hpp"
-#include "GeneralPlugin.hpp"
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
@@ -36,9 +35,13 @@ class PluginManager
 public:
 	PluginManager() = default;
 	
-	V1::GeneralPluginPtr LoadPlugin(const QJsonObject& config, V1::Context& ctx);
+	// copy is allowed
+	PluginManager(const PluginManager&) = default;
+	PluginManager(PluginManager&&) = default;
+	PluginManager& operator=(const PluginManager&) = default;
+	PluginManager& operator=(PluginManager&&) = default;
 	
-	void LoadPersonaFactory(const QJsonObject& config);
+	QString LoadPersonaFactory(const QJsonObject& config);
 	V1::PersonaPtr NewPersona(const QString& name, V1::Context& ctx) const;
 	std::vector<QString> Persona() const;
 
@@ -65,7 +68,6 @@ private:
 	static ImportResult<FunctionType> Import(const QJsonObject& config);
 
 private:
-	std::vector<std::function<V1::GeneralPluginFactory>> m_plugins;
 	std::unordered_map<
 		QString,
 		PackedPersonaFactory,
