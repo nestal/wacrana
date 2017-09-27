@@ -15,7 +15,7 @@
 #include <QtWidgets/QWidget>
 
 #include "BrowserTab.hpp"
-#include "Persona.hpp"
+#include "Plugin.hpp"
 
 #include "ProgressTimer.hh"
 #include "TimerEventCallback.hh"
@@ -31,7 +31,7 @@ class QTimerEvent;
 namespace wacrana {
 
 namespace V1 {
-class Persona;
+class Plugin;
 }
 
 class ActivePersona;

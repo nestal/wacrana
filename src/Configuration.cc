@@ -127,7 +127,7 @@ Configuration::~Configuration()
  * Like other getters in this class, this function will block until the homepage plugin is
  * finished loading asynchronously.
  */
-V1::Persona* Configuration::HomePage()
+V1::Plugin* Configuration::HomePage()
 {
 	return m_home_page.Get().get();
 }

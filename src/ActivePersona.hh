@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Persona.hpp"
+#include "Plugin.hpp"
 #include "BrowserTab.hpp"
 
 #include <QtCore/QUrl>
@@ -31,7 +31,7 @@ namespace wacrana {
  * This class is the heart of the multi-thread architecture of the wacrana
  * personas. Is is the "active" version of a persona
  */
-class ActivePersona : public V1::Persona
+class ActivePersona : public V1::Plugin
 {
 public:
 	explicit ActivePersona(V1::PersonaPtr&& adaptee);

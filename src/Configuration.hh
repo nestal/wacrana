@@ -18,7 +18,7 @@
 #include "PluginManager.hh"
 #include "Exception.hh"
 
-#include "Persona.hpp"
+#include "Plugin.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -62,7 +62,7 @@ public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
-	V1::Persona* HomePage();
+	V1::Plugin* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();

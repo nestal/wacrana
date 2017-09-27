@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Persona.hpp"
+#include "Plugin.hpp"
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
@@ -57,22 +57,12 @@ private:
 		std::function<V1::PersonaFactory> factory;
 	};
 	
-	template <typename FunctionType>
-	struct ImportResult
-	{
-		boost::filesystem::path     path;
-		std::function<FunctionType> func;
-	};
-	
-	template <typename FunctionType>
-	static ImportResult<FunctionType> Import(const QJsonObject& config);
-
 private:
 	std::unordered_map<
 		QString,
 		PackedPersonaFactory,
 		Hash
-	> m_persona;
+	> m_factories;
 };
 
 } // end of namespace

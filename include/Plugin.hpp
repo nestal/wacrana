@@ -54,10 +54,10 @@ class Context;
  * A plugin is a shared library (DLL in Windows and .so in Linux) that implements
  * a factory function that returns a Plugin object.
  */
-class WCAPI Persona
+class WCAPI Plugin
 {
 public:
-	virtual ~Persona() = default;
+	virtual ~Plugin() = default;
 	
 	/**
 	 * \brief Callback when a page has finished loading.

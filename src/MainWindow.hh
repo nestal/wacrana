@@ -55,7 +55,7 @@ private:
 	
 private:
 	Configuration&  m_config;
-	
+
 	std::unique_ptr<Ui::MainWindow> m_ui;
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
