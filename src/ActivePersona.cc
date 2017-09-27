@@ -23,7 +23,7 @@ namespace {
 const std::chrono::milliseconds timer_interval{500};
 }
 
-ActivePersona::ActivePersona(V1::PersonaPtr&& adaptee) :
+ActivePersona::ActivePersona(V1::PluginPtr&& adaptee) :
 	m_work{m_ios},
 	m_timer{m_ios, timer_interval},
 	m_persona{std::move(adaptee)},

@@ -24,6 +24,8 @@
 #include <memory>
 #include <functional>
 
+class QJsonArray;
+
 namespace wacrana {
 
 namespace V1 {
@@ -33,7 +35,7 @@ class Context;
 class PluginManager
 {
 public:
-	PluginManager() = default;
+	explicit PluginManager(const QJsonArray& config);
 	
 	// copy is allowed
 	PluginManager(const PluginManager&) = default;
@@ -41,17 +43,18 @@ public:
 	PluginManager& operator=(const PluginManager&) = default;
 	PluginManager& operator=(PluginManager&&) = default;
 	
-	QString LoadPersonaFactory(const QJsonObject& config);
-	V1::PersonaPtr NewPersona(const QString& name, V1::Context& ctx) const;
-	std::vector<QString> Persona() const;
+	V1::PluginPtr NewPersona(const QString& name, V1::Context& ctx) const;
+	std::vector<QString> Find(const QString& role) const;
 
 private:
+	QString LoadPersonaFactory(const QJsonObject& config);
+	
 	struct Hash
 	{
 		std::size_t operator()(const QString& s) const;
 	};
 	
-	struct PackedPersonaFactory
+	struct PluginFactory
 	{
 		QJsonObject config;
 		std::function<V1::PersonaFactory> factory;
@@ -60,7 +63,7 @@ private:
 private:
 	std::unordered_map<
 		QString,
-		PackedPersonaFactory,
+		PluginFactory,
 		Hash
 	> m_factories;
 };

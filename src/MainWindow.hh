@@ -61,6 +61,8 @@ private:
 	QToolButton *m_menu_btn{};
 	QMenu       *m_tab_menu{};
 	QProgressBar *m_timer_progress{};
+	
+	V1::PluginPtr   m_home_page;
 };
 
 } // end of namespace

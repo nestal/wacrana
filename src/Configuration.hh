@@ -62,13 +62,12 @@ public:
 	Configuration(const QString& path, V1::Context& ctx);
 	~Configuration() override;
 	
-	V1::Plugin* HomePage();
 	double DefaultZoom() const;
 	
 	void GetResult();
 	
-	V1::PersonaPtr MakePersona(const QString& name) const;
-	std::vector<QString> Persona() const;
+	V1::PluginPtr MakePersona(const QString& name) const;
+	std::vector<QString> Find(const QString& role) const;
 	
 Q_SIGNALS:
 	void PreFinish();
@@ -85,6 +84,7 @@ Q_SIGNALS:
 	 * the signal will be missed and the slot will never be called.
 	 */
 	void Finish();
+
 private:
 	V1::Context&                m_ctx;
 
@@ -92,7 +92,6 @@ private:
 	OwnedFuture<double>         m_default_zoom;
 	
 	OwnedFuture<PluginManager>  m_plugin_mgr;
-	OwnedFuture<V1::PersonaPtr> m_home_page;
 };
 
 } // end of namespace

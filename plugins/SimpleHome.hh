@@ -27,7 +27,7 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 	
-	static V1::PersonaPtr Create(const QJsonObject& config, V1::Context& ctx);
+	static V1::PluginPtr Create(const QJsonObject& config, V1::Context& ctx);
 	
 private:
 	QUrl    m_home{"http://localhost"};

@@ -49,7 +49,8 @@ MainWindow::MainWindow(Configuration& config) :
 	connect(m_ui->m_action_about,    &QAction::triggered, qApp, &QApplication::aboutQt);
 	connect(m_ui->m_action_home,     &QAction::triggered, [this]
 	{
-		m_config.HomePage()->OnPageLoaded(Current(), true);
+		if (m_home_page)
+			m_home_page->OnPageLoaded(Current(), true);
 	});
 	connect(m_ui->m_action_reload,   &QAction::triggered, [this]{Current().Reload();});
 
@@ -92,7 +93,7 @@ MainWindow::MainWindow(Configuration& config) :
 	});
 	
 	// load home page
-	m_config.HomePage()->OnPageLoaded(NewTab(), true);
+	NewTab();
 }
 
 MainWindow::~MainWindow() = default;
@@ -208,9 +209,15 @@ void MainWindow::OnConfigReady()
 		
 		Q_ASSERT(m_tab_menu);
 		
-		for (auto&& persona : m_config.Persona())
+		auto hp_plugins = m_config.Find("homepage");
+		if (!hp_plugins.empty())
 		{
-			qDebug() << "loaded persona: " << persona;
+			m_home_page = m_config.MakePersona(hp_plugins.front());
+			m_home_page->OnPageLoaded(Current(), true);
+		}
+		
+		for (auto&& persona : m_config.Find("persona"))
+		{
 			auto action = new QAction{persona, this};
 			connect(action, &QAction::triggered, [this, persona]
 			{

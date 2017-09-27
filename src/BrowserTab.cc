@@ -136,7 +136,7 @@ void BrowserTab::SingleShotTimer(TimeDuration timeout, TimerCallback&& callback)
 	m_timer->Start(std::chrono::duration_cast<ProgressTimer::Duration>(timeout));
 }
 
-void BrowserTab::SetPersona(V1::PersonaPtr&& persona)
+void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 {
 	m_persona = std::make_unique<ActivePersona>(std::move(persona));
 }

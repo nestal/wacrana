@@ -166,7 +166,7 @@ void Beethoven::OnPageIdle(V1::BrowserTab& tab)
 	OnTimer(tab);
 }
 
-V1::PersonaPtr Beethoven::Create(const QJsonObject& config, V1::Context& ctx)
+V1::PluginPtr Beethoven::Create(const QJsonObject& config, V1::Context& ctx)
 {
 	return std::make_unique<Beethoven>(config, ctx.RandomGenerator()());
 }

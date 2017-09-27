@@ -1,15 +1,11 @@
 {
-	"homepage" : {
-		"lib"     : "@CMAKE_CURRENT_BINARY_DIR@/SimpleHome",
-		"factory" : "Load",
-		"homepage": "https://google.com"
-	},
 	"default_zoom" : 2.0,
-	"persona" :
+	"plugins" :
 	[
 		{
 			"lib"		: "@CMAKE_CURRENT_BINARY_DIR@/Beethoven",
 			"factory"	: "Load",
+			"role"		: "persona",
 			"wait_time" : {
 				"search_result":	{"mean": 20.0, "stddev": 10.0, "min": 1.0, "max": 300},
 				"search":			{"mean": 5.0,  "stddev": 2.0,  "min": 0,   "max": 60}
@@ -25,6 +21,12 @@
 				"itunes", "sex", "xxx", "porn", "adult", "for", "the", "search",
 				"搜尋", "download", "mp3", "意思", "中文", "meaning", "who", "is", "what", "downloads"
 			]
+		},
+		{
+			"lib"		: "@CMAKE_CURRENT_BINARY_DIR@/SimpleHome",
+			"factory"	: "Load",
+			"role"		: "homepage",
+			"url"		: "https://google.com"
 		}
 	]
 }

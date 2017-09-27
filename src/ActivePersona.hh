@@ -34,7 +34,7 @@ namespace wacrana {
 class ActivePersona : public V1::Plugin
 {
 public:
-	explicit ActivePersona(V1::PersonaPtr&& adaptee);
+	explicit ActivePersona(V1::PluginPtr&& adaptee);
 	~ActivePersona() override;
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
@@ -89,7 +89,7 @@ private:
 	void OnTimer(boost::system::error_code ec);
 	
 private:
-	V1::PersonaPtr                  m_persona;
+	V1::PluginPtr                  m_persona;
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;

@@ -62,7 +62,7 @@ public :
 	std::size_t SequenceNumber() const override;
 	void LeftClick(const QPoint& pos) ;
 	
-	void SetPersona(V1::PersonaPtr&& persona);
+	void SetPersona(V1::PluginPtr&& persona);
 	double WaitProgress() const;
 	
 	QWebEnginePage* Page();

@@ -24,6 +24,6 @@ namespace wacrana {
 namespace V1 {
 
 class Plugin;
-using PersonaPtr = std::unique_ptr<V1::Plugin>;
+using PluginPtr = std::unique_ptr<V1::Plugin>;
 
 }} // end of namespace

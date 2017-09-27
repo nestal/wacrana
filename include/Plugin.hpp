@@ -80,7 +80,7 @@ public:
 	virtual QIcon Icon() const = 0;
 };
 
-using PersonaFactory = PersonaPtr(const QJsonObject&, Context&);
+using PersonaFactory = PluginPtr(const QJsonObject&, Context&);
 
 }} // end of namespace
 
