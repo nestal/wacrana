@@ -67,15 +67,8 @@ add_library(SimpleHome SHARED plugins/SimpleHome.hh plugins/SimpleHome.cc plugin
 target_link_libraries(SimpleHome Qt5::Core Qt5::Gui)
 set_target_properties(SimpleHome PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-add_library(Beethoven SHARED
-	plugins/Beethoven.hh
-	plugins/Beethoven.cc
-	plugins/ResourceLoader.hh
-	plugins/res/Beethoven.qrc
-	plugins/Wait.cc
-	plugins/Wait.hh
-	${INCLUDE_FILES}
-)
+file(GLOB BEETHOVEN_SRC plugins/beethoven/*.cc plugins/beethoven/*.hh plugins/beethoven/res/*.qrc)
+add_library(Beethoven SHARED ${BEETHOVEN_SRC} ${INCLUDE_FILES})
 target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)
 

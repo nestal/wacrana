@@ -40,7 +40,6 @@ class Google
 
 	static SearchResults()
 	{
-		console.log(document.body.getBoundingClientRect().width, document.body.getBoundingClientRect().height);
 		let result = [];
 		document.querySelectorAll("h3 > a").forEach(node =>
 		{
