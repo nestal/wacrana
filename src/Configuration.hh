@@ -88,8 +88,8 @@ Q_SIGNALS:
 private:
 	V1::Context&                m_ctx;
 
-	std::future<void>           m_loaded;
-	OwnedFuture<double>         m_default_zoom;
+	std::future<void>   m_loaded;
+	double              m_default_zoom;
 	
 	OwnedFuture<PluginManager>  m_plugin_mgr;
 };

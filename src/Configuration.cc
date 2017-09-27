@@ -48,6 +48,27 @@ namespace wacrana {
  */
 Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 {
+	QFile file(path);
+	if (!file.open(QFile::ReadOnly))
+		BOOST_THROW_EXCEPTION(FileReadError()
+			<< boost::errinfo_file_name{path.toStdString()}
+			<< boost::errinfo_api_function{"QFile::open"}
+			<< ErrorString{file.errorString()}
+		);
+		
+	QJsonParseError err{};
+	auto doc = QJsonDocument::fromJson(file.readAll(), &err);
+	
+	if (doc.isNull())
+		BOOST_THROW_EXCEPTION(JsonParseError()
+			<< boost::errinfo_file_name{path.toStdString()}
+			<< boost::errinfo_api_function{"QJsonDocument::fromJson"}
+			<< ErrorString{err.errorString()}
+		);
+	
+	// default zoom
+	m_default_zoom = doc.object()["default_zoom"].toDouble(1.3);
+	
 	// Make sure the PreFinish() signal is emitted before the async function starts.
 	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
 	// after returning to the main loop. This is to ensure the signal will not be
@@ -56,7 +77,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_loaded = std::async(std::launch::async, [this, path]
+	m_loaded = std::async(std::launch::async, [this, doc]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -66,36 +87,13 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 		
 		try
 		{
-			QFile file(path);
-			if (!file.open(QFile::ReadOnly))
-				BOOST_THROW_EXCEPTION(FileReadError()
-					<< boost::errinfo_file_name{path.toStdString()}
-					<< boost::errinfo_api_function{"QFile::open"}
-					<< ErrorString{file.errorString()}
-				);
-				
-			QJsonParseError err;
-			auto doc = QJsonDocument::fromJson(file.readAll(), &err);
-			
-			if (doc.isNull())
-				BOOST_THROW_EXCEPTION(JsonParseError()
-					<< boost::errinfo_file_name{path.toStdString()}
-					<< boost::errinfo_api_function{"QJsonDocument::fromJson"}
-					<< ErrorString{err.errorString()}
-				);
-			
-			// default zoom
-			m_default_zoom.Set(doc.object()["default_zoom"].toDouble(1.3));
-			
 			// plugins
 			m_plugin_mgr.Set(PluginManager{doc.object()["plugins"].toArray()});
 		}
 		catch (...)
 		{
 			// this is not good, must remember to set exception to all config items
-			m_default_zoom.OnException(std::current_exception());
 			m_plugin_mgr.OnException(std::current_exception());
-			
 			throw;
 		}
 	});
@@ -134,7 +132,7 @@ void Configuration::GetResult()
  */
 double Configuration::DefaultZoom() const
 {
-	return m_default_zoom.Get();
+	return m_default_zoom;
 }
 
 V1::PluginPtr Configuration::MakePersona(const QString& name) const
