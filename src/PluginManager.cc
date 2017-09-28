@@ -31,11 +31,11 @@ PluginManager::PluginManager(const QJsonArray& config)
 	{
 		// have to load the plugin to know its name
 		// anyway we have to try running the factory function once to check if there's any problem
-		LoadPersonaFactory(p.toObject());
+		Load(p.toObject());
 	}
 }
 
-QString PluginManager::LoadPersonaFactory(const QJsonObject& config)
+QString PluginManager::Load(const QJsonObject& config)
 {
 	auto&& json_lib      = config["lib"];
 	auto&& json_factory  = config["factory"];

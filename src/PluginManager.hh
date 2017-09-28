@@ -16,6 +16,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
 
 #include <boost/filesystem/path.hpp>
 
@@ -23,8 +24,6 @@
 #include <unordered_map>
 #include <memory>
 #include <functional>
-
-class QJsonArray;
 
 namespace wacrana {
 
@@ -35,7 +34,7 @@ class Context;
 class PluginManager
 {
 public:
-	explicit PluginManager(const QJsonArray& config);
+	explicit PluginManager(const QJsonArray& config = {});
 	
 	// copy is allowed
 	PluginManager(const PluginManager&) = default;
@@ -47,7 +46,7 @@ public:
 	std::vector<QString> Find(const QString& role) const;
 
 private:
-	QString LoadPersonaFactory(const QJsonObject& config);
+	QString Load(const QJsonObject& config);
 	
 	struct Hash
 	{
