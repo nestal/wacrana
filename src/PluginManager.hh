@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Plugin.hpp"
+#include "json.hpp"
 
 #include <QtCore/QString>
 #include <QtCore/QJsonObject>
