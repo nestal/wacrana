@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <QtCore/QDir>
+
 // can't call Q_INIT_RESOURCE() in extern "C" functions
 // must be called in a separate function in global namespace
 

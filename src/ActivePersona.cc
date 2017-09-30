@@ -42,7 +42,7 @@ void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnPageIdle(proxy);});
 }
 
-QIcon ActivePersona::Icon() const
+std::string ActivePersona::Icon() const
 {
 	// constant function should be thread-safe
 	return m_persona->Icon();

@@ -17,8 +17,6 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonObject>
 
 #include <set>
 
@@ -140,9 +138,9 @@ void Beethoven::OnTimer(V1::BrowserTab& tab)
 	tab.Load({"https://google.com"});
 }
 
-QIcon Beethoven::Icon() const
+std::string Beethoven::Icon() const
 {
-	return m_icon;
+	return ":/icon/Beethoven.jpg";
 }
 
 QString Beethoven::Randomize()

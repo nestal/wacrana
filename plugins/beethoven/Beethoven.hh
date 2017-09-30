@@ -12,22 +12,17 @@
 
 #pragma once
 
-#include <QtCore/QObject>
 #include "Plugin.hpp"
 
 #include "Wait.hh"
-
-#include <QtGui/QIcon>
 
 #include <memory>
 #include <random>
 
 namespace wacrana {
 
-class Beethoven : public QObject, public V1::Plugin
+class Beethoven : public V1::Plugin
 {
-	Q_OBJECT
-	
 public:
 	Beethoven(const nlohmann::json& config, std::mt19937::result_type seed);
 	~Beethoven() override;
@@ -40,7 +35,7 @@ public:
 	
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnPageIdle(V1::BrowserTab& tab) override;
-	QIcon Icon() const override;
+	std::string Icon() const override;
 
 	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
 	
@@ -50,8 +45,6 @@ private:
 	QString Randomize();
 	
 private:
-	QIcon m_icon{":/icon/Beethoven.jpg"};
-	
 	std::vector<QString> m_keywords, m_blacklist;
 	Wait m_search;
 	Wait m_result;

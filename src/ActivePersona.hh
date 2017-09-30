@@ -39,7 +39,7 @@ public:
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
-	QIcon Icon() const override;
+	std::string Icon() const override;
 
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)

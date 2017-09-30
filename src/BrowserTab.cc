@@ -35,7 +35,7 @@ BrowserTab::BrowserTab(QWidget *parent, double zoom) :
 	connect(m_ui->m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoadFinished);
 	connect(m_ui->m_page, &QWebEngineView::iconChanged,  [this](const QIcon& icon)
 	{
-		Q_EMIT IconChanged(m_persona ? m_persona->Icon() : icon);
+		Q_EMIT IconChanged(m_persona ? QIcon{QString::fromStdString(m_persona->Icon())} : icon);
 	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
@@ -76,7 +76,7 @@ QString BrowserTab::Title() const
 
 QIcon BrowserTab::Icon() const
 {
-	return m_persona ? m_persona->Icon() : m_ui->m_page->icon();
+	return m_persona ? QIcon{QString::fromStdString(m_persona->Icon())} : m_ui->m_page->icon();
 }
 
 void BrowserTab::Back()

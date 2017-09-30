@@ -14,9 +14,6 @@
 #include "MainWindow.hpp"
 #include "BrowserTab.hpp"
 
-#include <QtCore/QJsonObject>
-#include <QtGui/QIcon>
-
 #include <boost/dll/alias.hpp> // for BOOST_DLL_ALIAS
 
 namespace wacrana {
@@ -40,7 +37,7 @@ V1::PluginPtr SimpleHome::Create(const nlohmann::json& config, V1::Context&)
 	return std::make_unique<SimpleHome>(config);
 }
 
-QIcon SimpleHome::Icon() const
+std::string SimpleHome::Icon() const
 {
 	return {};
 }
