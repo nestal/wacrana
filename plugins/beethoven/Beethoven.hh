@@ -19,6 +19,8 @@
 #include <memory>
 #include <random>
 
+class QString;
+
 namespace wacrana {
 
 class Beethoven : public V1::Plugin
@@ -36,7 +38,7 @@ public:
 	void OnPageLoaded(V1::BrowserTab&, bool) override ;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	std::string Icon() const override;
-	void OnReseed(V1::Context& ctx) override;
+	void OnReseed(std::uint_fast32_t seed) override;
 
 	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
 	

@@ -17,10 +17,7 @@
 
 #include <memory>
 #include <cassert>
-
-class QString;
-class QJsonObject;
-class QIcon;
+#include <cstdint>
 
 /**
  * \brief Wacrana namespace.
@@ -79,7 +76,7 @@ public:
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnPageIdle(BrowserTab& tab) = 0;
 	virtual std::string Icon() const = 0;
-	virtual void OnReseed(Context& ctx) = 0;
+	virtual void OnReseed(std::uint_fast32_t seed) = 0;
 };
 
 using PersonaFactory = PluginPtr(const nlohmann::json&, Context&);

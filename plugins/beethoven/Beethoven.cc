@@ -152,9 +152,9 @@ QString Beethoven::Randomize()
 	if (count >= m_keywords.size())
 		result.insert(m_keywords.begin(), m_keywords.end());
 	
-	std::uniform_int_distribution<std::size_t> keywoard_index{0, m_keywords.size()-1};
+	std::uniform_int_distribution<std::size_t> keyword_index{0, m_keywords.size()-1};
 	while (result.size() < count)
-		result.insert(m_keywords[keywoard_index(m_rand)] + ' ');
+		result.insert(m_keywords[keyword_index(m_rand)] + ' ');
 
 	return std::accumulate(result.begin(), result.end(), QString{});
 }
@@ -169,8 +169,9 @@ V1::PluginPtr Beethoven::Create(const nlohmann::json& config, V1::Context& ctx)
 	return std::make_unique<Beethoven>(config, ctx.Random());
 }
 
-void Beethoven::OnReseed(V1::Context&)
+void Beethoven::OnReseed(std::uint_fast32_t seed)
 {
+	m_rand.seed(seed);
 }
 
 } // end of namespace

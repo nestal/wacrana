@@ -42,7 +42,7 @@ std::string SimpleHome::Icon() const
 	return {};
 }
 
-void SimpleHome::OnReseed(V1::Context&)
+void SimpleHome::OnReseed(std::uint_fast32_t)
 {
 }
 

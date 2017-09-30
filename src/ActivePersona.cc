@@ -20,16 +20,16 @@
 namespace wacrana {
 
 namespace {
-const std::chrono::milliseconds timer_interval{500};
+const std::chrono::hours reseed_interval{1};
 }
 
 ActivePersona::ActivePersona(V1::PluginPtr&& adaptee) :
 	m_work{m_ios},
-	m_timer{m_ios, timer_interval},
+	m_timer{m_ios, reseed_interval},
 	m_persona{std::move(adaptee)},
 	m_thread([this]{m_ios.run();})
 {
-	m_timer.async_wait([this](auto ec){OnTimer(ec);});
+	m_timer.async_wait([this](auto ec){ReseedPersona(ec);});
 }
 
 void ActivePersona::OnPageLoaded(V1::BrowserTab& tab, bool ok)
@@ -42,9 +42,9 @@ void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnPageIdle(proxy);});
 }
 
-void ActivePersona::OnReseed(V1::Context& ctx)
+void ActivePersona::OnReseed(std::uint_fast32_t seed)
 {
-	m_ios.post([this, ctx]{m_persona->OnReseed(ctx);});
+	m_ios.post([this, seed]{m_rand.seed(seed);});
 }
 
 std::string ActivePersona::Icon() const
@@ -59,12 +59,14 @@ ActivePersona::~ActivePersona()
 	m_thread.join();
 }
 
-void ActivePersona::OnTimer(boost::system::error_code)
+void ActivePersona::ReseedPersona(boost::system::error_code)
 {
 	assert(std::this_thread::get_id() == m_thread.get_id());
 	
-	m_timer.expires_from_now(timer_interval);
-	m_timer.async_wait([this](auto ec){OnTimer(ec);});
+	m_persona->OnReseed(m_rand());
+	
+	m_timer.expires_from_now(reseed_interval);
+	m_timer.async_wait([this](auto ec){ReseedPersona(ec);});
 }
 
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :

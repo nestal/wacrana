@@ -22,6 +22,7 @@
 #include <boost/asio/steady_timer.hpp>
 
 #include <thread>
+#include <random>
 
 namespace wacrana {
 
@@ -40,7 +41,7 @@ public:
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	std::string Icon() const override;
-	void OnReseed(V1::Context& ctx) override;
+	void OnReseed(std::uint_fast32_t seed) override;
 
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
@@ -87,7 +88,7 @@ private:
 		std::size_t     m_seqnum;
 	};
 	
-	void OnTimer(boost::system::error_code ec);
+	void ReseedPersona(boost::system::error_code ec);
 	
 private:
 	V1::PluginPtr                  m_persona;
@@ -97,6 +98,7 @@ private:
 
 	// this must be the last
 	std::thread                     m_thread;
+	std::mt19937                    m_rand;
 };
 
 } // end of namespace
