@@ -29,7 +29,7 @@ class Beethoven : public QObject, public V1::Plugin
 	Q_OBJECT
 	
 public:
-	Beethoven(const QJsonObject& config, std::mt19937::result_type seed);
+	Beethoven(const nlohmann::json& config, std::mt19937::result_type seed);
 	~Beethoven() override;
 	
 	// copy and moves are not allowed. no one uses these anyway.
@@ -42,7 +42,7 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 
-	static V1::PluginPtr Create(const QJsonObject& config, V1::Context& ctx);
+	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
 	
 private:
 	void OnTimer(V1::BrowserTab& tab);

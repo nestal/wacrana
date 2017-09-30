@@ -21,8 +21,8 @@
 
 namespace wacrana {
 
-SimpleHome::SimpleHome(const QJsonObject& config) :
-	m_home{config["url"].toString()}
+SimpleHome::SimpleHome(const nlohmann::json& config) :
+	m_home{QString::fromStdString(config["url"])}
 {
 }
 
@@ -35,7 +35,7 @@ void SimpleHome::OnPageIdle(V1::BrowserTab&)
 {
 }
 
-V1::PluginPtr SimpleHome::Create(const QJsonObject& config, V1::Context&)
+V1::PluginPtr SimpleHome::Create(const nlohmann::json& config, V1::Context&)
 {
 	return std::make_unique<SimpleHome>(config);
 }

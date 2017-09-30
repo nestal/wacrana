@@ -15,10 +15,6 @@
 #include "Plugin.hpp"
 #include "json.hpp"
 
-#include <QtCore/QString>
-#include <QtCore/QJsonObject>
-#include <QtCore/QJsonArray>
-
 #include <boost/filesystem/path.hpp>
 
 #include <vector>
@@ -35,7 +31,7 @@ class Context;
 class PluginManager
 {
 public:
-	explicit PluginManager(const QJsonArray& config = {});
+	explicit PluginManager(const nlohmann::json& config = {});
 	
 	// copy is allowed
 	PluginManager(const PluginManager&) = default;
@@ -43,29 +39,20 @@ public:
 	PluginManager& operator=(const PluginManager&) = default;
 	PluginManager& operator=(PluginManager&&) = default;
 	
-	V1::PluginPtr NewPersona(const QString& name, V1::Context& ctx) const;
-	std::vector<QString> Find(const QString& role) const;
+	V1::PluginPtr NewPersona(const std::string& name, V1::Context& ctx) const;
+	std::vector<std::string> Find(const std::string& role) const;
 
 private:
-	QString Load(const QJsonObject& config);
-	
-	struct Hash
-	{
-		std::size_t operator()(const QString& s) const;
-	};
+	std::string Load(const nlohmann::json& config);
 	
 	struct PluginFactory
 	{
-		QJsonObject config;
+		nlohmann::json config;
 		std::function<V1::PersonaFactory> factory;
 	};
 	
 private:
-	std::unordered_map<
-		QString,
-		PluginFactory,
-		Hash
-	> m_factories;
+	std::unordered_map<std::string, PluginFactory> m_factories;
 };
 
 } // end of namespace

@@ -20,13 +20,10 @@
 
 namespace wacrana {
 
-Wait::Wait(const QJsonObject& config) :
-	m_range{
-		config["mean"].toDouble(),
-		config["stddev"].toDouble()
-	},
-	m_min{config["min"].toDouble()},
-	m_max{config["max"].toDouble()}
+Wait::Wait(const nlohmann::json& config) :
+	m_range{config["mean"], config["stddev"]},
+	m_min{config["min"]},
+	m_max{config["max"]}
 {
 }
 

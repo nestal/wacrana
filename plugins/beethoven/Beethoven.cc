@@ -37,16 +37,16 @@ Beethoven::~Beethoven() = default;
  * This factory function should be the only symbol that is exported/made visible
  * by the DSO/DLL.
  */
-Beethoven::Beethoven(const QJsonObject& config, std::mt19937::result_type seed) :
-	m_result{config["wait_time"].toObject()["search_result"].toObject()},
-	m_search{config["wait_time"].toObject()["search"].toObject()},
+Beethoven::Beethoven(const nlohmann::json& config, std::mt19937::result_type seed) :
+	m_result{config["wait_time"]["search_result"]},
+	m_search{config["wait_time"]["search"]},
 	m_rand{seed}
 {
-	for (auto&& jval : config["keywords"].toArray())
-		m_keywords.push_back(jval.toString());
+	for (auto&& jval : config["keywords"])
+		m_keywords.push_back(QString::fromStdString(jval.get<std::string>()));
 	
-	for (auto&& jval : config["blacklist"].toArray())
-		m_blacklist.push_back(jval.toString());
+	for (auto&& jval : config["blacklist"])
+		m_blacklist.push_back(QString::fromStdString(jval.get<std::string>()));
 	std::sort(m_blacklist.begin(), m_blacklist.end());
 }
 
@@ -166,7 +166,7 @@ void Beethoven::OnPageIdle(V1::BrowserTab& tab)
 	OnTimer(tab);
 }
 
-V1::PluginPtr Beethoven::Create(const QJsonObject& config, V1::Context& ctx)
+V1::PluginPtr Beethoven::Create(const nlohmann::json& config, V1::Context& ctx)
 {
 	return std::make_unique<Beethoven>(config, ctx.Random());
 }

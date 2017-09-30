@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "json.hpp"
+
 #include <chrono>
 #include <random>
 
@@ -22,7 +24,7 @@ namespace wacrana {
 class Wait
 {
 public:
-	Wait(const QJsonObject& config);
+	Wait(const nlohmann::json& config);
 	
 	std::chrono::system_clock::duration Random(std::mt19937& gen);
 	

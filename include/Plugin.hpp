@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Export.hpp"
+#include "json.hpp"
 
 #include <memory>
 #include <cassert>
@@ -80,7 +81,7 @@ public:
 	virtual QIcon Icon() const = 0;
 };
 
-using PersonaFactory = PluginPtr(const QJsonObject&, Context&);
+using PersonaFactory = PluginPtr(const nlohmann::json&, Context&);
 
 }} // end of namespace
 

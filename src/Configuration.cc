@@ -12,6 +12,8 @@
 
 #include "Configuration.hh"
 
+#include "json.hpp"
+
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
@@ -25,6 +27,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <fstream>
 
 namespace wacrana {
 
@@ -48,26 +51,13 @@ namespace wacrana {
  */
 Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 {
-	QFile file(path);
-	if (!file.open(QFile::ReadOnly))
-		BOOST_THROW_EXCEPTION(FileReadError()
-			<< boost::errinfo_file_name{path.toStdString()}
-			<< boost::errinfo_api_function{"QFile::open"}
-			<< ErrorString{file.errorString()}
-		);
-		
-	QJsonParseError err{};
-	auto doc = QJsonDocument::fromJson(file.readAll(), &err);
+	std::ifstream ifile{path.toStdString()};
 	
-	if (doc.isNull())
-		BOOST_THROW_EXCEPTION(JsonParseError()
-			<< boost::errinfo_file_name{path.toStdString()}
-			<< boost::errinfo_api_function{"QJsonDocument::fromJson"}
-			<< ErrorString{err.errorString()}
-		);
+	using json = nlohmann::json;
+	auto config = json::parse(ifile);
 	
 	// default zoom
-	m_default_zoom = doc.object()["default_zoom"].toDouble(1.3);
+	m_default_zoom = config["default_zoom"];
 	
 	// Make sure the PreFinish() signal is emitted before the async function starts.
 	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
@@ -77,7 +67,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
 	// spawn a thread to load the configuration file
-	m_plugin_mgr = std::async(std::launch::async, [this, plugins=doc.object()["plugins"].toArray()]
+	m_plugin_mgr = std::async(std::launch::async, [this, config=std::move(config)]
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
@@ -85,7 +75,7 @@ Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
 		auto finale = [this](void*){Q_EMIT PreFinish();};
 		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
 		
-		return PluginManager{plugins};
+		return PluginManager{config["plugins"]};
 	}).share();
 }
 
@@ -106,12 +96,15 @@ double Configuration::DefaultZoom() const
 
 V1::PluginPtr Configuration::MakePersona(const QString& name) const
 {
-	return m_plugin_mgr.get().NewPersona(name, m_ctx);
+	return m_plugin_mgr.get().NewPersona(name.toStdString(), m_ctx);
 }
 
 std::vector<QString> Configuration::Find(const QString& role) const
 {
-	return m_plugin_mgr.get().Find(role);
+	std::vector<QString> result;
+	for (auto&& s : m_plugin_mgr.get().Find(role.toStdString()))
+		result.push_back(QString::fromStdString(s));
+	return result;
 }
 
 } // end of namespace

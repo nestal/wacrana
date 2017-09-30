@@ -21,13 +21,13 @@ namespace wacrana {
 class SimpleHome : public V1::Plugin
 {
 public:
-	explicit SimpleHome(const QJsonObject& config);
+	explicit SimpleHome(const nlohmann::json& config);
 	
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	QIcon Icon() const override;
 	
-	static V1::PluginPtr Create(const QJsonObject& config, V1::Context& ctx);
+	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
 	
 private:
 	QUrl    m_home{"http://localhost"};

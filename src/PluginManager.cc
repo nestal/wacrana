@@ -12,51 +12,43 @@
 
 #include "PluginManager.hh"
 
-#include <QtCore/QHash>
-#include <QtCore/QJsonArray>
-
 #include <boost/dll.hpp>
 #include <boost/dll/import.hpp> // for import_alias
 
 namespace wacrana {
 
-std::size_t PluginManager::Hash::operator()(const QString& s) const
-{
-	return qHash(s);
-}
-
-PluginManager::PluginManager(const QJsonArray& config)
+PluginManager::PluginManager(const nlohmann::json& config)
 {
 	for (auto&& p : config)
 	{
 		// have to load the plugin to know its name
 		// anyway we have to try running the factory function once to check if there's any problem
-		Load(p.toObject());
+		Load(p);
 	}
 }
 
-QString PluginManager::Load(const QJsonObject& config)
+std::string PluginManager::Load(const nlohmann::json& config)
 {
 	auto&& json_lib      = config["lib"];
 	auto&& json_factory  = config["factory"];
 	
-	if (!json_lib.isString() || !json_factory.isString())
+	if (!json_lib.is_string() || !json_factory.is_string())
 		throw std::runtime_error(R"(Invalid configuration: missing "lib" or "factory" in configuration.)");
 	
-	boost::filesystem::path path{json_lib.toString().toStdString()};
+	boost::filesystem::path path{json_lib.get<std::string>()};
 	auto factory = boost::dll::import_alias<V1::PersonaFactory>(
 		path,
-		json_factory.toString().toStdString(),
+		json_factory,
 		boost::dll::load_mode::append_decorations
 	);
 	
 	return m_factories.emplace(
-		QString::fromStdString(path.filename().string()),
+		path.filename().string(),
 		PluginFactory{config, std::move(factory)}
 	).first->first;
 }
 
-V1::PluginPtr PluginManager::NewPersona(const QString& name, V1::Context& ctx) const
+V1::PluginPtr PluginManager::NewPersona(const std::string& name, V1::Context& ctx) const
 {
 	auto it = m_factories.find(name);
 	if (it != m_factories.end())
@@ -65,12 +57,12 @@ V1::PluginPtr PluginManager::NewPersona(const QString& name, V1::Context& ctx) c
 		throw std::runtime_error("not found");
 }
 
-std::vector<QString> PluginManager::Find(const QString& role) const
+std::vector<std::string> PluginManager::Find(const std::string& role) const
 {
-	std::vector<QString> result;
+	std::vector<std::string> result;
 	for (auto&& p : m_factories)
 	{
-		if (role == p.second.config["role"].toString())
+		if (role == p.second.config["role"].get<std::string>())
 			result.push_back(p.first);
 	}
 	return result;
