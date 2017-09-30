@@ -26,6 +26,7 @@ public:
 	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override;
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	std::string Icon() const override;
+	void OnReseed(V1::Context& ctx) override;
 	
 	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
 	

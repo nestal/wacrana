@@ -59,7 +59,7 @@ public:
 	using ErrorString   = boost::error_info<struct ErrorString_, QString>;
 
 public:
-	Configuration(const QString& path, V1::Context& ctx);
+	Configuration(const std::string& path, V1::Context& ctx);
 	~Configuration() override = default;
 	
 	double DefaultZoom() const;

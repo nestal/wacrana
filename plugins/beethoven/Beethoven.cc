@@ -169,4 +169,8 @@ V1::PluginPtr Beethoven::Create(const nlohmann::json& config, V1::Context& ctx)
 	return std::make_unique<Beethoven>(config, ctx.Random());
 }
 
+void Beethoven::OnReseed(V1::Context&)
+{
+}
+
 } // end of namespace

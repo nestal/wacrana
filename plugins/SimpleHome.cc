@@ -42,6 +42,10 @@ std::string SimpleHome::Icon() const
 	return {};
 }
 
+void SimpleHome::OnReseed(V1::Context&)
+{
+}
+
 BOOST_DLL_ALIAS(
     wacrana::SimpleHome::Create, // <-- this function is exported with...
     Load                         // <-- ...this alias name

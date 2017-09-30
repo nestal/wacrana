@@ -79,6 +79,7 @@ public:
 	virtual void OnPageLoaded(BrowserTab& tab, bool ok) = 0;
 	virtual void OnPageIdle(BrowserTab& tab) = 0;
 	virtual std::string Icon() const = 0;
+	virtual void OnReseed(Context& ctx) = 0;
 };
 
 using PersonaFactory = PluginPtr(const nlohmann::json&, Context&);

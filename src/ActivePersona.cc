@@ -42,6 +42,11 @@ void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnPageIdle(proxy);});
 }
 
+void ActivePersona::OnReseed(V1::Context& ctx)
+{
+	m_ios.post([this, ctx]{m_persona->OnReseed(ctx);});
+}
+
 std::string ActivePersona::Icon() const
 {
 	// constant function should be thread-safe

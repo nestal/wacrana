@@ -49,9 +49,9 @@ namespace wacrana {
  * Therefore, this function should load the configuration values in the
  * same order as they are needed to ensure maximum performance.
  */
-Configuration::Configuration(const QString& path, V1::Context& ctx) : m_ctx{ctx}
+Configuration::Configuration(const std::string& path, V1::Context& ctx) : m_ctx{ctx}
 {
-	std::ifstream ifile{path.toStdString()};
+	std::ifstream ifile{path};
 	
 	using json = nlohmann::json;
 	auto config = json::parse(ifile);
