@@ -24,30 +24,26 @@ class ThenableFuture
 {
 public:
 	template <typename Func>
-	explicit ThenableFuture(Func&& func) :
-		m_ready_future{m_ready_promise.get_future()},
-		m_future{std::async(std::launch::async, [func=std::forward<Func>(func), this]
-		{
-			auto result = func();
-			PostMain([r=std::move(result), this]() mutable
-			{
-				m_ready_future.get()(r);
-			});
-			return result;
-		})}
+	explicit ThenableFuture(Func&& func)
 	{
+		auto future = m_promise.get_future();
+		std::thread{[func=std::forward<Func>(func), future=std::move(future)]() mutable
+		{
+			PostMain([result=func(), callback=future.get()]() mutable
+			{
+				callback(result);
+			});
+		}}.detach();
 	}
 	
 	template <typename Callable>
 	void Then(Callable&& callback)
 	{
-		m_ready_promise.set_value(std::forward<Callable>(callback));
+		m_promise.set_value(std::forward<Callable>(callback));
 	}
 	
 private:
-	std::promise<std::function<void(T&)>>  m_ready_promise;
-	std::future<std::function<void(T&)>>   m_ready_future;
-	std::future<T>      m_future;
+	std::promise<std::function<void(T&)>>  m_promise;
 };
 
 } // end of namespace

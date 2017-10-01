@@ -69,9 +69,7 @@ Configuration::Configuration(const std::string& path)
 		return PluginManager{config["plugins"]};
 	}).share();
 	
-	qDebug() << "here";
-	auto f = new ThenableFuture<int>{[]{return 100;}};
-	f->Then([f](int val)
+	ThenableFuture<int>{[]{std::this_thread::sleep_for(std::chrono::seconds{5}); return 100;}}.Then([](int val)
 	{
 		qDebug() << "this should be 100: " << val;
 	});
