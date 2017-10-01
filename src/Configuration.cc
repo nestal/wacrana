@@ -11,6 +11,9 @@
 //
 
 #include "Configuration.hh"
+#include "Async.hh"
+
+#include <QDebug>
 
 #include "json.hpp"
 
@@ -65,6 +68,13 @@ Configuration::Configuration(const std::string& path)
 		
 		return PluginManager{config["plugins"]};
 	}).share();
+	
+	qDebug() << "here";
+	auto f = new ThenableFuture<int>{[]{return 100;}, this};
+	f->Then([](int val)
+	{
+		qDebug() << "this should be 100: " << val;
+	});
 }
 
 /**
