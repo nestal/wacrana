@@ -69,10 +69,10 @@ Configuration::Configuration(const std::string& path)
 		return PluginManager{config["plugins"]};
 	}).share();
 	
-	ThenableFuture<int>{[]{std::this_thread::sleep_for(std::chrono::seconds{5}); return 100;}}/*.Then([](int val)
+	Async([]{std::this_thread::sleep_for(std::chrono::seconds{5}); return 100;}).Then([](int val)
 	{
 		qDebug() << "this should be 100: " << val;
-	})*/;
+	});
 }
 
 /**

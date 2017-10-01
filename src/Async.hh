@@ -14,10 +14,12 @@
 
 #include "FunctorEvent.hh"
 
+#include <cassert>
 #include <future>
 #include <thread>
+#include <type_traits>
+
 #include <QDebug>
-#include <cassert>
 
 namespace wacrana {
 
@@ -26,12 +28,6 @@ class ThenableFuture
 {
 public:
 	ThenableFuture() = default;
-	
-	template <typename Func>
-	explicit ThenableFuture(Func&& func)
-	{
-		Start(std::forward<Func>(func));
-	}
 	
 	template <typename Func>
 	void Start(Func&& func)
@@ -56,8 +52,6 @@ public:
 				{
 					callback(result);
 				});
-			
-			qDebug() << "thread quit!";
 		}}.detach();
 	}
 	
@@ -84,5 +78,13 @@ private:
 	std::promise<std::function<void(T&)>>  m_promise;
 	bool m_thenned{false};
 };
+
+template <typename Func>
+auto Async(Func&& func)
+{
+	ThenableFuture<decltype(func())> future;
+	future.Start(std::forward<Func>(func));
+	return future;
+}
 
 } // end of namespace
