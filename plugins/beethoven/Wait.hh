@@ -17,8 +17,6 @@
 #include <chrono>
 #include <random>
 
-class QJsonObject;
-
 namespace wacrana {
 
 class Wait
@@ -27,6 +25,8 @@ public:
 	Wait(const nlohmann::json& config);
 	
 	std::chrono::system_clock::duration Random(std::mt19937& gen);
+
+	friend void from_json(const nlohmann::json& config, Wait& wait);
 	
 private:
 	std::normal_distribution<> m_range{20};

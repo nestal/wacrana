@@ -226,4 +226,10 @@ std::size_t BrowserTab::SequenceNumber() const
 	return m_seqnum;
 }
 
+void BrowserTab::Reseed(std::uint_fast32_t seed)
+{
+	if (m_persona)
+		m_persona->OnReseed(seed);
+}
+
 } // end of namespace

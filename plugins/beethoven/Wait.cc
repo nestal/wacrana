@@ -36,4 +36,11 @@ std::chrono::system_clock::duration Wait::Random(std::mt19937& gen)
 	return duration_cast<system_clock::duration>(duration<double, seconds::period>{sec});
 }
 
+void from_json(const nlohmann::json& config, Wait& wait)
+{
+	wait.m_range = std::normal_distribution<>{config["mean"], config["stddev"]};
+	wait.m_min   = config["min"];
+	wait.m_max   = config["max"];
+}
+
 } // end of namespace

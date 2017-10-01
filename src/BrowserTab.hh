@@ -64,6 +64,7 @@ public :
 	
 	void SetPersona(V1::PluginPtr&& persona);
 	double WaitProgress() const;
+	void Reseed(std::uint_fast32_t seed);
 	
 	QWebEnginePage* Page();
 	

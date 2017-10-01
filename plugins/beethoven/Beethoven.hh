@@ -52,7 +52,7 @@ private:
 	Wait m_search;
 	Wait m_result;
 	
-	mutable std::mt19937 m_rand;
+	std::mt19937 m_rand;
 	std::uniform_int_distribution<std::size_t> m_search_count{1, 4};
 };
 
