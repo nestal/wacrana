@@ -17,6 +17,7 @@
 #include <future>
 #include <thread>
 #include <QDebug>
+#include <cassert>
 
 namespace wacrana {
 
@@ -50,21 +51,38 @@ public:
 			// Move the result of "func" and the callback from Then() to a lambda closure,
 			// and post it back to the main thread. The main thread will execute the
 			// lambda after it is received.
-			PostMain([result=std::move(result), callback=std::move(callback)]() mutable
-			{
-				callback(result);
-			});
+			if (callback)
+				PostMain([result=std::move(result), callback=std::move(callback)]() mutable
+				{
+					callback(result);
+				});
+			
+			qDebug() << "thread quit!";
 		}}.detach();
+	}
+	
+	ThenableFuture(ThenableFuture&& other) noexcept: m_promise{std::move(other.m_promise)}, m_thenned{other.m_thenned}
+	{
+		other.m_thenned = false;
+	}
+	
+	~ThenableFuture()
+	{
+		if (!m_thenned)
+			m_promise.set_value({});
 	}
 	
 	template <typename Callable>
 	void Then(Callable&& callback)
 	{
+		assert(!m_thenned);
 		m_promise.set_value(std::forward<Callable>(callback));
+		m_thenned = true;
 	}
 	
 private:
 	std::promise<std::function<void(T&)>>  m_promise;
+	bool m_thenned{false};
 };
 
 } // end of namespace
