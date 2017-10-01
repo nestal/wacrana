@@ -49,6 +49,7 @@ public:
 		connect(this, &ThenableFuture::Finished, this, [callback=std::forward<Callable>(callback), this]
 		{
 			callback(m_future.get());
+			deleteLater();
 		}, Qt::QueuedConnection);
 		
 		m_future = std::async(std::launch::async, [this]
