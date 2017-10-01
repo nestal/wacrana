@@ -9,8 +9,10 @@
 
 #pragma once
 
-#include <QObject>
 #include "Context.hpp"
+#include "Configuration.hh"
+
+#include <QObject>
 
 #include <random>
 
@@ -21,14 +23,23 @@ class Context : public QObject, public V1::Context
 	Q_OBJECT
 
 public:
-	Context();
+	Context(const std::string& config);
+
+	const Configuration& Config() const ;
+	
+	V1::PluginPtr MakePersona(const QString& name);
+	std::vector<QString> Find(const QString& role) const;
 
 	std::uint_fast32_t Random() override;
+	
+private:
 	void timerEvent(QTimerEvent*) override;
 
 private:
 	std::random_device m_dev;
 	std::mt19937 m_rand{m_dev()};
+	
+	Configuration   m_config;
 };
 
 } // end of namespace

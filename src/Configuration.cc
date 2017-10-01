@@ -14,19 +14,7 @@
 
 #include "json.hpp"
 
-#include <QtCore/QFile>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-#include <QtCore/QJsonArray>
-#include <QtCore/QDebug>
-
-#include <boost/throw_exception.hpp>
-#include <boost/exception/info.hpp>
-#include <boost/exception/errinfo_file_name.hpp>
-#include <boost/exception/errinfo_api_function.hpp>
-
 #include <memory>
-#include <stdexcept>
 #include <fstream>
 
 namespace wacrana {
@@ -49,7 +37,7 @@ namespace wacrana {
  * Therefore, this function should load the configuration values in the
  * same order as they are needed to ensure maximum performance.
  */
-Configuration::Configuration(const std::string& path, V1::Context& ctx) : m_ctx{ctx}
+Configuration::Configuration(const std::string& path)
 {
 	std::ifstream ifile{path};
 	
@@ -94,17 +82,9 @@ double Configuration::DefaultZoom() const
 	return m_default_zoom;
 }
 
-V1::PluginPtr Configuration::MakePersona(const QString& name) const
+const PluginManager& Configuration::Plugins() const
 {
-	return m_plugin_mgr.get().NewPersona(name.toStdString(), m_ctx);
-}
-
-std::vector<QString> Configuration::Find(const QString& role) const
-{
-	std::vector<QString> result;
-	for (auto&& s : m_plugin_mgr.get().Find(role.toStdString()))
-		result.push_back(QString::fromStdString(s));
-	return result;
+	return m_plugin_mgr.get();
 }
 
 } // end of namespace

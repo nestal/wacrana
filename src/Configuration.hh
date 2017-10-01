@@ -23,8 +23,6 @@
 #include <unordered_map>
 #include <future>
 
-#include <boost/exception/error_info.hpp>
-
 class QString;
 class QJsonObject;
 
@@ -52,20 +50,12 @@ class Configuration : public QObject
 	Q_OBJECT
 
 public:
-	struct Error : Exception {};
-	struct FileReadError : Error {};
-	struct JsonParseError : Error {};
-
-	using ErrorString   = boost::error_info<struct ErrorString_, QString>;
-
-public:
-	Configuration(const std::string& path, V1::Context& ctx);
+	explicit Configuration(const std::string& path);
 	~Configuration() override = default;
 	
 	double DefaultZoom() const;
 	
-	V1::PluginPtr MakePersona(const QString& name) const;
-	std::vector<QString> Find(const QString& role) const;
+	const PluginManager& Plugins() const;
 	
 Q_SIGNALS:
 	void PreFinish();
@@ -84,7 +74,6 @@ Q_SIGNALS:
 	void Finish();
 
 private:
-	V1::Context&    m_ctx;
 	double          m_default_zoom;
 	
 	std::shared_future<PluginManager>  m_plugin_mgr;

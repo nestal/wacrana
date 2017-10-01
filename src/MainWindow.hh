@@ -25,7 +25,7 @@ class QProgressBar;
 namespace wacrana {
 
 class BrowserTab;
-class Configuration;
+class Context;
 
 namespace Ui {
 class MainWindow;
@@ -36,7 +36,7 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(Configuration& config);
+	MainWindow(Context& ctx);
 	~MainWindow();
 
 	BrowserTab& NewTab() override;
@@ -54,7 +54,7 @@ private:
 	void SetLocation(const QString& loc);
 	
 private:
-	Configuration&  m_config;
+	Context&  m_ctx;
 
 	std::unique_ptr<Ui::MainWindow> m_ui;
 	QLineEdit   *m_location{};

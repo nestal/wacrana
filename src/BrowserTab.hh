@@ -41,7 +41,7 @@ class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCall
 	Q_OBJECT
 
 public :
-	explicit BrowserTab(QWidget *parent, double zoom);
+	explicit BrowserTab(QWidget *parent);
 	BrowserTab(const BrowserTab&) = delete;
 	BrowserTab& operator=(const BrowserTab&) = delete;
 	~BrowserTab();

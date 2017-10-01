@@ -11,7 +11,6 @@
 #include <QtWebEngine/QtWebEngine>
 #include <QtCore/QCommandLineParser>
 
-#include "Configuration.hh"
 #include "MainWindow.hh"
 #include "Context.hh"
 
@@ -30,11 +29,10 @@ int main(int argc, char **argv)
 	
 	try
 	{
-		Context ctx;
-		Configuration config{"wacrana.json", ctx};
+		Context ctx{"wacrana.json"};
 		QtWebEngine::initialize();
 		
-		MainWindow wnd{config};
+		MainWindow wnd{ctx};
 		wnd.show();
 		
 		return app.exec();

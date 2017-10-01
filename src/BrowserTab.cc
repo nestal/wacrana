@@ -23,13 +23,12 @@
 
 namespace wacrana {
 
-BrowserTab::BrowserTab(QWidget *parent, double zoom) :
+BrowserTab::BrowserTab(QWidget *parent) :
 	QWidget{parent},
 	m_ui{std::make_unique<Ui::BrowserTab>()},
 	m_timer{new ProgressTimer{*this}}
 {
 	m_ui->setupUi(this);
-	m_ui->m_page->setZoomFactor(zoom);
 	
 	connect(m_ui->m_page, &QWebEngineView::loadStarted,  this, &BrowserTab::OnLoadStarted);
 	connect(m_ui->m_page, &QWebEngineView::loadFinished, this, &BrowserTab::OnLoadFinished);

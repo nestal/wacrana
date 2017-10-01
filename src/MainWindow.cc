@@ -10,6 +10,7 @@
 #include "MainWindow.hh"
 
 #include "Configuration.hh"
+#include "Context.hh"
 #include "ui_MainWindow.h"
 
 #include <QtWidgets/QLineEdit>
@@ -21,14 +22,14 @@
 
 namespace wacrana {
 
-MainWindow::MainWindow(Configuration& config) :
-	m_config{config},
+MainWindow::MainWindow(Context& ctx) :
+	m_ctx{ctx},
 	m_ui{std::make_unique<Ui::MainWindow>()},
 	m_location{new QLineEdit(this)},
 	m_timer_progress{new QProgressBar}
 {
-	Q_ASSERT(m_config.thread() == thread());
-	connect(&m_config, &Configuration::Finish, this, &MainWindow::OnConfigReady);
+	Q_ASSERT(m_ctx.Config().thread() == thread());
+	connect(&m_ctx.Config(), &Configuration::Finish, this, &MainWindow::OnConfigReady);
 	
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
@@ -45,7 +46,7 @@ MainWindow::MainWindow(Configuration& config) :
 	connect(m_ui->m_action_exit,     &QAction::triggered, [this]{close();});
 	connect(m_ui->m_action_zoom_in,  &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() * 1.25);});
 	connect(m_ui->m_action_zoom_out, &QAction::triggered, [this]{Current().ZoomFactor(Current().ZoomFactor() / 1.25);});
-	connect(m_ui->m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_config.DefaultZoom());});
+	connect(m_ui->m_action_reset_zoom, &QAction::triggered, [this]{Current().ZoomFactor(m_ctx.Config().DefaultZoom());});
 	connect(m_ui->m_action_about,    &QAction::triggered, qApp, &QApplication::aboutQt);
 	connect(m_ui->m_action_home,     &QAction::triggered, [this]
 	{
@@ -100,7 +101,7 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto tab = new BrowserTab{m_ui->m_tabs, m_config.DefaultZoom()};
+	auto tab = new BrowserTab{m_ui->m_tabs};
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		SetLocation(tab->Location().url());
@@ -108,7 +109,7 @@ BrowserTab& MainWindow::NewTab()
 		setWindowTitle(tab->Title());
 
 		// need to reset zoom factor after loading a site
-		tab->ZoomFactor(m_config.DefaultZoom());
+		tab->ZoomFactor(m_ctx.Config().DefaultZoom());
 	});
 	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
 	{
@@ -207,19 +208,23 @@ void MainWindow::OnConfigReady()
 	{
 		Q_ASSERT(m_tab_menu);
 		
-		auto hp_plugins = m_config.Find("homepage");
+		// set zoom ratio of all tabs
+		for (auto i = 0 ; i < TabCount(); ++i)
+			Tab(i).ZoomFactor(m_ctx.Config().DefaultZoom());
+		
+		auto hp_plugins = m_ctx.Find("homepage");
 		if (!hp_plugins.empty())
 		{
-			m_home_page = m_config.MakePersona(hp_plugins.front());
+			m_home_page = m_ctx.MakePersona(hp_plugins.front());
 			m_home_page->OnPageLoaded(Current(), true);
 		}
 		
-		for (auto&& persona : m_config.Find("persona"))
+		for (auto&& persona : m_ctx.Find("persona"))
 		{
 			auto action = new QAction{persona, this};
 			connect(action, &QAction::triggered, [this, persona]
 			{
-				NewTab().SetPersona(m_config.MakePersona(persona));
+				NewTab().SetPersona(m_ctx.MakePersona(persona));
 			});
 			m_tab_menu->addAction(action);
 		}
