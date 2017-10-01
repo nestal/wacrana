@@ -70,7 +70,7 @@ Configuration::Configuration(const std::string& path)
 	}).share();
 	
 	qDebug() << "here";
-	auto f = new ThenableFuture<int>{[]{return 100;}, this};
+	auto f = new ThenableFuture<int>{[]{return 100;}};
 	f->Then([f](int val)
 	{
 		qDebug() << "this should be 100: " << val;

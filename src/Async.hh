@@ -12,39 +12,28 @@
 
 #pragma once
 
-#include <QtCore/QObject>
+#include "FunctorEvent.hh"
 
 #include <future>
 #include <QDebug>
 
 namespace wacrana {
 
-class ThenableFutureBase : public QObject
-{
-	Q_OBJECT
-
-protected:
-	explicit ThenableFutureBase(QObject *parent = {}) : QObject{parent}
-	{
-	}
-
-Q_SIGNALS:
-	void Finished();
-};
-
 template <typename T>
-class ThenableFuture : private ThenableFutureBase
+class ThenableFuture
 {
 public:
 	template <typename Func>
-	explicit ThenableFuture(Func&& func, QObject *parent) :
-		ThenableFutureBase{parent},
+	explicit ThenableFuture(Func&& func) :
 		m_ready_future{m_ready_promise.get_future()},
-		m_future{std::async(std::launch::async, [this, func=std::forward<Func>(func)]
+		m_future{std::async(std::launch::async, [func=std::forward<Func>(func), this]
 		{
-			auto finale = [this](void*){m_ready_future.wait(); Q_EMIT Finished();};
-			std::unique_ptr<void, decltype(finale)> ptr{this, finale};
-			return func();
+			auto result = func();
+			PostMain([r=std::move(result), this]() mutable
+			{
+				m_ready_future.get()(r);
+			});
+			return result;
 		})}
 	{
 	}
@@ -52,18 +41,12 @@ public:
 	template <typename Callable>
 	void Then(Callable&& callback)
 	{
-		connect(this, &ThenableFuture::Finished, this, [callback=std::forward<Callable>(callback), this]
-		{
-			callback(m_future.get());
-		}, Qt::QueuedConnection);
-		
-		// kick-off the deferred async task
-		m_ready_promise.set_value();
+		m_ready_promise.set_value(std::forward<Callable>(callback));
 	}
 	
 private:
-	std::promise<void>  m_ready_promise;
-	std::future<void>   m_ready_future;
+	std::promise<std::function<void(T&)>>  m_ready_promise;
+	std::future<std::function<void(T&)>>   m_ready_future;
 	std::future<T>      m_future;
 };
 
