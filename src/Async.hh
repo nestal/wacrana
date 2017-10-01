@@ -39,7 +39,13 @@ public:
 	template <typename Func>
 	explicit ThenableFuture(Func&& func, QObject *parent) :
 		ThenableFutureBase{parent},
-		m_func{std::forward<Func>(func)}
+		m_ready_future{m_ready_promise.get_future()},
+		m_future{std::async(std::launch::async, [this, func=std::forward<Func>(func)]
+		{
+			auto finale = [this](void*){m_ready_future.wait(); Q_EMIT Finished();};
+			std::unique_ptr<void, decltype(finale)> ptr{this, finale};
+			return func();
+		})}
 	{
 	}
 	
@@ -49,19 +55,15 @@ public:
 		connect(this, &ThenableFuture::Finished, this, [callback=std::forward<Callable>(callback), this]
 		{
 			callback(m_future.get());
-			deleteLater();
 		}, Qt::QueuedConnection);
 		
-		m_future = std::async(std::launch::async, [this]
-		{
-			auto finale = [this](void*){Q_EMIT Finished();};
-			std::unique_ptr<void, decltype(finale)> ptr{this, finale};
-			return m_func();
-		});
+		// kick-off the deferred async task
+		m_ready_promise.set_value();
 	}
 	
 private:
-	std::function<T()>  m_func;
+	std::promise<void>  m_ready_promise;
+	std::future<void>   m_ready_future;
 	std::future<T>      m_future;
 };
 
