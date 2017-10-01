@@ -87,4 +87,61 @@ auto Async(Func&& func)
 	return future;
 }
 
+template <>
+class ThenableFuture<void>
+{
+public:
+	ThenableFuture() = default;
+	
+	template <typename Func>
+	void Start(Func&& func)
+	{
+		auto future = m_promise.get_future();
+		std::thread{[func=std::forward<Func>(func), future=std::move(future)]() mutable
+		{
+			// Run the function "func" in the spawned thread. The return value will be
+			// moved to the lambda closure to be used later.
+			func();
+			
+			// Wait for the main thread to send us the callback function, which will be
+			// called by the main thread to handle the return value of "func".
+			// The callback function is specified by Then().
+			auto callback = future.get();
+			
+			// Move the result of "func" and the callback from Then() to a lambda closure,
+			// and post it back to the main thread. The main thread will execute the
+			// lambda after it is received.
+			if (callback)
+				PostMain([callback=std::move(callback)]() mutable
+				{
+					callback();
+				});
+		}}.detach();
+	}
+	
+	ThenableFuture(ThenableFuture&& other) noexcept: m_promise{std::move(other.m_promise)}, m_thenned{other.m_thenned}
+	{
+		other.m_thenned = false;
+	}
+	
+	~ThenableFuture()
+	{
+		if (!m_thenned)
+			m_promise.set_value({});
+	}
+	
+	template <typename Callable>
+	void Then(Callable&& callback)
+	{
+		assert(!m_thenned);
+		m_promise.set_value(std::forward<Callable>(callback));
+		m_thenned = true;
+	}
+	
+private:
+	std::promise<std::function<void()>>  m_promise;
+	bool m_thenned{false};
+};
+
+
 } // end of namespace
