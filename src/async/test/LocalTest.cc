@@ -33,7 +33,6 @@ TEST_CASE( "Async simple", "[normal]" )
 	}, &exec).Then([](const std::string& s)
 	{
 		REQUIRE(s == "abc");
-		return 0;
 	}, &exec);
 	
 	using namespace std::chrono_literals;

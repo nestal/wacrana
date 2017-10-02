@@ -31,9 +31,10 @@ public:
 	}
 	
 	template <typename Func>
-	auto Then(Func&& continuation, Executor *host)
+	auto Then(Func&& continuation, Executor *host,
+		typename std::enable_if<!std::is_void<decltype(continuation(std::declval<T>()))>::value>::type* = 0)
 	{
-		using U = decltype(continuation(T()));
+		using U = decltype(continuation(std::declval<T>()));
 		auto                next_result = std::make_shared<std::promise<U>>();
 		std::promise<Token> next_token;
 		
@@ -67,6 +68,46 @@ public:
 		
 		return Future<U>{std::move(next_future), std::move(next_token)};
 	}
+	
+	template <typename Func>
+	auto Then(Func&& continuation, Executor *host,
+		typename std::enable_if<std::is_void<decltype(continuation(std::declval<T>()))>::value>::type* = 0)
+	{
+		auto                next_result = std::make_shared<std::promise<void>>();
+		std::promise<Token> next_token;
+		
+		auto next_future = next_result->get_future();
+		auto result      = m_shared_state.share();
+		
+		auto token      = host->Add([
+			result,
+			func        = std::forward<Func>(continuation),
+			next_result = std::move(next_result),
+			next_token  = next_token.get_future().share()
+		]() mutable
+		{
+			func(result.get());
+			next_result->set_value();
+			
+			// notify next
+			if (next_token.wait_for(std::chrono::system_clock::duration::zero()) == std::future_status::ready)
+			{
+				auto t = next_token.get();
+				if (t.host)
+					t.host->Execute(t);
+			}
+		});
+		
+		m_thenned = true;
+		
+		if (result.wait_for(std::chrono::system_clock::duration::zero()) == std::future_status::ready)
+			host->Execute(token);
+		else
+			m_token.set_value(token);
+		
+		return Future<void>{std::move(next_future), std::move(next_token)};
+	}
+	
 	Future(Future&& f) :
 		m_shared_state{std::move(f.m_shared_state)},
 		m_token{std::move(f.m_token)},
