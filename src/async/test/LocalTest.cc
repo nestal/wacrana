@@ -29,6 +29,11 @@ TEST_CASE( "Async simple", "[normal]" )
 	future.Then([](int val)
 	{
 		REQUIRE(val == 100);
+		return std::string("abc");
+	}, &exec).Then([](const std::string& s)
+	{
+		REQUIRE(s == "abc");
+		return 0;
 	}, &exec);
 	
 	using namespace std::chrono_literals;
