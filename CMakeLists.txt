@@ -24,7 +24,13 @@ find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 find_package(Doxygen)
 
-include_directories(${Qt5Core_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include ${DLIB_DIR})
+include_directories(
+	${Qt5Core_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIRS}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${DLIB_DIR}
+)
 
 file(GLOB ASYNC_SOURCE src/async/*.cc src/async/*.hh)
 add_library(async ${ASYNC_SOURCE})

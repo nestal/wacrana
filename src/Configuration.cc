@@ -11,7 +11,6 @@
 //
 
 #include "Configuration.hh"
-#include "Async.hh"
 
 #include <QDebug>
 
@@ -68,15 +67,6 @@ Configuration::Configuration(const std::string& path)
 		
 		return PluginManager{config["plugins"]};
 	}).share();
-	
-	Async([]{std::this_thread::sleep_for(std::chrono::seconds{5}); return 100;}).Then([](int val)
-	{
-		qDebug() << "this should be 100: " << val;
-	});
-	Async([]{std::this_thread::sleep_for(std::chrono::seconds{5});}).Then([]
-	{
-		qDebug() << "this should be void: ";
-	});
 }
 
 /**
