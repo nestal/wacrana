@@ -67,12 +67,7 @@ public:
 	}
 	
 	template <typename Callable>
-	void Then(Callable&& callback)
-	{
-		assert(!m_thenned);
-		m_promise.set_value(std::forward<Callable>(callback));
-		m_thenned = true;
-	}
+	void Then(Callable&& callback);
 	
 private:
 	std::promise<std::function<void(T&)>>  m_promise;
@@ -131,17 +126,27 @@ public:
 	}
 	
 	template <typename Callable>
-	void Then(Callable&& callback)
-	{
-		assert(!m_thenned);
-		m_promise.set_value(std::forward<Callable>(callback));
-		m_thenned = true;
-	}
+	void Then(Callable&& callback);
 	
 private:
 	std::promise<std::function<void()>>  m_promise;
 	bool m_thenned{false};
 };
 
+template <typename T> template<typename Callable>
+void ThenableFuture<T>::Then(Callable&& callback)
+{
+	assert(!m_thenned);
+	m_promise.set_value(std::forward<Callable>(callback));
+	m_thenned = true;
+}
+
+template <typename Callable>
+void ThenableFuture<void>::Then(Callable&& callback)
+{
+	assert(!m_thenned);
+	m_promise.set_value(std::forward<Callable>(callback));
+	m_thenned = true;
+}
 
 } // end of namespace
