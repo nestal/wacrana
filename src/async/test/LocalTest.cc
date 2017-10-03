@@ -10,32 +10,31 @@
 // Created by nestal on 10/2/17.
 //
 
+#include <iostream>
 #include "async/Async.hh"
-#include "async/LocalExecutor.hh"
 
 #include "catch.hpp"
 
 using namespace exe;
+using namespace std::chrono_literals;
 
 TEST_CASE( "Async simple", "[normal]" )
 {
+	TaskScheduler sch;
 	LocalExecutor exec;
 	
 	auto future = Async([]
 	{
+		std::this_thread::sleep_for(2s);
 		return 100;
-	});
+	}, &exec);
 	
 	future.Then([](int val)
 	{
 		REQUIRE(val == 100);
-		return std::string("abc");
-	}, &exec).Then([](const std::string& s)
-	{
-		REQUIRE(s == "abc");
-	}, &exec);
+	}, &sch, &exec);
 	
 	using namespace std::chrono_literals;
-	while (exec.Count() > 0)
+	while (sch.Count() > 0)
 		std::this_thread::sleep_for(1s);
 }
