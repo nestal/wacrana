@@ -59,8 +59,13 @@ public:
 		{
 			auto t = m_cont.get();
 			if (t.host)
+			{
+				std::cout << "schedule cont" << std::endl;
 				t.host->Schedule(t, executor);
+			}
 		}
+		else
+			std::cout << "not one called then() yet" << std::endl;
 	}
 
 private:
@@ -112,6 +117,7 @@ public:
 	template <typename T, typename Function>
 	auto Add(const std::shared_future<T>& val, Function&& func, Token& out, std::future<Token>&& cont)
 	{
+		std::unique_lock<std::mutex> lock{m_mux};
 		out.event = m_seq++;
 		out.host  = this;
 
@@ -124,6 +130,7 @@ public:
 
 	void Schedule(Token token, Executor *executor)
 	{
+		std::unique_lock<std::mutex> lock{m_mux};
 		auto it = m_tasks.find(token.event);
 		if (it != m_tasks.end())
 		{
@@ -141,6 +148,7 @@ public:
 	}
 
 private:
+	std::mutex  m_mux;
 	std::unordered_map<std::intptr_t, std::shared_ptr<TaskBase>>    m_tasks;
 	std::intptr_t m_seq{0};
 };

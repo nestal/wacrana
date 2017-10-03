@@ -25,7 +25,7 @@ TEST_CASE( "Async simple", "[normal]" )
 	
 	auto future = Async([]
 	{
-//		std::this_thread::sleep_for(2s);
+		std::this_thread::sleep_for(2s);
 		return 100;
 	}, &exec);
 	
@@ -35,7 +35,9 @@ TEST_CASE( "Async simple", "[normal]" )
 		return std::string{"abc"};
 	}, &sch, &exec).Then([](const std::string& s)
 	{
+		std::cout << "then2 " << s << std::endl;
 		REQUIRE(s == "abc");
+		std::this_thread::sleep_for(1s);
 	}, &sch, &exec);
 	
 	using namespace std::chrono_literals;
