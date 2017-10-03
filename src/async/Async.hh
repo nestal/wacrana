@@ -34,6 +34,26 @@ public:
 	virtual void Execute(Executor *executor) = 0;
 };
 
+class TaskScheduler
+{
+public:
+	TaskScheduler() = default;
+
+	template <typename T, typename Function>
+	auto Add(const std::shared_future<T>& val, Function&& func, Token& out, std::future<Token>&& cont);
+
+	void Schedule(Token token, Executor *executor);
+
+	std::size_t Count() const
+	{
+		return m_tasks.size();
+	}
+
+private:
+	std::unordered_map<std::intptr_t, std::shared_ptr<TaskBase>>    m_tasks;
+	std::intptr_t m_seq{0};
+};
+
 template <typename T, typename Function>
 class Task : public TaskBase
 {
@@ -92,13 +112,37 @@ private:
 	std::future<Token>      m_cont;
 };
 
-class TaskScheduler;
-
 class Executor
 {
 public:
 	virtual void Execute(const std::function<void()>& func) = 0;
 };
+
+template <typename T, typename Function>
+auto TaskScheduler::Add(const std::shared_future<T>& val, Function&& func, Token& out, std::future<Token>&& cont)
+{
+	out.event = m_seq++;
+	out.host  = this;
+
+	auto task = std::make_shared<Task<T, Function>>(std::move(val), std::forward<Function>(func), std::move(cont));
+	auto result = task->Result();
+
+	m_tasks.emplace(out.event, std::move(task));
+	return result;
+}
+
+inline void TaskScheduler::Schedule(Token token, Executor *executor)
+{
+	auto it = m_tasks.find(token.event);
+	if (it != m_tasks.end())
+	{
+		executor->Execute([task=std::move(it->second), executor]
+		{
+			task->Execute(executor);
+		});
+		it = m_tasks.erase(it);
+	}
+}
 
 class LocalExecutor : public Executor
 {
@@ -109,57 +153,13 @@ public:
 	}
 };
 
-class TaskScheduler
-{
-public:
-	TaskScheduler() = default;
-
-	template <typename T, typename Function>
-	auto Add(const std::shared_future<T>& val, Function&& func, Token& out, std::future<Token>&& cont)
-	{
-		std::unique_lock<std::mutex> lock{m_mux};
-		out.event = m_seq++;
-		out.host  = this;
-
-		auto task = std::make_shared<Task<T, Function>>(std::move(val), std::forward<Function>(func), std::move(cont));
-		auto result = task->Result();
-
-		m_tasks.emplace(out.event, std::move(task));
-		return result;
-	}
-
-	void Schedule(Token token, Executor *executor)
-	{
-		std::unique_lock<std::mutex> lock{m_mux};
-		auto it = m_tasks.find(token.event);
-		if (it != m_tasks.end())
-		{
-			executor->Execute([task=std::move(it->second), executor]
-			{
-				task->Execute(executor);
-			});
-			it = m_tasks.erase(it);
-		}
-	}
-
-	std::size_t Count() const
-	{
-		return m_tasks.size();
-	}
-
-private:
-	std::mutex  m_mux;
-	std::unordered_map<std::intptr_t, std::shared_ptr<TaskBase>>    m_tasks;
-	std::intptr_t m_seq{0};
-};
-
 template <typename T>
 class Future
 {
 public:
 	Future() = default;
-	Future(Future&&) = default;
-	Future(std::future<T>&& shared_state, std::promise<Token>&& token = {}) :
+	Future(Future&&) noexcept = default;
+	explicit Future(std::future<T>&& shared_state, std::promise<Token>&& token = {}) noexcept :
 		m_shared_state{std::move(shared_state)},
 		m_token{std::move(token)}
 	{
@@ -194,10 +194,10 @@ public:
 	}
 
 private:
-	template <typename T>
-	static auto MakeFuture(std::future<T>&& shared_state, std::promise<Token>&& token)
+	template <typename Type>
+	static auto MakeFuture(std::future<Type>&& shared_state, std::promise<Token>&& token)
 	{
-		return Future<T>{std::move(shared_state), std::move(token)};
+		return Future<Type>{std::move(shared_state), std::move(token)};
 	}
 
 private:
