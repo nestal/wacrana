@@ -25,16 +25,22 @@ TEST_CASE( "Async simple", "[normal]" )
 	
 	auto future = Async([]
 	{
-		std::this_thread::sleep_for(2s);
+//		std::this_thread::sleep_for(2s);
 		return 100;
 	}, &exec);
 	
 	future.Then([](int val)
 	{
 		REQUIRE(val == 100);
+		return std::string{"abc"};
+	}, &sch, &exec).Then([](const std::string& s)
+	{
+		REQUIRE(s == "abc");
 	}, &sch, &exec);
 	
 	using namespace std::chrono_literals;
 	while (sch.Count() > 0)
 		std::this_thread::sleep_for(1s);
+
+	std::cout << "quitting" << std::endl;
 }
