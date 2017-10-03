@@ -13,7 +13,7 @@
 #include "async/Async.hh"
 #include "async/LocalExecutor.hh"
 
-#include "catch/catch.hpp"
+#include "catch.hpp"
 
 using namespace exe;
 
