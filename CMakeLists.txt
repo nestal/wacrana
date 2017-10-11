@@ -32,17 +32,9 @@ include_directories(
 	${DLIB_DIR}
 )
 
-file(GLOB ASYNC_SOURCE src/async/*.cc src/async/*.hh)
-add_library(async ${ASYNC_SOURCE})
-target_link_libraries(async Threads::Threads)
-
-file(GLOB ASYNC_TEST_SOURCE src/async/test/*.cc src/async/test/*.hh)
-add_executable(async-UT ${ASYNC_TEST_SOURCE})
-target_link_libraries(async-UT async)
-
 file(GLOB INCLUDE_FILES include/*.hpp)
 file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc)
-add_executable(wacrana ${SOURCE_FILES} ${INCLUDE_FILES})
+add_executable(wacrana ${SOURCE_FILES} ${INCLUDE_FILES} BrightFuture/BrightFuture.hh)
 
 target_link_libraries(
 	wacrana
@@ -85,6 +77,9 @@ file(GLOB BEETHOVEN_SRC plugins/beethoven/*.cc plugins/beethoven/*.hh plugins/be
 add_library(Beethoven SHARED ${BEETHOVEN_SRC} ${INCLUDE_FILES})
 target_link_libraries(Beethoven Qt5::Core Qt5::Gui)
 set_target_properties(Beethoven PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
+# include BridgeFuture
+add_subdirectory(BrightFuture)
 
 set(CMAKE_CXX_STANDARD 11)
 add_executable(rvm_test dlib/rvm_test.cc)
