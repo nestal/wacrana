@@ -26,6 +26,7 @@ public:
 	Context(const std::string& config);
 
 	const Configuration& Config() const ;
+	Configuration& Config();
 	
 	std::uint_fast32_t Random() override;
 	

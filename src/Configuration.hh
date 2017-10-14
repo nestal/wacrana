@@ -55,12 +55,12 @@ public:
 	
 	double DefaultZoom() const;
 	
-	BrightFuture::shared_future<PluginManager> Plugins() const;
+	BrightFuture::future<PluginManager>& Plugins();
 	
 private:
 	double          m_default_zoom;
 	
-	BrightFuture::shared_future<PluginManager>  m_plugin_mgr;
+	BrightFuture::future<PluginManager>  m_plugin_mgr;
 };
 
 } // end of namespace

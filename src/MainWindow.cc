@@ -31,7 +31,7 @@ MainWindow::MainWindow(Context& ctx) :
 {
 	Q_ASSERT(m_ctx.Config().thread() == thread());
 //	connect(&m_ctx.Config(), &Configuration::Finish, this, &MainWindow::OnConfigReady);
-	m_ctx.Config().Plugins().then([this](BrightFuture::shared_future<PluginManager>&& pm)
+	m_ctx.Config().Plugins().then([this](BrightFuture::future<PluginManager>&& pm)
 	{
 		OnConfigReady(std::move(pm));
 	}, MainExec());
@@ -206,34 +206,13 @@ void MainWindow::InitMenu()
 	m_ui->m_toolbar->addWidget(m_menu_btn);
 }
 
-void MainWindow::OnConfigReady(BrightFuture::shared_future<PluginManager>&& future)
+void MainWindow::OnConfigReady(BrightFuture::future<PluginManager>&& future)
 {
 	Q_ASSERT(QThread::currentThread() == thread());
 	try
 	{
-		Q_ASSERT(m_tab_menu);
-		
-		// set zoom ratio of all tabs
-		for (auto i = 0 ; i < TabCount(); ++i)
-			Tab(i).ZoomFactor(m_ctx.Config().DefaultZoom());
-		
-		auto& pm = future.get();
-		auto hp_plugins = pm.Find("homepage");
-		if (!hp_plugins.empty())
-		{
-			m_home_page = pm.NewPersona(hp_plugins.front(), m_ctx);
-			m_home_page->OnPageLoaded(Current(), true);
-		}
-		
-		for (auto&& persona : pm.Find("persona"))
-		{
-			auto action = new QAction{QString::fromStdString(persona), this};
-			connect(action, &QAction::triggered, [this, persona, &pm]
-			{
-				NewTab().SetPersona(pm.NewPersona(persona, m_ctx));
-			});
-			m_tab_menu->addAction(action);
-		}
+		assert(future.is_ready());
+		m_plugins = std::move(future.get());
 	}
 	catch (std::exception& e)
 	{
@@ -242,6 +221,29 @@ void MainWindow::OnConfigReady(BrightFuture::shared_future<PluginManager>&& futu
 	catch (...)
 	{
 		QMessageBox::critical(this, QObject::tr("Configuration Error"), "Unknown exception");
+	}
+
+	Q_ASSERT(m_tab_menu);
+	
+	// set zoom ratio of all tabs
+	for (auto i = 0 ; i < TabCount(); ++i)
+		Tab(i).ZoomFactor(m_ctx.Config().DefaultZoom());
+		
+	auto hp_plugins = m_plugins.Find("homepage");
+	if (!hp_plugins.empty())
+	{
+		m_home_page = m_plugins.NewPersona(hp_plugins.front(), m_ctx);
+		m_home_page->OnPageLoaded(Current(), true);
+	}
+	
+	for (auto&& persona : m_plugins.Find("persona"))
+	{
+		auto action = new QAction{QString::fromStdString(persona), this};
+		connect(action, &QAction::triggered, [this, persona]
+		{
+			NewTab().SetPersona(m_plugins.NewPersona(persona, m_ctx));
+		});
+		m_tab_menu->addAction(action);
 	}
 }
 

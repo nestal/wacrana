@@ -14,6 +14,7 @@
 
 // dependencies
 #include "BrowserTab.hh"
+#include "PluginManager.hh"
 #include "BrightFuture/BrightFuture.hh"
 
 #include <memory>
@@ -38,8 +39,8 @@ class MainWindow : public QMainWindow, public V1::MainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(Context& ctx);
-	~MainWindow();
+	explicit MainWindow(Context& ctx);
+	~MainWindow() override;
 
 	BrowserTab& NewTab() override;
 	
@@ -52,7 +53,7 @@ private:
 	void Go();
 	int IndexOf(const BrowserTab& tab) const ;
 	void InitMenu();
-	void OnConfigReady(BrightFuture::shared_future<PluginManager>&& future);
+	void OnConfigReady(BrightFuture::future<PluginManager>&& future);
 	void SetLocation(const QString& loc);
 	
 private:
@@ -65,6 +66,7 @@ private:
 	QProgressBar *m_timer_progress{};
 	
 	V1::PluginPtr   m_home_page;
+	PluginManager   m_plugins;
 };
 
 } // end of namespace

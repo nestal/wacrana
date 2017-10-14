@@ -33,4 +33,9 @@ const Configuration& Context::Config() const
 	return m_config;
 }
 
+Configuration& Context::Config()
+{
+	return m_config;
+}
+
 }

@@ -52,7 +52,7 @@ Configuration::Configuration(const std::string& path)
 	m_plugin_mgr = async([this, config=std::move(config)]
 	{
 		return PluginManager{config["plugins"]};
-	}, DefaultExecutor::Instance()).share();
+	}, DefaultExecutor::Instance());
 }
 
 /**
@@ -70,7 +70,7 @@ double Configuration::DefaultZoom() const
 	return m_default_zoom;
 }
 
-BrightFuture::shared_future<PluginManager> Configuration::Plugins() const
+BrightFuture::future<PluginManager>& Configuration::Plugins()
 {
 	return m_plugin_mgr;
 }
