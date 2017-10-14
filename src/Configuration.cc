@@ -11,12 +11,9 @@
 //
 
 #include "Configuration.hh"
+#include "FunctorEvent.hh"
 
 #include <QDebug>
-
-#include "json.hpp"
-
-#include <memory>
 #include <fstream>
 
 namespace wacrana {
@@ -70,7 +67,7 @@ Configuration::Configuration(const std::string& path)
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
 		// custom deleter will not be called.
 		Q_EMIT PreFinish();
-	}, DefaultExecutor::Instance());
+	}, MainExec());
 }
 
 /**

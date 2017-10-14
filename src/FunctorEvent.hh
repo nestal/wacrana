@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "BrightFuture/BrightFuture.hh"
+
 #include <QEvent>
 #include <QtCore/QCoreApplication>
 
@@ -31,8 +33,8 @@ public:
 		{
 			m_func();
 		}
-		catch (...) {
-		
+		catch (...)
+		{
 		}
 	}
 	
@@ -45,5 +47,22 @@ void PostMain(Func&& func, QObject *dest = qApp)
 {
 	QCoreApplication::postEvent(dest, new FunctorEvent<Func>(std::forward<Func>(func)));
 }
+
+class MainGuiExecutor : public BrightFuture::ExecutorBase<MainGuiExecutor> // CRTP
+{
+public:
+	// Called by ExecutorBase using CRTP
+	void ExecuteTask(std::function<void()>&& task)
+	{
+		PostMain(std::move(task));
+	}
+
+	friend MainGuiExecutor* MainExec();
+	
+private:
+	MainGuiExecutor() = default;
+};
+
+MainGuiExecutor* MainExec();
 
 } // end of namespace

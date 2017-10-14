@@ -16,7 +16,6 @@
 
 #include "PluginManager.hh"
 #include "Exception.hh"
-
 #include "Plugin.hpp"
 
 #include <BrightFuture/BrightFuture.hh>
