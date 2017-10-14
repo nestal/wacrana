@@ -19,9 +19,10 @@
 
 #include "Plugin.hpp"
 
+#include <BrightFuture/BrightFuture.hh>
+
 #include <functional>
 #include <unordered_map>
-#include <future>
 
 class QString;
 class QJsonObject;
@@ -76,7 +77,7 @@ Q_SIGNALS:
 private:
 	double          m_default_zoom;
 	
-	std::shared_future<PluginManager>  m_plugin_mgr;
+	BrightFuture::shared_future<PluginManager>  m_plugin_mgr;
 };
 
 } // end of namespace

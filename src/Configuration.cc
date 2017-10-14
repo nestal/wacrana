@@ -56,17 +56,21 @@ Configuration::Configuration(const std::string& path)
 	// it before returning to the main loop.
 	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
 	
+	using namespace BrightFuture;
+	
 	// spawn a thread to load the configuration file
-	m_plugin_mgr = std::async(std::launch::async, [this, config=std::move(config)]
+	m_plugin_mgr = async([this, config=std::move(config)]
+	{
+		return PluginManager{config["plugins"]};
+	}, DefaultExecutor::Instance()).share();
+	
+	m_plugin_mgr.then([this](shared_future<PluginManager> pm)
 	{
 		// Emit PreFinish() at the end of this function even when exception is thrown.
 		// Note that need to put a non-null pointer in unique_ptr, otherwise the
 		// custom deleter will not be called.
-		auto finale = [this](void*){Q_EMIT PreFinish();};
-		std::unique_ptr<void, decltype(finale)> ptr{this, finale};
-		
-		return PluginManager{config["plugins"]};
-	}).share();
+		Q_EMIT PreFinish();
+	}, DefaultExecutor::Instance());
 }
 
 /**
