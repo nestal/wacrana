@@ -30,7 +30,6 @@ MainWindow::MainWindow(Context& ctx) :
 	m_timer_progress{new QProgressBar}
 {
 	Q_ASSERT(m_ctx.Config().thread() == thread());
-//	connect(&m_ctx.Config(), &Configuration::Finish, this, &MainWindow::OnConfigReady);
 	m_ctx.Config().Plugins().then([this](BrightFuture::future<PluginManager>&& pm)
 	{
 		OnConfigReady(std::move(pm));

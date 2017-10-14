@@ -57,7 +57,8 @@ private:
 	void SetLocation(const QString& loc);
 	
 private:
-	Context&  m_ctx;
+	Context&        m_ctx;
+	PluginManager   m_plugins;      // Must put it before all other plugins
 
 	std::unique_ptr<Ui::MainWindow> m_ui;
 	QLineEdit   *m_location{};
@@ -66,7 +67,6 @@ private:
 	QProgressBar *m_timer_progress{};
 	
 	V1::PluginPtr   m_home_page;
-	PluginManager   m_plugins;
 };
 
 } // end of namespace

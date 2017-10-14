@@ -49,7 +49,11 @@ private:
 	{
 		nlohmann::json config;
 		std::function<V1::PersonaFactory> factory;
+		
+		V1::PluginPtr operator()(V1::Context& ctx) const;
 	};
+	
+	struct WrappedPlugin;
 	
 private:
 	std::unordered_map<std::string, PluginFactory> m_factories;

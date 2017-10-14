@@ -48,11 +48,50 @@ std::string PluginManager::Load(const nlohmann::json& config)
 	).first->first;
 }
 
+/*!
+ * \brief A plugin that owned a copy of the factory function that creates it.
+ *
+ * The factory function is loaded from the dynamic library. If all copies of the function function
+ * is destroyed, the dynamic library will be unloaded. If we put the factory and the plugin together
+ * we can make sure we don't accidentally unloaded the dynamic library when the plugin is still
+ * in use.
+ */
+struct PluginManager::WrappedPlugin : public V1::Plugin
+{
+public:
+	WrappedPlugin(const std::function<V1::PersonaFactory>& factory, const nlohmann::json& config, V1::Context& ctx) :
+		m_factory{factory},
+		m_plugin{m_factory(config, ctx)}
+	{
+	}
+	
+	void OnPageLoaded(V1::BrowserTab& tab, bool ok) override
+	{
+		return m_plugin->OnPageLoaded(tab, ok);
+	}
+	void OnPageIdle(V1::BrowserTab& tab) override
+	{
+		return m_plugin->OnPageIdle(tab);
+	}
+	std::string Icon() const override
+	{
+		return m_plugin->Icon();
+	}
+	void OnReseed(std::uint_fast32_t seed) override
+	{
+		m_plugin->OnReseed(seed);
+	}
+	
+private:
+	std::function<V1::PersonaFactory> m_factory;
+	V1::PluginPtr m_plugin;
+};
+
 V1::PluginPtr PluginManager::NewPersona(const std::string& name, V1::Context& ctx) const
 {
 	auto it = m_factories.find(name);
 	if (it != m_factories.end())
-		return it->second.factory(it->second.config, ctx);
+		return std::make_unique<WrappedPlugin>(it->second.factory, it->second.config, ctx);
 	else
 		throw std::runtime_error("not found");
 }
@@ -68,4 +107,8 @@ std::vector<std::string> PluginManager::Find(const std::string& role) const
 	return result;
 }
 
+V1::PluginPtr PluginManager::PluginFactory::operator()(V1::Context& ctx) const
+{
+	return std::make_unique<WrappedPlugin>(factory, config, ctx);
+}
 } // end of namespace
