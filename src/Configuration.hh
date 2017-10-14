@@ -55,24 +55,8 @@ public:
 	
 	double DefaultZoom() const;
 	
-	const PluginManager& Plugins() const;
+	BrightFuture::shared_future<PluginManager> Plugins() const;
 	
-Q_SIGNALS:
-	void PreFinish();
-	
-	/**
-	 * \brief   Signal emitted after the configuration finishes loading
-	 *          asynchronouosly.
-	 *
-	 * The constructor will load the configuration asynchronously, but this
-	 * signal will not be emitted until the caller thread returns to the
-	 * main loop. (The "caller" thread is the thread which calls the
-	 * Configuration constructor). Therefore you must make sure this signal
-	 * is connected to a slot before returning to the main loop, otherwise
-	 * the signal will be missed and the slot will never be called.
-	 */
-	void Finish();
-
 private:
 	double          m_default_zoom;
 	

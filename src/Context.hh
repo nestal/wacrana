@@ -27,9 +27,6 @@ public:
 
 	const Configuration& Config() const ;
 	
-	V1::PluginPtr MakePersona(const QString& name);
-	std::vector<QString> Find(const QString& role) const;
-
 	std::uint_fast32_t Random() override;
 	
 private:

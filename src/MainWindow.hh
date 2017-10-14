@@ -14,6 +14,7 @@
 
 // dependencies
 #include "BrowserTab.hh"
+#include "BrightFuture/BrightFuture.hh"
 
 #include <memory>
 #include <random>
@@ -26,6 +27,7 @@ namespace wacrana {
 
 class BrowserTab;
 class Context;
+class PluginManager;
 
 namespace Ui {
 class MainWindow;
@@ -50,7 +52,7 @@ private:
 	void Go();
 	int IndexOf(const BrowserTab& tab) const ;
 	void InitMenu();
-	void OnConfigReady();
+	void OnConfigReady(BrightFuture::shared_future<PluginManager>&& future);
 	void SetLocation(const QString& loc);
 	
 private:

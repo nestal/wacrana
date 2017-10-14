@@ -46,13 +46,6 @@ Configuration::Configuration(const std::string& path)
 	// default zoom
 	m_default_zoom = config["default_zoom"];
 	
-	// Make sure the PreFinish() signal is emitted before the async function starts.
-	// Connect using QueuedConnection to ensure the Finish() signal will be emitted
-	// after returning to the main loop. This is to ensure the signal will not be
-	// missed even if we connect it _after_ it is emitted. Just make sure to connect
-	// it before returning to the main loop.
-	connect(this, &Configuration::PreFinish, this, &Configuration::Finish, Qt::QueuedConnection);
-	
 	using namespace BrightFuture;
 	
 	// spawn a thread to load the configuration file
@@ -60,14 +53,6 @@ Configuration::Configuration(const std::string& path)
 	{
 		return PluginManager{config["plugins"]};
 	}, DefaultExecutor::Instance()).share();
-	
-	m_plugin_mgr.then([this](shared_future<PluginManager> pm)
-	{
-		// Emit PreFinish() at the end of this function even when exception is thrown.
-		// Note that need to put a non-null pointer in unique_ptr, otherwise the
-		// custom deleter will not be called.
-		Q_EMIT PreFinish();
-	}, MainExec());
 }
 
 /**
@@ -85,9 +70,9 @@ double Configuration::DefaultZoom() const
 	return m_default_zoom;
 }
 
-const PluginManager& Configuration::Plugins() const
+BrightFuture::shared_future<PluginManager> Configuration::Plugins() const
 {
-	return m_plugin_mgr.get();
+	return m_plugin_mgr;
 }
 
 } // end of namespace

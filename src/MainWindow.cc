@@ -8,10 +8,11 @@
 /////////////////////////////////////////////////////////////////////////
 
 #include "MainWindow.hh"
+#include "ui_MainWindow.h"
 
 #include "Configuration.hh"
 #include "Context.hh"
-#include "ui_MainWindow.h"
+#include "FunctorEvent.hh"
 
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
@@ -29,7 +30,11 @@ MainWindow::MainWindow(Context& ctx) :
 	m_timer_progress{new QProgressBar}
 {
 	Q_ASSERT(m_ctx.Config().thread() == thread());
-	connect(&m_ctx.Config(), &Configuration::Finish, this, &MainWindow::OnConfigReady);
+//	connect(&m_ctx.Config(), &Configuration::Finish, this, &MainWindow::OnConfigReady);
+	m_ctx.Config().Plugins().then([this](BrightFuture::shared_future<PluginManager>&& pm)
+	{
+		OnConfigReady(std::move(pm));
+	}, MainExec());
 	
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
@@ -201,7 +206,7 @@ void MainWindow::InitMenu()
 	m_ui->m_toolbar->addWidget(m_menu_btn);
 }
 
-void MainWindow::OnConfigReady()
+void MainWindow::OnConfigReady(BrightFuture::shared_future<PluginManager>&& future)
 {
 	Q_ASSERT(QThread::currentThread() == thread());
 	try
@@ -212,19 +217,20 @@ void MainWindow::OnConfigReady()
 		for (auto i = 0 ; i < TabCount(); ++i)
 			Tab(i).ZoomFactor(m_ctx.Config().DefaultZoom());
 		
-		auto hp_plugins = m_ctx.Find("homepage");
+		auto& pm = future.get();
+		auto hp_plugins = pm.Find("homepage");
 		if (!hp_plugins.empty())
 		{
-			m_home_page = m_ctx.MakePersona(hp_plugins.front());
+			m_home_page = pm.NewPersona(hp_plugins.front(), m_ctx);
 			m_home_page->OnPageLoaded(Current(), true);
 		}
 		
-		for (auto&& persona : m_ctx.Find("persona"))
+		for (auto&& persona : pm.Find("persona"))
 		{
-			auto action = new QAction{persona, this};
-			connect(action, &QAction::triggered, [this, persona]
+			auto action = new QAction{QString::fromStdString(persona), this};
+			connect(action, &QAction::triggered, [this, persona, &pm]
 			{
-				NewTab().SetPersona(m_ctx.MakePersona(persona));
+				NewTab().SetPersona(pm.NewPersona(persona, m_ctx));
 			});
 			m_tab_menu->addAction(action);
 		}
