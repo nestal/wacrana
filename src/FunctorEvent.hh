@@ -17,6 +17,10 @@
 #include <QEvent>
 #include <QtCore/QCoreApplication>
 
+namespace BrightFuture {
+class Executor;
+}
+
 namespace wacrana {
 
 template <typename Func>
@@ -48,21 +52,6 @@ void PostMain(Func&& func, QObject *dest = qApp)
 	QCoreApplication::postEvent(dest, new FunctorEvent<Func>(std::forward<Func>(func)));
 }
 
-class MainGuiExecutor : public BrightFuture::ExecutorBase<MainGuiExecutor> // CRTP
-{
-public:
-	// Called by ExecutorBase using CRTP
-	void ExecuteTask(std::function<void()>&& task)
-	{
-		PostMain(std::move(task));
-	}
-
-	friend MainGuiExecutor* MainExec();
-	
-private:
-	MainGuiExecutor() = default;
-};
-
-MainGuiExecutor* MainExec();
+BrightFuture::Executor* MainExec();
 
 } // end of namespace

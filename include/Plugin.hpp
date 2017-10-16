@@ -56,7 +56,10 @@ class WCAPI Plugin
 {
 public:
 	virtual ~Plugin() = default;
-	
+
+	virtual void OnAttachTab(BrowserTab& tab) = 0;
+	virtual void OnDetachTab(BrowserTab& tab) = 0;
+
 	/**
 	 * \brief Callback when a page has finished loading.
 	 * \param wnd   Browser main window, which is the parent of the tab that contains

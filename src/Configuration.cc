@@ -52,7 +52,7 @@ Configuration::Configuration(const std::string& path)
 	m_plugin_mgr = async([this, config=std::move(config)]
 	{
 		return PluginManager{config["plugins"]};
-	}, DefaultExecutor::Instance());
+	}, MainExec());
 }
 
 /**

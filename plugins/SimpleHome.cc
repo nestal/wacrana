@@ -46,6 +46,16 @@ void SimpleHome::OnReseed(std::uint_fast32_t)
 {
 }
 
+void SimpleHome::OnAttachTab(V1::BrowserTab& tab)
+{
+
+}
+
+void SimpleHome::OnDetachTab(V1::BrowserTab& tab)
+{
+
+}
+
 BOOST_DLL_ALIAS(
     wacrana::SimpleHome::Create, // <-- this function is exported with...
     Load                         // <-- ...this alias name

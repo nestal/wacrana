@@ -29,7 +29,9 @@ public:
 	void OnReseed(std::uint_fast32_t seed) override;
 	
 	static V1::PluginPtr Create(const nlohmann::json& config, V1::Context& ctx);
-	
+	void OnAttachTab(V1::BrowserTab& tab) override;
+	void OnDetachTab(V1::BrowserTab& tab) override;
+
 private:
 	QUrl    m_home{"http://localhost"};
 };

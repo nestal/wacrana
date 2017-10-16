@@ -14,7 +14,22 @@
 
 namespace wacrana {
 
-MainGuiExecutor* MainExec()
+class MainGuiExecutor : public BrightFuture::ExecutorBase<MainGuiExecutor> // CRTP
+{
+public:
+	// Called by ExecutorBase using CRTP
+	void ExecuteTask(std::function<void()>&& task)
+	{
+		PostMain(std::move(task));
+	}
+
+	friend BrightFuture::Executor* MainExec();
+
+private:
+	MainGuiExecutor() = default;
+};
+
+BrightFuture::Executor* MainExec()
 {
 	static MainGuiExecutor inst;
 	return &inst;

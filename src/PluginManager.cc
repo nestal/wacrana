@@ -81,7 +81,16 @@ public:
 	{
 		m_plugin->OnReseed(seed);
 	}
-	
+	void OnAttachTab(V1::BrowserTab& tab) override
+	{
+		m_plugin->OnAttachTab(tab);
+	}
+	void OnDetachTab(V1::BrowserTab& tab) override
+	{
+		m_plugin->OnDetachTab(tab);
+	}
+
+
 private:
 	std::function<V1::PersonaFactory> m_factory;
 	V1::PluginPtr m_plugin;

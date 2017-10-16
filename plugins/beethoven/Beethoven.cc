@@ -174,4 +174,14 @@ void Beethoven::OnReseed(std::uint_fast32_t seed)
 	m_rand.seed(seed);
 }
 
+void Beethoven::OnAttachTab(V1::BrowserTab& tab)
+{
+
+}
+
+void Beethoven::OnDetachTab(V1::BrowserTab& tab)
+{
+
+}
+
 } // end of namespace

@@ -21,8 +21,9 @@
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
 
-#include <thread>
 #include <random>
+#include <thread>
+#include <unordered_map>
 
 namespace wacrana {
 
@@ -42,6 +43,9 @@ public:
 	void OnPageIdle(V1::BrowserTab& tab) override;
 	std::string Icon() const override;
 	void OnReseed(std::uint_fast32_t seed) override;
+
+	void OnAttachTab(V1::BrowserTab& tab) override;
+	void OnDetachTab(V1::BrowserTab& tab) override;
 
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
@@ -95,6 +99,8 @@ private:
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
+
+	std::unordered_map<V1::BrowserTab*, BrowserTabProxy> m_proxies;
 
 	// this must be the last
 	std::thread                     m_thread;

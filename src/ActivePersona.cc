@@ -69,6 +69,16 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 	m_timer.async_wait([this](auto ec){ReseedPersona(ec);});
 }
 
+void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
+{
+
+}
+
+void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
+{
+
+}
+
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
 	m_parent{parent},
 	m_location{m_parent.Location()},
