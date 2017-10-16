@@ -138,6 +138,7 @@ void BrowserTab::SingleShotTimer(TimeDuration timeout, TimerCallback&& callback)
 void BrowserTab::SetPersona(V1::PluginPtr&& persona)
 {
 	m_persona = std::make_unique<ActivePersona>(std::move(persona));
+	m_persona->OnAttachTab(*this);
 }
 
 void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)

@@ -71,12 +71,14 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-
+	m_proxies.emplace(&tab, BrowserTabProxy{tab});
+	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(proxy);});
 }
 
 void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 {
-
+//	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(tab);});
+	m_proxies.erase(&tab);
 }
 
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
@@ -146,6 +148,14 @@ void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
 {
 	return m_seqnum;
+}
+
+void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab& parent)
+{
+	assert(&m_parent == &parent);
+	m_location = m_parent.Location();
+	m_title = m_parent.Title();
+	m_seqnum = m_parent.SequenceNumber();
 }
 
 } // end of namespace

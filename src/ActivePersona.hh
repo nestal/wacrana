@@ -21,6 +21,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
 
+#include <cassert>
 #include <random>
 #include <thread>
 #include <unordered_map>
@@ -54,12 +55,16 @@ public:
 		// because it will copy some GUI-related stuff, e.g. browser location
 		// and web page title.
 		assert(std::this_thread::get_id() != m_thread.get_id());
-		BrowserTabProxy proxy{real};
+		auto it = m_proxies.find(&real);
+		assert(it != m_proxies.end());
+
+//		BrowserTabProxy proxy{real};
+		it->second.Update(real);
 		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
 		m_ios.post([
-			proxy=std::move(proxy),
+			&proxy=it->second,
 			cb=std::forward<Func>(callback)
 		]() mutable
 		{
@@ -84,6 +89,8 @@ private:
 		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 		void ReportProgress(double percent) override;
 		std::size_t SequenceNumber() const override;
+
+		void Update(V1::BrowserTab& parent);
 
 	private:
 		V1::BrowserTab& m_parent;
