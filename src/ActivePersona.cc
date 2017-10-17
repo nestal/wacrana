@@ -113,8 +113,9 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	
 	// BrowserTabProxy is a temporary object. "this" will be destroyed when the callback
 	// is invoked. Therefore we capture &parent instead of capturing "this".
-	PostMain([&parent=m_parent, js, promise=std::move(promise)]() mutable
+	PostMain([&parent=m_parent, js, promise=std::move(promise), this]() mutable
 	{
+		Update(parent);
 		parent.InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
 		{
 			promise.set_value(v.get());
@@ -128,8 +129,9 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	PostMain([&parent=m_parent, path, promise=std::move(promise)]() mutable
+	PostMain([&parent=m_parent, path, promise=std::move(promise), this]() mutable
 	{
+		Update(parent);
 		parent.InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
 		{
 			promise.set_value(v.get());
