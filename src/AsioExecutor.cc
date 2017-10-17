@@ -14,7 +14,6 @@
 
 namespace wacrana {
 
-
 AsioExecutor::AsioExecutor(boost::asio::io_service& ios) : m_ios{ios}
 {
 }

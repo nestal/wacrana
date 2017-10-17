@@ -71,28 +71,39 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(tab, &m_exec));
+	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, &m_exec));
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(proxy);});
 }
 
 void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 {
-//	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(tab);});
-	m_proxies.erase(&tab);
+	auto it = m_proxies.find(&tab);
+	if (it != m_proxies.end())
+	{
+		// Disable the proxy before notifying the persona thread
+		it->second->Update(nullptr);
+		m_ios.post([proxy=it->second, this](){ m_persona->OnDetachTab(*proxy); });
+
+		// Remove the proxy from our list. The proxy will still be kept alive by the
+		// shared_ptr inside the above lambda. It will be passed to the persona thread.
+		// The proxy will be freed after the persona thread released the shared_ptr, i.e.
+		// by returning from OnDetachTab().
+		m_proxies.erase(it++);
+	}
 }
 
-ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent, BrightFuture::Executor *exec) :
+ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec) :
 	m_exec{exec},
-	m_parent{parent},
-	m_location{m_parent.Location()},
-	m_title{m_parent.Title()},
-	m_seqnum{m_parent.SequenceNumber()}
+	m_parent{parent}
 {
+	assert(parent);
+	Update(parent);
 }
 
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
-	PostMain([&parent=m_parent, url]{parent.Load(url);});
+	if (m_parent)
+		PostMain([parent=m_parent, url]{parent->Load(url);});
 }
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
@@ -112,16 +123,17 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	// BrowserTabProxy is a temporary object. "this" will be destroyed when the callback
-	// is invoked. Therefore we capture &parent instead of capturing "this".
-	PostMain([&parent=m_parent, js, promise=std::move(promise), this]() mutable
-	{
-		Update(parent);
-		parent.InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+	if (m_parent)
+		PostMain([js, promise=std::move(promise), this]() mutable
 		{
-			promise.set_value(v.get());
+			Update(m_parent);
+			m_parent->InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+			{
+				promise.set_value(v.get());
+			});
 		});
-	});
+	else
+		promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
 	return future;
 }
 
@@ -130,14 +142,18 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	PostMain([&parent=m_parent, path, promise=std::move(promise), this]() mutable
-	{
-		Update(parent);
-		parent.InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+	if (m_parent)
+		PostMain([path, promise=std::move(promise), this]() mutable
 		{
-			promise.set_value(v.get());
+			Update(m_parent);
+			m_parent->InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+			{
+				promise.set_value(v.get());
+			});
 		});
-	});
+	else
+		promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
+	
 	return future;
 }
 
@@ -150,21 +166,22 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 	// we don't want to use the old BrowserTabProxy (i.e. *this) again when the timer fires
 	// because most of the stuff stored inside *this will be invalid (e.g. title, location).
 	// this is not a good idea afterall. giving up.
-
-	PostMain([&parent=m_parent, duration, cb=std::move(callback)]() mutable
-	{
-		parent.SingleShotTimer(duration, std::move(cb));
-	});
+	if (m_parent)
+		PostMain([parent=m_parent, duration, cb=std::move(callback)]() mutable
+		{
+			parent->SingleShotTimer(duration, std::move(cb));
+		});
 }
 
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
-	PostMain([&parent=m_parent, percent]() mutable
-	{
-		parent.ReportProgress(percent);
-
-		// perhaps update the fields in BrowserTabProxy?
-	});
+	if (m_parent)
+		PostMain([parent=m_parent, percent]() mutable
+		{
+			parent->ReportProgress(percent);
+	
+			// perhaps update the fields in BrowserTabProxy?
+		});
 }
 
 std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
@@ -173,13 +190,18 @@ std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
 	return m_seqnum;
 }
 
-void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab& parent)
+void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab *parent)
 {
 	std::unique_lock<std::mutex> lock{m_mux};
-	assert(&m_parent == &parent);
-	m_location = m_parent.Location();
-	m_title = m_parent.Title();
-	m_seqnum = m_parent.SequenceNumber();
+	if (parent)
+	{
+		assert(m_parent == parent);
+		m_location = m_parent->Location();
+		m_title = m_parent->Title();
+		m_seqnum = m_parent->SequenceNumber();
+	}
+	else
+		m_parent = nullptr;
 }
 
 std::weak_ptr<V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis()

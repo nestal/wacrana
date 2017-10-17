@@ -61,7 +61,7 @@ public:
 		auto it = m_proxies.find(&real);
 		assert(it != m_proxies.end());
 
-		it->second->Update(real);
+		it->second->Update(&real);
 		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
@@ -78,7 +78,7 @@ private:
 	class BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
 	{
 	public:
-		explicit BrowserTabProxy(V1::BrowserTab& parent, BrightFuture::Executor *exec);
+		explicit BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec);
 		
 		void Load(const QUrl& url) override;
 		QUrl Location() const override;
@@ -95,16 +95,16 @@ private:
 		std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
 		BrightFuture::Executor* Executor() override;
 
-		void Update(V1::BrowserTab& parent);
+		void Update(V1::BrowserTab *parent);
 
 	private:
 		BrightFuture::Executor *m_exec;
 		
 		mutable std::mutex      m_mux;
-		V1::BrowserTab& m_parent;
+		V1::BrowserTab  *m_parent;
 		QUrl            m_location;
 		QString         m_title;
-		std::size_t     m_seqnum;
+		std::size_t     m_seqnum{};
 	};
 	
 	void ReseedPersona(boost::system::error_code ec);

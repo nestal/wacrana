@@ -19,6 +19,7 @@
 #include <QtCore/QUrl>
 
 #include <set>
+#include <thread>
 
 namespace wacrana {
 
@@ -55,9 +56,12 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 	{
 		if (loc.fileName() == "search")
 		{
+			auto tid = std::this_thread::get_id();
+			
 			tab.InjectScriptFile(":/scripts/Google.js");
-			tab.InjectScript("Google.RelatedWords();").then([this](auto fut_terms)
+			tab.InjectScript("Google.RelatedWords();").then([this, tid](auto fut_terms)
 			{
+				assert(tid == std::this_thread::get_id());
 				for (auto&& var : fut_terms.get().toList())
 				{
 					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
