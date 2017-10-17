@@ -14,6 +14,8 @@
 
 #include "Plugin.hpp"
 #include "BrowserTab.hpp"
+#include "FunctorEvent.hh"
+#include "AsioExecutor.hh"
 
 #include <QtCore/QUrl>
 #include <QtCore/QString>
@@ -76,7 +78,7 @@ private:
 	class BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
 	{
 	public:
-		explicit BrowserTabProxy(V1::BrowserTab& parent);
+		explicit BrowserTabProxy(V1::BrowserTab& parent, BrightFuture::Executor *exec);
 		
 		void Load(const QUrl& url) override;
 		QUrl Location() const override;
@@ -91,10 +93,13 @@ private:
 		std::size_t SequenceNumber() const override;
 		std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
 		std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
+		BrightFuture::Executor* Executor() override;
 
 		void Update(V1::BrowserTab& parent);
 
 	private:
+		BrightFuture::Executor *m_exec;
+		
 		mutable std::mutex      m_mux;
 		V1::BrowserTab& m_parent;
 		QUrl            m_location;
@@ -105,10 +110,11 @@ private:
 	void ReseedPersona(boost::system::error_code ec);
 	
 private:
-	V1::PluginPtr                  m_persona;
+	V1::PluginPtr                   m_persona;
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
+	AsioExecutor                    m_exec{m_ios};
 
 	std::unordered_map<V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
 

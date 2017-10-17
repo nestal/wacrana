@@ -44,6 +44,7 @@ public:
 	
 	virtual std::weak_ptr<BrowserTab> WeakFromThis() = 0;
 	virtual std::weak_ptr<const BrowserTab> WeakFromThis() const = 0;
+	virtual BrightFuture::Executor* Executor() = 0;
 	
 	// script injection
 	virtual BrightFuture::future<QVariant> InjectScript(const QString& javascript) = 0;

@@ -94,7 +94,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				std::sort(m_keywords.begin(), m_keywords.end());
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
-			});
+			}, tab.Executor());
 			tab.InjectScript("Google.SearchResults();").then([this, wtab=tab.WeakFromThis()](auto fut_results)
 			{
 				for (auto&& result : fut_results.get().toList())
@@ -120,7 +120,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 					});
 					break;
 				}
-			});
+			}, tab.Executor());
 			
 		}
 		else if (ok)

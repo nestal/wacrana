@@ -71,7 +71,7 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(tab));
+	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(tab, &m_exec));
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(proxy);});
 }
 
@@ -81,7 +81,8 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 	m_proxies.erase(&tab);
 }
 
-ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent) :
+ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab& parent, BrightFuture::Executor *exec) :
+	m_exec{exec},
 	m_parent{parent},
 	m_location{m_parent.Location()},
 	m_title{m_parent.Title()},
@@ -189,6 +190,11 @@ std::weak_ptr<V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis()
 std::weak_ptr<const V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis() const
 {
 	return shared_from_this();
+}
+
+BrightFuture::Executor *ActivePersona::BrowserTabProxy::Executor()
+{
+	return m_exec;
 }
 
 } // end of namespace
