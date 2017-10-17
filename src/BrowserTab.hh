@@ -59,8 +59,8 @@ public :
 	double ZoomFactor() const  ;
 	void ZoomFactor(double zoom) ;
 	void Reload() ;
-	void InjectScript(const QString& javascript, ScriptCallback&& callback) override;
-	void InjectScriptFile(const QString& path) override;
+	BrightFuture::future<QVariant> InjectScript(const QString& javascript) override;
+	BrightFuture::future<QVariant> InjectScriptFile(const QString& path) override;
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	void ReportProgress(double percent) override;
 	std::size_t SequenceNumber() const override;

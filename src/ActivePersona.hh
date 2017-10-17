@@ -83,8 +83,8 @@ private:
 		QString Title() const override;
 		
 		// script injection
-		void InjectScript(const QString& js, ScriptCallback&& callback) override;
-		void InjectScriptFile(const QString& path) override;
+		BrightFuture::future<QVariant> InjectScript(const QString& js) override;
+		BrightFuture::future<QVariant> InjectScriptFile(const QString& path) override;
 		
 		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 		void ReportProgress(double percent) override;

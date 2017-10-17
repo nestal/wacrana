@@ -106,19 +106,36 @@ QString ActivePersona::BrowserTabProxy::Title() const
 	return m_title;
 }
 
-void ActivePersona::BrowserTabProxy::InjectScript(const QString& js, ScriptCallback&& callback)
+BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(const QString& js)
 {
+	BrightFuture::promise<QVariant> promise;
+	auto future = promise.get_future();
+	
 	// BrowserTabProxy is a temporary object. "this" will be destroyed when the callback
 	// is invoked. Therefore we capture &parent instead of capturing "this".
-	PostMain([&parent=m_parent, js, cb=std::move(callback)]() mutable
+	PostMain([&parent=m_parent, js, promise=std::move(promise)]() mutable
 	{
-		parent.InjectScript(js, std::move(cb));
+		parent.InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+		{
+			promise.set_value(v.get());
+		});
 	});
+	return future;
 }
 
-void ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& path)
+BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(const QString& path)
 {
-	PostMain([&parent=m_parent, path]{parent.InjectScriptFile(path);});
+	BrightFuture::promise<QVariant> promise;
+	auto future = promise.get_future();
+	
+	PostMain([&parent=m_parent, path, promise=std::move(promise)]() mutable
+	{
+		parent.InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+		{
+			promise.set_value(v.get());
+		});
+	});
+	return future;
 }
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)

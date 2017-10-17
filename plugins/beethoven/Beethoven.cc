@@ -56,9 +56,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		if (loc.fileName() == "search")
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
-			tab.InjectScript("Google.RelatedWords();", [this](const QVariant& terms, V1::BrowserTab&)
+			tab.InjectScript("Google.RelatedWords();").then([this](BrightFuture::future<QVariant> terms)
 			{
-				for (auto&& var : terms.toList())
+				for (auto&& var : terms.get().toList())
 				{
 					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
 					{
@@ -95,9 +95,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
-			tab.InjectScript("Google.SearchResults();", [this, wtab=tab.WeakFromThis()](const QVariant& results, V1::BrowserTab&)
+			tab.InjectScript("Google.SearchResults();").then([this, wtab=tab.WeakFromThis()](BrightFuture::future<QVariant> results)
 			{
-				for (auto&& result : results.toList())
+				for (auto&& result : results.get().toList())
 				{
 					auto&& map = result.toMap();
 //					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["top"].toInt() << ", " << map["left"].toInt() << ")";
@@ -116,7 +116,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 						if (auto tab = wtab.lock())
 //				        tab.InjectScript("Google.IAmFeelingLucky();", {});
 //						tab.LeftClick(rect.center());
-							tab->InjectScript("Google.ClickSearchResult('" + url + "');", {});
+							tab->InjectScript("Google.ClickSearchResult('" + url + "');");
 					});
 					break;
 				}
@@ -127,7 +127,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
 			tab.InjectScriptFile(":/scripts/Beethoven.js");
-			tab.InjectScript("Beethoven('" + Randomize() + "');", {});
+			tab.InjectScript("Beethoven('" + Randomize() + "');");
 		}
 	}
 	else if (loc.url() == "about:blank")

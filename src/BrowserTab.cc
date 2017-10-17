@@ -108,22 +108,24 @@ void BrowserTab::Reload()
 	m_ui->m_page->page()->triggerAction(QWebEnginePage::WebAction::Reload);
 }
 
-void BrowserTab::InjectScript(const QString& javascript, ScriptCallback&& callback)
+BrightFuture::future<QVariant> BrowserTab::InjectScript(const QString& javascript)
 {
-	m_ui->m_page->page()->runJavaScript(javascript, [cb=std::move(callback), this](const QVariant &v)
+	auto promise = std::make_shared<BrightFuture::promise<QVariant>>();
+	
+	m_ui->m_page->page()->runJavaScript(javascript, [promise](const QVariant& v)
 	{
-		if (cb)
-			cb(v, *this);
+		promise->set_value(v);
 	});
+	return promise->get_future();
 }
 
-void BrowserTab::InjectScriptFile(const QString& path)
+BrightFuture::future<QVariant> BrowserTab::InjectScriptFile(const QString& path)
 {
 	QFile script{path};
 	if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
 		throw std::runtime_error(script.errorString().toStdString());
 	
-	InjectScript(QString{script.readAll()}, {});
+	return InjectScript(QString{script.readAll()});
 }
 
 void BrowserTab::SingleShotTimer(TimeDuration timeout, TimerCallback&& callback)

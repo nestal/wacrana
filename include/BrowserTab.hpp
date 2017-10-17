@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "BrightFuture/BrightFuture.hh"
+
 #include <functional>
 #include <chrono>
 #include <cstddef>
@@ -34,7 +36,6 @@ protected:
 public:
 	using TimeDuration  = std::chrono::system_clock::duration;
 	using TimerCallback = std::function<void(V1::BrowserTab&)>;
-	using ScriptCallback = std::function<void(const QVariant&, V1::BrowserTab&)>;
 	
 public:
 	virtual void Load(const QUrl& url) = 0;
@@ -45,8 +46,8 @@ public:
 	virtual std::weak_ptr<const BrowserTab> WeakFromThis() const = 0;
 	
 	// script injection
-	virtual void InjectScript(const QString& javascript, ScriptCallback&& callback) = 0;
-	virtual void InjectScriptFile(const QString& path) = 0;
+	virtual BrightFuture::future<QVariant> InjectScript(const QString& javascript) = 0;
+	virtual BrightFuture::future<QVariant> InjectScriptFile(const QString& path) = 0;
 	
 	virtual void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) = 0;
 	virtual void ReportProgress(double percent) = 0;
