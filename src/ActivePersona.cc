@@ -71,7 +71,7 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-	m_proxies.emplace(&tab, BrowserTabProxy{tab});
+	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(tab));
 	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(proxy);});
 }
 
@@ -96,11 +96,13 @@ void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
 {
+	std::unique_lock<std::mutex> lock{m_mux};
 	return m_location;
 }
 
 QString ActivePersona::BrowserTabProxy::Title() const
 {
+	std::unique_lock<std::mutex> lock{m_mux};
 	return m_title;
 }
 
@@ -147,11 +149,13 @@ void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 
 std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
 {
+	std::unique_lock<std::mutex> lock{m_mux};
 	return m_seqnum;
 }
 
 void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab& parent)
 {
+	std::unique_lock<std::mutex> lock{m_mux};
 	assert(&m_parent == &parent);
 	m_location = m_parent.Location();
 	m_title = m_parent.Title();

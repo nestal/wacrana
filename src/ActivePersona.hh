@@ -21,6 +21,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
 
+#include <mutex>
 #include <cassert>
 #include <random>
 #include <thread>
@@ -58,17 +59,16 @@ public:
 		auto it = m_proxies.find(&real);
 		assert(it != m_proxies.end());
 
-//		BrowserTabProxy proxy{real};
-		it->second.Update(real);
+		it->second->Update(real);
 		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
 		m_ios.post([
-			&proxy=it->second,
+			proxy=it->second,
 			cb=std::forward<Func>(callback)
 		]() mutable
 		{
-			cb(proxy);
+			cb(*proxy);
 		});
 	}
 
@@ -93,6 +93,7 @@ private:
 		void Update(V1::BrowserTab& parent);
 
 	private:
+		mutable std::mutex      m_mux;
 		V1::BrowserTab& m_parent;
 		QUrl            m_location;
 		QString         m_title;
@@ -107,7 +108,7 @@ private:
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
 
-	std::unordered_map<V1::BrowserTab*, BrowserTabProxy> m_proxies;
+	std::unordered_map<V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
 
 	// this must be the last
 	std::thread                     m_thread;
