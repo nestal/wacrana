@@ -56,9 +56,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		if (loc.fileName() == "search")
 		{
 			tab.InjectScriptFile(":/scripts/Google.js");
-			tab.InjectScript("Google.RelatedWords();").then([this](BrightFuture::future<QVariant> terms)
+			tab.InjectScript("Google.RelatedWords();").then([this](auto fut_terms)
 			{
-				for (auto&& var : terms.get().toList())
+				for (auto&& var : fut_terms.get().toList())
 				{
 					for (auto&& term : var.toString().split("\n", QString::SkipEmptyParts))
 					{
@@ -95,9 +95,9 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 				m_keywords.erase(std::unique(m_keywords.begin(), m_keywords.end()), m_keywords.end());
 				qDebug() << "search result: " << m_keywords.size() << " keywords";
 			});
-			tab.InjectScript("Google.SearchResults();").then([this, wtab=tab.WeakFromThis()](BrightFuture::future<QVariant> results)
+			tab.InjectScript("Google.SearchResults();").then([this, wtab=tab.WeakFromThis()](auto fut_results)
 			{
-				for (auto&& result : results.get().toList())
+				for (auto&& result : fut_results.get().toList())
 				{
 					auto&& map = result.toMap();
 //					qDebug() << map["href"].toString() << ": " << map["text"].toString() << " (" << map["top"].toInt() << ", " << map["left"].toInt() << ")";
