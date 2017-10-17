@@ -36,7 +36,8 @@ class Plugin;
 
 class ActivePersona;
 
-class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCallback
+class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCallback,
+	public std::enable_shared_from_this<BrowserTab>
 {
 	Q_OBJECT
 
@@ -88,7 +89,6 @@ private:
 	std::unique_ptr<ActivePersona>  m_persona;
 	ProgressTimer   *m_timer;
 	TimerCallback   m_callback;
-	QStatusBar      *m_status;
 	std::size_t     m_seqnum{0};
 };
 

@@ -69,25 +69,29 @@ MainWindow::MainWindow(Context& ctx) :
 	// upload location bar when switching tabs
 	connect(m_ui->m_tabs, &QTabWidget::currentChanged, [this](int tab)
 	{
-		Q_ASSERT(tab >= 0 && tab < m_ui->m_tabs->count());
-		auto&& browser = Tab(tab);
-		SetLocation(browser.Location().url());
-		setWindowTitle(browser.Title());
+		if (tab >= 0 && tab < m_ui->m_tabs->count())
+		{
+			auto&& browser = Tab(tab);
+			SetLocation(browser.Location().url());
+			setWindowTitle(browser.Title());
+		}
 	});
 	
 	// close tab when "x" button is pressed
 	connect(m_ui->m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
 	{
+		// the tab widget will not delete the tabs, so we need to delete them ourselves.
+		auto& ptab = Tab(tab);
+
+		auto widget = m_ui->m_tabs->widget(tab);
+		m_ui->m_tabs->removeTab(tab);
+
+		m_tabs.erase(ptab.shared_from_this());
+//		delete widget;
+
 		// close the main window when the last tab is closed
-		if (m_ui->m_tabs->count() == 1)
+		if (m_ui->m_tabs->count() == 0)
 			close();
-		else
-		{
-			// the tab widget will not delete the tabs, so we need to delete them ourselves.
-			auto widget = m_ui->m_tabs->widget(tab);
-			m_ui->m_tabs->removeTab(tab);
-			delete widget;
-		}
 	});
 	
 	// double click the tab bar will create new tab
@@ -105,7 +109,10 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto tab = new BrowserTab{m_ui->m_tabs};
+	auto ptab = std::make_shared<BrowserTab>(m_ui->m_tabs);
+	m_tabs.emplace(ptab);
+
+	auto tab = ptab.get();
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		SetLocation(tab->Location().url());
