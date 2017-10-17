@@ -15,6 +15,7 @@
 #include <functional>
 #include <chrono>
 #include <cstddef>
+#include <memory>
 
 class QUrl;
 class QIcon;
@@ -39,6 +40,9 @@ public:
 	virtual void Load(const QUrl& url) = 0;
 	virtual QUrl Location() const = 0;
 	virtual QString Title() const = 0;
+	
+	virtual std::weak_ptr<BrowserTab> WeakFromThis() = 0;
+	virtual std::weak_ptr<const BrowserTab> WeakFromThis() const = 0;
 	
 	// script injection
 	virtual void InjectScript(const QString& javascript, ScriptCallback&& callback) = 0;

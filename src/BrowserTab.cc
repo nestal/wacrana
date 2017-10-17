@@ -232,4 +232,14 @@ void BrowserTab::Reseed(std::uint_fast32_t seed)
 		m_persona->OnReseed(seed);
 }
 
+std::weak_ptr<V1::BrowserTab> BrowserTab::WeakFromThis()
+{
+	return shared_from_this();
+}
+
+std::weak_ptr<const V1::BrowserTab> BrowserTab::WeakFromThis() const
+{
+	return shared_from_this();
+}
+
 } // end of namespace

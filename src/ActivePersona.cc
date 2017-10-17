@@ -162,4 +162,14 @@ void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab& parent)
 	m_seqnum = m_parent.SequenceNumber();
 }
 
+std::weak_ptr<V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis()
+{
+	return shared_from_this();
+}
+
+std::weak_ptr<const V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis() const
+{
+	return shared_from_this();
+}
+
 } // end of namespace

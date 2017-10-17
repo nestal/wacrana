@@ -73,7 +73,7 @@ public:
 	}
 
 private:
-	class BrowserTabProxy : public V1::BrowserTab
+	class BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
 	{
 	public:
 		explicit BrowserTabProxy(V1::BrowserTab& parent);
@@ -89,6 +89,8 @@ private:
 		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 		void ReportProgress(double percent) override;
 		std::size_t SequenceNumber() const override;
+		std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
+		std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
 
 		void Update(V1::BrowserTab& parent);
 

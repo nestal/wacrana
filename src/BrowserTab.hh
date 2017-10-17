@@ -36,7 +36,10 @@ class Plugin;
 
 class ActivePersona;
 
-class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCallback,
+class BrowserTab :
+	public QWidget,
+	public V1::BrowserTab,
+	private TimerEventCallback,
 	public std::enable_shared_from_this<BrowserTab>
 {
 	Q_OBJECT
@@ -45,7 +48,7 @@ public :
 	explicit BrowserTab(QWidget *parent);
 	BrowserTab(const BrowserTab&) = delete;
 	BrowserTab& operator=(const BrowserTab&) = delete;
-	~BrowserTab();
+	~BrowserTab() override;
 
 	void Load(const QUrl& url) override;
 	QUrl Location() const override;
@@ -61,6 +64,9 @@ public :
 	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
 	void ReportProgress(double percent) override;
 	std::size_t SequenceNumber() const override;
+	std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
+	std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
+	
 	void LeftClick(const QPoint& pos) ;
 	
 	void SetPersona(V1::PluginPtr&& persona);
