@@ -35,7 +35,7 @@ protected:
 	
 public:
 	using TimeDuration  = std::chrono::system_clock::duration;
-	using TimerCallback = std::function<void(V1::BrowserTab&)>;
+	using TimerCallback = std::function<void()>;
 	
 public:
 	virtual void Load(const QUrl& url) = 0;

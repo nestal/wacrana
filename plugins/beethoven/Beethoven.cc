@@ -115,7 +115,7 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 					if (!tab)
 						break;
 					
-					tab->SingleShotTimer(m_result.Random(m_rand), [this, url, wtab=tab->WeakFromThis()](V1::BrowserTab&)
+					tab->SingleShotTimer(m_result.Random(m_rand), [this, url, wtab=tab->WeakFromThis()]
 					{
 						if (auto tab = wtab.lock())
 //				        tab.InjectScript("Google.IAmFeelingLucky();", {});
@@ -138,7 +138,11 @@ void Beethoven::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 		OnTimer(tab);
 	else
 	{
-		tab.SingleShotTimer(m_result.Random(m_rand), [this](V1::BrowserTab& tab){OnTimer(tab);});
+		tab.SingleShotTimer(m_result.Random(m_rand), [this, wtab=tab.WeakFromThis()]
+		{
+			if (auto tab = wtab.lock())
+				OnTimer(*tab);
+		});
 	}
 }
 
