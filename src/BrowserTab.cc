@@ -39,6 +39,7 @@ BrowserTab::BrowserTab(QWidget *parent) :
 	});
 	
 	connect(m_ui->m_page->page(), &QWebEnginePage::titleChanged, [this](const QString& title){Q_EMIT TitleChanged(title);});
+	m_ui->m_page->page()->setAudioMuted(true);  // not configurable!
 	
 	static const auto intervalMs = 500;
 	startTimer(intervalMs);
