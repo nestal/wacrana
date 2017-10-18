@@ -44,7 +44,8 @@ public:
 	std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
 	BrightFuture::Executor* Executor() override;
 
-	void Update(V1::BrowserTab *parent);
+	void Update();
+	void Detach();
 
 private:
 	BrightFuture::Executor *const m_exec;
@@ -67,12 +68,12 @@ ActivePersona::ActivePersona(V1::PluginPtr&& adaptee) :
 
 void ActivePersona::OnPageLoaded(V1::BrowserTab& tab, bool ok)
 {
-	Post(tab, [ok, this](V1::BrowserTab& proxy)mutable{m_persona->OnPageLoaded(proxy, ok);});
+	Post(tab, [ok, this](V1::BrowserTab& proxy){m_persona->OnPageLoaded(proxy, ok);});
 }
 
 void ActivePersona::OnPageIdle(V1::BrowserTab& tab)
 {
-	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnPageIdle(proxy);});
+	Post(tab, [this](V1::BrowserTab& proxy){m_persona->OnPageIdle(proxy);});
 }
 
 void ActivePersona::OnReseed(std::uint_fast32_t seed)
@@ -123,7 +124,7 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 		// Disable the proxy before notifying the persona thread.
 		// Setting its pointer-to-real to null because the real tab is going to be
 		// destroyed.
-		proxy->Update(nullptr);
+		proxy->Detach();
 
 		m_ios.post([proxy, this]{ m_persona->OnDetachTab(*proxy); });
 	}
@@ -131,15 +132,13 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 
 std::weak_ptr<V1::BrowserTab> ActivePersona::Proxy(V1::BrowserTab& real)
 {
-	// The BrowserTabProxy construct must be called in the GUI thread
-	// because it will copy some GUI-related stuff, e.g. browser location
-	// and web page title.
+	// In general, everything that touches the real BrowserTab should be in main thread.
 	assert(std::this_thread::get_id() != m_thread.get_id());
 
 	auto it = m_proxies.find(&real);
 	if (it != m_proxies.end())
 	{
-		it->second->Update(&real);
+		it->second->Update();
 		return it->second;
 	}
 	else
@@ -148,9 +147,7 @@ std::weak_ptr<V1::BrowserTab> ActivePersona::Proxy(V1::BrowserTab& real)
 
 std::weak_ptr<const V1::BrowserTab> ActivePersona::Proxy(const V1::BrowserTab& real) const
 {
-	// The BrowserTabProxy construct must be called in the GUI thread
-	// because it will copy some GUI-related stuff, e.g. browser location
-	// and web page title.
+	// In general, everything that touches the real BrowserTab should be in main thread.
 	assert(std::this_thread::get_id() != m_thread.get_id());
 
 	auto it = m_proxies.find(&real);
@@ -161,18 +158,16 @@ ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFu
 	m_exec{exec},
 	m_parent{parent}
 {
-	assert(parent);
-	Update(parent);
+	Update();
 }
 
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
-	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), url]
-		{
-			if (self->m_parent)
-				self->m_parent->Load(url);
-		});
+	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), url]
+	{
+		if (self->m_parent)
+			self->m_parent->Load(url);
+	});
 }
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
@@ -192,22 +187,21 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this()]() mutable
+	BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this()]() mutable
+	{
+		if (self->m_parent)
 		{
-			if (self->m_parent)
-			{
-				self->Update(self->m_parent);
-				self->m_parent->InjectScript(js).then(
-					[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
-					{
-						promise.set_value(v.get());
-					}
-				);
-			}
-		});
-	else
-		promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
+			self->Update();
+			self->m_parent->InjectScript(js).then(
+				[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
+				{
+					promise.set_value(v.get());
+				}
+			);
+		}
+		else
+			promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
+	});
 	return future;
 }
 
@@ -216,41 +210,43 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), this]() mutable
+	BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), self=shared_from_this()]() mutable
+	{
+		if (self->m_parent)
 		{
-			Update(m_parent);
-			m_parent->InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
-			{
-				promise.set_value(v.get());
-			});
-		});
-	else
-		promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
-	
+			self->Update();
+			self->m_parent->InjectScriptFile(path).then(
+				[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
+				{
+					promise.set_value(v.get());
+				}
+			);
+		}
+		else
+			promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
+	});
+
 	return future;
 }
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
 {
-	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), duration, cb=std::move(callback)]() mutable
-		{
-			if (self->m_parent)
-				self->m_parent->SingleShotTimer(duration, std::move(cb));
-		});
+	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), duration, cb=std::move(callback)]() mutable
+	{
+		if (self->m_parent)
+			self->m_parent->SingleShotTimer(duration, std::move(cb));
+	});
 }
 
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
-	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), percent]
-		{
-			if (self->m_parent)
-				self->m_parent->ReportProgress(percent);
-	
-			// perhaps update the fields in BrowserTabProxy?
-		});
+	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), percent]
+	{
+		if (self->m_parent)
+			self->m_parent->ReportProgress(percent);
+
+		// perhaps update the fields in BrowserTabProxy?
+	});
 }
 
 std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
@@ -259,18 +255,15 @@ std::size_t ActivePersona::BrowserTabProxy::SequenceNumber() const
 	return m_seqnum;
 }
 
-void ActivePersona::BrowserTabProxy::Update(V1::BrowserTab *parent)
+void ActivePersona::BrowserTabProxy::Update()
 {
 	std::unique_lock<std::mutex> lock{m_mux};
-	if (parent)
+	if (m_parent)
 	{
-		assert(m_parent == parent);
 		m_location = m_parent->Location();
 		m_title = m_parent->Title();
 		m_seqnum = m_parent->SequenceNumber();
 	}
-	else
-		m_parent = nullptr;
 }
 
 std::weak_ptr<V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis()
@@ -286,6 +279,12 @@ std::weak_ptr<const V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis
 BrightFuture::Executor *ActivePersona::BrowserTabProxy::Executor()
 {
 	return m_exec;
+}
+
+void ActivePersona::BrowserTabProxy::Detach()
+{
+	Q_ASSERT(m_parent);
+	m_parent = nullptr;
 }
 
 } // end of namespace
