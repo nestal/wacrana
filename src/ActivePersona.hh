@@ -14,7 +14,7 @@
 
 #include "Plugin.hpp"
 #include "BrowserTab.hpp"
-#include "AsioExecutor.hh"
+#include "BrightFuture/executor/BoostAsioExecutor.hh"
 
 #include <QtCore/QUrl>
 #include <QtCore/QString>
@@ -55,12 +55,14 @@ public:
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
 	{
+		assert(std::this_thread::get_id() != m_thread.get_id());
+		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
-		m_ios.post([proxy=Proxy(real), cb=std::forward<Func>(callback)]() mutable
+		m_ios.post([proxy=Proxy(real), callback=std::forward<Func>(callback)]() mutable
 		{
 			if (auto sh = proxy.lock())
-				cb(*sh);
+				callback(*sh);
 		});
 	}
 
@@ -83,7 +85,7 @@ private:
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
-	AsioExecutor                    m_exec{m_ios};
+	BrightFuture::BoostAsioExecutor m_exec{m_ios};
 
 	std::unordered_map<const V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
 

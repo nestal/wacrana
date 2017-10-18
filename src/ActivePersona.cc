@@ -192,12 +192,10 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 		if (self->m_parent)
 		{
 			self->Update();
-			self->m_parent->InjectScript(js).then(
-				[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
-				{
-					promise.set_value(v.get());
-				}
-			);
+			self->m_parent->InjectScript(js).then([promise = std::move(promise)](auto fut_var) mutable
+			{
+				promise.set_value(fut_var.get());
+			});
 		}
 		else
 			promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
@@ -215,12 +213,10 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 		if (self->m_parent)
 		{
 			self->Update();
-			self->m_parent->InjectScriptFile(path).then(
-				[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
-				{
-					promise.set_value(v.get());
-				}
-			);
+			self->m_parent->InjectScriptFile(path).then([promise = std::move(promise)](auto fut_var) mutable
+			{
+				promise.set_value(fut_var.get());
+			});
 		}
 		else
 			promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
