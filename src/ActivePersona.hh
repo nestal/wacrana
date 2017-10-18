@@ -65,13 +65,20 @@ public:
 		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
-		m_ios.post([
-			proxy=it->second,
-			cb=std::forward<Func>(callback)
-		]() mutable
+		m_ios.post([proxy=it->second, cb=std::forward<Func>(callback)]() mutable
 		{
 			cb(*proxy);
 		});
+	}
+
+	template <typename Func>
+	void Post(Func&& callback)
+	{
+		// The BrowserTabProxy construct must be called in the GUI thread
+		// because it will copy some GUI-related stuff, e.g. browser location
+		// and web page title.
+		assert(std::this_thread::get_id() != m_thread.get_id());
+		m_ios.post(std::forward<Func>(callback));
 	}
 
 private:

@@ -113,7 +113,7 @@ BrightFuture::future<QVariant> BrowserTab::InjectScript(const QString& javascrip
 {
 	auto promise = std::make_shared<BrightFuture::promise<QVariant>>();
 	
-	m_ui->m_page->page()->runJavaScript(javascript, [promise](const QVariant& v)
+	m_ui->m_page->page()->runJavaScript(javascript, [promise](auto&& v)
 	{
 		promise->set_value(v);
 	});
@@ -152,7 +152,7 @@ void BrowserTab::OnTimerUpdate(ProgressTimer::Duration remain)
 void BrowserTab::OnTimeout()
 {
 	if (m_persona)
-		m_persona->Post(*this, [this](V1::BrowserTab&){m_callback();});
+		m_persona->Post(std::move(m_callback));
 	else
 		m_callback();
 }
