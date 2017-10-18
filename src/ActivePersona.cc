@@ -15,7 +15,8 @@
 
 #include <QtGui/QIcon>
 #include <QDebug>
-#include <iostream>
+
+#include <mutex>
 
 namespace wacrana {
 
@@ -46,7 +47,7 @@ public:
 	void Update(V1::BrowserTab *parent);
 
 private:
-	BrightFuture::Executor *m_exec;
+	BrightFuture::Executor *const m_exec;
 
 	mutable std::mutex      m_mux;
 	V1::BrowserTab  *m_parent;
@@ -104,7 +105,7 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
 	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, &m_exec));
-	Post(tab, [this](V1::BrowserTab& proxy)mutable{m_persona->OnAttachTab(proxy);});
+	Post(tab, [this](V1::BrowserTab& proxy){m_persona->OnAttachTab(proxy);});
 }
 
 void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
@@ -124,7 +125,7 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 		// destroyed.
 		proxy->Update(nullptr);
 
-		m_ios.post([proxy, this](){ m_persona->OnDetachTab(*proxy); });
+		m_ios.post([proxy, this]{ m_persona->OnDetachTab(*proxy); });
 	}
 }
 
@@ -167,7 +168,11 @@ ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFu
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
 	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([parent=m_parent, url]{parent->Load(url);});
+		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), url]
+		{
+			if (self->m_parent)
+				self->m_parent->Load(url);
+		});
 }
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
@@ -188,13 +193,18 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	auto future = promise.get_future();
 	
 	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), this]() mutable
+		BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this()]() mutable
 		{
-			Update(m_parent);
-			m_parent->InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
+			if (self->m_parent)
 			{
-				promise.set_value(v.get());
-			});
+				self->Update(self->m_parent);
+				self->m_parent->InjectScript(js).then(
+					[promise = std::move(promise)](BrightFuture::future<QVariant> v) mutable
+					{
+						promise.set_value(v.get());
+					}
+				);
+			}
 		});
 	else
 		promise.set_exception(std::make_exception_ptr(std::runtime_error{"tab closed"}));
@@ -223,26 +233,21 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
 {
-	// call ActivePersona::SingleShotTimer() here
-	// find a way to pass the m_parent reference to ActivePersona
-	// when the timer expires, use this m_parent reference to create BrowserTabProxy again
-	// (oops but we can only create BroswerTabProxy in main threads)
-	// we don't want to use the old BrowserTabProxy (i.e. *this) again when the timer fires
-	// because most of the stuff stored inside *this will be invalid (e.g. title, location).
-	// this is not a good idea afterall. giving up.
 	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([parent=m_parent, duration, cb=std::move(callback)]() mutable
+		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), duration, cb=std::move(callback)]() mutable
 		{
-			parent->SingleShotTimer(duration, std::move(cb));
+			if (self->m_parent)
+				self->m_parent->SingleShotTimer(duration, std::move(cb));
 		});
 }
 
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
 	if (m_parent)
-		BrightFuture::QtGuiExecutor::Post([parent=m_parent, percent]() mutable
+		BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), percent]
 		{
-			parent->ReportProgress(percent);
+			if (self->m_parent)
+				self->m_parent->ReportProgress(percent);
 	
 			// perhaps update the fields in BrowserTabProxy?
 		});

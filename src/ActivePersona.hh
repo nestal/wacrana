@@ -22,10 +22,9 @@
 #include <boost/asio.hpp>
 #include <boost/asio/steady_timer.hpp>
 
-#include <mutex>
+#include <thread>
 #include <cassert>
 #include <random>
-#include <thread>
 #include <unordered_map>
 
 namespace wacrana {
