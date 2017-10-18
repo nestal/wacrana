@@ -11,7 +11,7 @@
 //
 
 #include "Configuration.hh"
-#include "FunctorEvent.hh"
+#include "BrightFuture/executor/QtGuiExecutor.hh"
 
 #include <QDebug>
 #include <fstream>
@@ -52,7 +52,7 @@ Configuration::Configuration(const std::string& path)
 	m_plugin_mgr = async([this, config=std::move(config)]
 	{
 		return PluginManager{config["plugins"]};
-	}, MainExec());
+	}, ::BrightFuture::TheQtGuiExecutor());
 }
 
 /**

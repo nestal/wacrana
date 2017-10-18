@@ -56,6 +56,7 @@ private:
 	void InitMenu();
 	void OnConfigReady(BrightFuture::future<PluginManager>&& future);
 	void SetLocation(const QString& loc);
+	std::shared_ptr<BrowserTab> RemoveTab(int tab);
 	
 private:
 	Context&        m_ctx;
