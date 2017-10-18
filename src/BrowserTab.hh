@@ -39,13 +39,12 @@ class ActivePersona;
 class BrowserTab :
 	public QWidget,
 	public V1::BrowserTab,
-	private TimerEventCallback,
-	public std::enable_shared_from_this<BrowserTab>
+	private TimerEventCallback
 {
 	Q_OBJECT
 
 public :
-	explicit BrowserTab(QWidget *parent);
+	explicit BrowserTab(QWidget *parent = nullptr);
 	BrowserTab(const BrowserTab&) = delete;
 	BrowserTab& operator=(const BrowserTab&) = delete;
 	~BrowserTab() override;

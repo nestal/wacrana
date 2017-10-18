@@ -54,22 +54,17 @@ public:
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
 	{
-		// The BrowserTabProxy construct must be called in the GUI thread
-		// because it will copy some GUI-related stuff, e.g. browser location
-		// and web page title.
-		assert(std::this_thread::get_id() != m_thread.get_id());
-		auto it = m_proxies.find(&real);
-		assert(it != m_proxies.end());
-
-		it->second->Update(&real);
-		
 		// Move the callback function and the BrowserTabProxy to the lambda
 		// function, and call use callback function in the persona thread.
-		m_ios.post([proxy=it->second, cb=std::forward<Func>(callback)]() mutable
+		m_ios.post([proxy=Proxy(real), cb=std::forward<Func>(callback)]() mutable
 		{
-			cb(*proxy);
+			if (auto sh = proxy.lock())
+				cb(*sh);
 		});
 	}
+
+	std::weak_ptr<V1::BrowserTab> Proxy(V1::BrowserTab& real);
+	std::weak_ptr<const V1::BrowserTab> Proxy(const V1::BrowserTab& real) const;
 
 	template <typename Func>
 	void Post(Func&& callback)
@@ -82,38 +77,7 @@ public:
 	}
 
 private:
-	class BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
-	{
-	public:
-		explicit BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec);
-		
-		void Load(const QUrl& url) override;
-		QUrl Location() const override;
-		QString Title() const override;
-		
-		// script injection
-		BrightFuture::future<QVariant> InjectScript(const QString& js) override;
-		BrightFuture::future<QVariant> InjectScriptFile(const QString& path) override;
-		
-		void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
-		void ReportProgress(double percent) override;
-		std::size_t SequenceNumber() const override;
-		std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
-		std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
-		BrightFuture::Executor* Executor() override;
-
-		void Update(V1::BrowserTab *parent);
-
-	private:
-		BrightFuture::Executor *m_exec;
-		
-		mutable std::mutex      m_mux;
-		V1::BrowserTab  *m_parent;
-		QUrl            m_location;
-		QString         m_title;
-		std::size_t     m_seqnum{};
-	};
-	
+	class BrowserTabProxy;
 	void ReseedPersona(boost::system::error_code ec);
 	
 private:
@@ -123,7 +87,7 @@ private:
 	boost::asio::steady_timer       m_timer;
 	AsioExecutor                    m_exec{m_ios};
 
-	std::unordered_map<V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
+	std::unordered_map<const V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
 
 	// this must be the last
 	std::thread                     m_thread;

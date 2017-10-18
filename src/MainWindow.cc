@@ -79,7 +79,19 @@ MainWindow::MainWindow(Context& ctx) :
 	});
 	
 	// close tab when "x" button is pressed
-	connect(m_ui->m_tabs, &QTabWidget::tabCloseRequested, [this](int tab){ RemoveTab(tab); });
+	connect(m_ui->m_tabs, &QTabWidget::tabCloseRequested, [this](int tab)
+	{
+		// close the main window when the last tab is closed
+		if (m_ui->m_tabs->count() == 1)
+			close();
+		else
+		{
+			// the tab widget will not delete the tabs, so we need to delete them ourselves.
+			auto widget = m_ui->m_tabs->widget(tab);
+			m_ui->m_tabs->removeTab(tab);
+			delete widget;
+		}
+	});
 	
 	// double click the tab bar will create new tab
 	connect(m_ui->m_tabs->tabBar(), &QTabBar::tabBarDoubleClicked, [this](int tab)
@@ -96,10 +108,8 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto ptab = std::make_shared<BrowserTab>(m_ui->m_tabs);
-	m_tabs.emplace(ptab);
-
-	connect(ptab.get(), &BrowserTab::LoadFinished, [this, tab=ptab.get()](bool ok)
+	auto tab = new BrowserTab{m_ui->m_tabs};
+	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		SetLocation(tab->Location().url());
 		m_ui->m_tabs->setTabText(IndexOf(*tab), tab->Title());
@@ -108,21 +118,21 @@ BrowserTab& MainWindow::NewTab()
 		// need to reset zoom factor after loading a site
 		tab->ZoomFactor(m_ctx.Config().DefaultZoom());
 	});
-	connect(ptab.get(), &BrowserTab::IconChanged,  [this, ptab](const QIcon& icon)
+	connect(tab, &BrowserTab::IconChanged,  [this, tab](const QIcon& icon)
 	{
-		m_ui->m_tabs->setTabIcon(IndexOf(*ptab), icon);
+		m_ui->m_tabs->setTabIcon(IndexOf(*tab), icon);
 	});
-	connect(ptab.get(), &BrowserTab::TitleChanged, [this, ptab](const QString& title)
+	connect(tab, &BrowserTab::TitleChanged, [this, tab](const QString& title)
 	{
 		// reset the text color when changing the title so that the user can see it clearly
-		auto idx = IndexOf(*ptab);
+		auto idx = IndexOf(*tab);
 		m_ui->m_tabs->tabBar()->setTabTextColor(idx, {});
 		m_ui->m_tabs->setTabText(idx, title);
 	});
-	connect(ptab.get(), &BrowserTab::WaitProgressUpdated, [this, ptab](double progress, ProgressTimer::Duration remain, ProgressTimer::Duration total)
+	connect(tab, &BrowserTab::WaitProgressUpdated, [this, tab](double progress, ProgressTimer::Duration remain, ProgressTimer::Duration total)
 	{
 		// gradually changing the color from black to white when progress becomes 1.0 (i.e. 100%)
-		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*ptab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
+		m_ui->m_tabs->tabBar()->setTabTextColor(IndexOf(*tab), QColor::fromRgbF(1-progress, 1-progress, 1-progress));
 
 		// round to millisecond to avoid overflowing the "int" type
 		using namespace std::chrono;
@@ -130,9 +140,9 @@ BrowserTab& MainWindow::NewTab()
 		m_timer_progress->setMaximum(duration_cast<MilliSec>(total).count());
 		m_timer_progress->setValue(duration_cast<MilliSec>(remain).count());
 	});
-	auto idx = m_ui->m_tabs->addTab(ptab.get(), tr("New Tab"));
+	auto idx = m_ui->m_tabs->addTab(tab, tr("New Tab"));
 	m_ui->m_tabs->setCurrentIndex(idx);
-	return *ptab;
+	return *tab;
 }
 
 void MainWindow::Go()
@@ -242,20 +252,6 @@ void MainWindow::OnConfigReady(BrightFuture::future<PluginManager>&& future)
 void MainWindow::SetLocation(const QString& loc)
 {
 	m_location->setText(loc == "about:blank" ? "" : loc);
-}
-
-std::shared_ptr<BrowserTab> MainWindow::RemoveTab(int tab)
-{
-	// the tab widget will not delete the tabs, so we need to delete them ourselves.
-	auto ptab = Tab(tab).shared_from_this();
-	m_ui->m_tabs->removeTab(tab);
-	m_tabs.erase(ptab);
-
-	// close the main window when the last tab is closed
-	if (m_ui->m_tabs->count() == 0)
-		close();
-
-	return ptab;
 }
 
 } // end of namespace

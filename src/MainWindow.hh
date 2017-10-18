@@ -56,14 +56,12 @@ private:
 	void InitMenu();
 	void OnConfigReady(BrightFuture::future<PluginManager>&& future);
 	void SetLocation(const QString& loc);
-	std::shared_ptr<BrowserTab> RemoveTab(int tab);
-	
+
 private:
 	Context&        m_ctx;
 	PluginManager   m_plugins;      // Must put it before all other plugins
 
 	std::unique_ptr<Ui::MainWindow> m_ui;
-	std::unordered_set<std::shared_ptr<BrowserTab>> m_tabs; // must put after m_ui otherwise destructor will crash
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
 	QMenu       *m_tab_menu{};

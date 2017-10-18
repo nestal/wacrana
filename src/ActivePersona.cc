@@ -23,6 +23,38 @@ namespace {
 const std::chrono::hours reseed_interval{1};
 }
 
+class ActivePersona::BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
+{
+public:
+	explicit BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec);
+
+	void Load(const QUrl& url) override;
+	QUrl Location() const override;
+	QString Title() const override;
+
+	// script injection
+	BrightFuture::future<QVariant> InjectScript(const QString& js) override;
+	BrightFuture::future<QVariant> InjectScriptFile(const QString& path) override;
+
+	void SingleShotTimer(TimeDuration timeout, TimerCallback&& callback) override;
+	void ReportProgress(double percent) override;
+	std::size_t SequenceNumber() const override;
+	std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
+	std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
+	BrightFuture::Executor* Executor() override;
+
+	void Update(V1::BrowserTab *parent);
+
+private:
+	BrightFuture::Executor *m_exec;
+
+	mutable std::mutex      m_mux;
+	V1::BrowserTab  *m_parent;
+	QUrl            m_location;
+	QString         m_title;
+	std::size_t     m_seqnum{};
+};
+
 ActivePersona::ActivePersona(V1::PluginPtr&& adaptee) :
 	m_work{m_ios},
 	m_timer{m_ios, reseed_interval},
@@ -90,6 +122,34 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 		// by returning from OnDetachTab().
 		m_proxies.erase(it++);
 	}
+}
+
+std::weak_ptr<V1::BrowserTab> ActivePersona::Proxy(V1::BrowserTab& real)
+{
+	// The BrowserTabProxy construct must be called in the GUI thread
+	// because it will copy some GUI-related stuff, e.g. browser location
+	// and web page title.
+	assert(std::this_thread::get_id() != m_thread.get_id());
+
+	auto it = m_proxies.find(&real);
+	if (it != m_proxies.end())
+	{
+		it->second->Update(&real);
+		return it->second;
+	}
+	else
+		return {};
+}
+
+std::weak_ptr<const V1::BrowserTab> ActivePersona::Proxy(const V1::BrowserTab& real) const
+{
+	// The BrowserTabProxy construct must be called in the GUI thread
+	// because it will copy some GUI-related stuff, e.g. browser location
+	// and web page title.
+	assert(std::this_thread::get_id() != m_thread.get_id());
+
+	auto it = m_proxies.find(&real);
+	return {it != m_proxies.end() ? it->second : nullptr};
 }
 
 ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec) :
