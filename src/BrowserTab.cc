@@ -13,7 +13,7 @@
 #include "BrowserTab.hh"
 
 #include "ActivePersona.hh"
-#include "FunctorEvent.hh"
+#include "BrightFuture/executor/QtGuiExecutor.hh"
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -248,7 +248,7 @@ std::weak_ptr<const V1::BrowserTab> BrowserTab::WeakFromThis() const
 BrightFuture::Executor *BrowserTab::Executor()
 {
 	// The real BrowserTab runs on the GUI thread (i.e. main thread)
-	return MainExec();
+	return BrightFuture::TheQtGuiExecutor();
 }
 
 } // end of namespace

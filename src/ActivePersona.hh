@@ -14,7 +14,6 @@
 
 #include "Plugin.hpp"
 #include "BrowserTab.hpp"
-#include "FunctorEvent.hh"
 #include "AsioExecutor.hh"
 
 #include <QtCore/QUrl>
@@ -51,6 +50,9 @@ public:
 	void OnAttachTab(V1::BrowserTab& tab) override;
 	void OnDetachTab(V1::BrowserTab& tab) override;
 
+	std::weak_ptr<V1::BrowserTab> Proxy(V1::BrowserTab& real);
+	std::weak_ptr<const V1::BrowserTab> Proxy(const V1::BrowserTab& real) const;
+
 	template <typename Func>
 	void Post(V1::BrowserTab& real, Func&& callback)
 	{
@@ -62,9 +64,6 @@ public:
 				cb(*sh);
 		});
 	}
-
-	std::weak_ptr<V1::BrowserTab> Proxy(V1::BrowserTab& real);
-	std::weak_ptr<const V1::BrowserTab> Proxy(const V1::BrowserTab& real) const;
 
 	template <typename Func>
 	void Post(Func&& callback)

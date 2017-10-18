@@ -11,7 +11,7 @@
 //
 
 #include "ActivePersona.hh"
-#include "FunctorEvent.hh"
+#include "BrightFuture/executor/QtGuiExecutor.hh"
 
 #include <QtGui/QIcon>
 #include <QDebug>
@@ -112,15 +112,19 @@ void ActivePersona::OnDetachTab(V1::BrowserTab& tab)
 	auto it = m_proxies.find(&tab);
 	if (it != m_proxies.end())
 	{
-		// Disable the proxy before notifying the persona thread
-		it->second->Update(nullptr);
-		m_ios.post([proxy=it->second, this](){ m_persona->OnDetachTab(*proxy); });
-
 		// Remove the proxy from our list. The proxy will still be kept alive by the
 		// shared_ptr inside the above lambda. It will be passed to the persona thread.
 		// The proxy will be freed after the persona thread released the shared_ptr, i.e.
 		// by returning from OnDetachTab().
+		auto proxy = it->second;
 		m_proxies.erase(it++);
+
+		// Disable the proxy before notifying the persona thread.
+		// Setting its pointer-to-real to null because the real tab is going to be
+		// destroyed.
+		proxy->Update(nullptr);
+
+		m_ios.post([proxy, this](){ m_persona->OnDetachTab(*proxy); });
 	}
 }
 
@@ -163,7 +167,7 @@ ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFu
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
 	if (m_parent)
-		PostMain([parent=m_parent, url]{parent->Load(url);});
+		BrightFuture::QtGuiExecutor::Post([parent=m_parent, url]{parent->Load(url);});
 }
 
 QUrl ActivePersona::BrowserTabProxy::Location() const
@@ -184,7 +188,7 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	auto future = promise.get_future();
 	
 	if (m_parent)
-		PostMain([js, promise=std::move(promise), this]() mutable
+		BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), this]() mutable
 		{
 			Update(m_parent);
 			m_parent->InjectScript(js).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
@@ -203,7 +207,7 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	auto future = promise.get_future();
 	
 	if (m_parent)
-		PostMain([path, promise=std::move(promise), this]() mutable
+		BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), this]() mutable
 		{
 			Update(m_parent);
 			m_parent->InjectScriptFile(path).then([promise=std::move(promise)](BrightFuture::future<QVariant> v) mutable
@@ -227,7 +231,7 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 	// because most of the stuff stored inside *this will be invalid (e.g. title, location).
 	// this is not a good idea afterall. giving up.
 	if (m_parent)
-		PostMain([parent=m_parent, duration, cb=std::move(callback)]() mutable
+		BrightFuture::QtGuiExecutor::Post([parent=m_parent, duration, cb=std::move(callback)]() mutable
 		{
 			parent->SingleShotTimer(duration, std::move(cb));
 		});
@@ -236,7 +240,7 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
 	if (m_parent)
-		PostMain([parent=m_parent, percent]() mutable
+		BrightFuture::QtGuiExecutor::Post([parent=m_parent, percent]() mutable
 		{
 			parent->ReportProgress(percent);
 	

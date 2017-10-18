@@ -12,7 +12,8 @@
 
 #include "Configuration.hh"
 #include "Context.hh"
-#include "FunctorEvent.hh"
+
+#include "BrightFuture/executor/QtGuiExecutor.hh"
 
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
@@ -33,7 +34,7 @@ MainWindow::MainWindow(Context& ctx) :
 	m_ctx.Config().Plugins().then([this](BrightFuture::future<PluginManager>&& pm)
 	{
 		OnConfigReady(std::move(pm));
-	}, MainExec());
+	}, BrightFuture::TheQtGuiExecutor());
 	
 	m_ui->setupUi(this);
 	m_ui->m_toolbar->addWidget(m_location);
