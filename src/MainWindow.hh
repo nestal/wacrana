@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <memory>
 #include <random>
+#include <set>
 
 class QLineEdit;
 class QToolButton;
@@ -57,11 +58,16 @@ private:
 	void OnConfigReady(BrightFuture::future<PluginManager>&& future);
 	void SetLocation(const QString& loc);
 
+protected:
+	void closeEvent(QCloseEvent *event);
+
 private:
 	Context&        m_ctx;
 	PluginManager   m_plugins;      // Must put it before all other plugins
 
-	std::unique_ptr<Ui::MainWindow> m_ui;
+	std::set<std::shared_ptr<BrowserTab>> m_tabs;
+
+	std::unique_ptr<Ui::MainWindow> m_ui;   // It doesn't own the children widgets.
 	QLineEdit   *m_location{};
 	QToolButton *m_menu_btn{};
 	QMenu       *m_tab_menu{};

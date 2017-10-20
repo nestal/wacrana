@@ -90,7 +90,11 @@ MainWindow::MainWindow(Context& ctx) :
 			// the tab widget will not delete the tabs, so we need to delete them ourselves.
 			auto widget = m_ui->m_tabs->widget(tab);
 			m_ui->m_tabs->removeTab(tab);
-			delete widget;
+//			delete widget;
+
+			auto ptab = dynamic_cast<BrowserTab&>(*widget).shared_from_this();
+			m_tabs.erase(ptab);
+			Q_ASSERT(ptab.use_count() == 1);
 		}
 	});
 	
@@ -109,7 +113,10 @@ MainWindow::~MainWindow() = default;
 
 BrowserTab& MainWindow::NewTab()
 {
-	auto tab = new BrowserTab{m_ui->m_tabs};
+	auto ptab = std::make_shared<BrowserTab>(m_ui->m_tabs);
+	m_tabs.insert(ptab);
+
+	auto tab = ptab.get();
 	connect(tab, &BrowserTab::LoadFinished, [this, tab](bool ok)
 	{
 		SetLocation(tab->Location().url());
@@ -253,6 +260,12 @@ void MainWindow::OnConfigReady(BrightFuture::future<PluginManager>&& future)
 void MainWindow::SetLocation(const QString& loc)
 {
 	m_location->setText(loc == "about:blank" ? "" : loc);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	m_ui->m_tabs->clear();
+	QWidget::closeEvent(event);
 }
 
 } // end of namespace

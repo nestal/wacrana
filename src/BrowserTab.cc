@@ -238,12 +238,14 @@ void BrowserTab::Reseed(std::uint_fast32_t seed)
 
 std::weak_ptr<V1::BrowserTab> BrowserTab::WeakFromThis()
 {
-	return m_persona ? m_persona->Proxy(*this) : std::weak_ptr<V1::BrowserTab>{};
+//	return m_persona ? m_persona->Proxy(*this) : std::weak_ptr<V1::BrowserTab>{};
+	return shared_from_this();
 }
 
 std::weak_ptr<const V1::BrowserTab> BrowserTab::WeakFromThis() const
 {
-	return m_persona ? m_persona->Proxy(*this) : std::weak_ptr<V1::BrowserTab>{};
+//	return m_persona ? m_persona->Proxy(*this) : std::weak_ptr<V1::BrowserTab>{};
+	return shared_from_this();
 }
 
 BrightFuture::Executor *BrowserTab::Executor()

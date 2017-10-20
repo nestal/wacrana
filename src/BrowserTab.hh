@@ -39,6 +39,7 @@ class ActivePersona;
 class BrowserTab :
 	public QWidget,
 	public V1::BrowserTab,
+	public std::enable_shared_from_this<BrowserTab>,
 	private TimerEventCallback
 {
 	Q_OBJECT

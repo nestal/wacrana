@@ -21,6 +21,9 @@ class TimerEventCallback
 public:
 	using Clock = std::chrono::steady_clock;
 
+protected:
+	~TimerEventCallback() = default;
+
 public:
 	virtual void OnTimerUpdate(Clock::duration remains) = 0;
 	virtual void OnTimeout() = 0;
