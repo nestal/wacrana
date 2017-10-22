@@ -36,10 +36,7 @@ class Plugin;
 
 class ActivePersona;
 
-class BrowserTab :
-	public QWidget,
-	public V1::BrowserTab,
-	private TimerEventCallback
+class BrowserTab : public QWidget, public V1::BrowserTab, private TimerEventCallback
 {
 	Q_OBJECT
 

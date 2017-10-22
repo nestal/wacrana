@@ -187,12 +187,12 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this()]() mutable
+	BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this(), this]() mutable
 	{
-		if (self->m_parent)
+		if (m_parent)
 		{
-			self->Update();
-			self->m_parent->InjectScript(js).then([promise = std::move(promise)](auto fut_var) mutable
+			Update();
+			m_parent->InjectScript(js).then([promise = std::move(promise)](auto fut_var) mutable
 			{
 				promise.set_value(fut_var.get());
 			});
@@ -208,12 +208,12 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), self=shared_from_this()]() mutable
+	BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), self=shared_from_this(), this]() mutable
 	{
-		if (self->m_parent)
+		if (m_parent)
 		{
-			self->Update();
-			self->m_parent->InjectScriptFile(path).then([promise = std::move(promise)](auto fut_var) mutable
+			Update();
+			m_parent->InjectScriptFile(path).then([promise = std::move(promise)](auto fut_var) mutable
 			{
 				promise.set_value(fut_var.get());
 			});
@@ -236,10 +236,10 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
-	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), percent]
+	BrightFuture::QtGuiExecutor::Post([this, self=shared_from_this(), percent]
 	{
-		if (self->m_parent)
-			self->m_parent->ReportProgress(percent);
+		if (m_parent)
+			m_parent->ReportProgress(percent);
 
 		// perhaps update the fields in BrowserTabProxy?
 	});
