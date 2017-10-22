@@ -105,7 +105,7 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, &m_exec));
+	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, m_exec.get()));
 	Post(tab, [this](V1::BrowserTab& proxy){m_persona->OnAttachTab(proxy);});
 }
 
