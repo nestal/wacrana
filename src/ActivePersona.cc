@@ -163,7 +163,7 @@ ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFu
 
 void ActivePersona::BrowserTabProxy::Load(const QUrl& url)
 {
-	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), url]
+	BrightFuture::QtGuiExecutor::PostMain([self=shared_from_this(), url]
 	{
 		if (self->m_parent)
 			self->m_parent->Load(url);
@@ -187,7 +187,7 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScript(cons
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	BrightFuture::QtGuiExecutor::Post([js, promise=std::move(promise), self=shared_from_this(), this]() mutable
+	BrightFuture::QtGuiExecutor::PostMain([js, promise=std::move(promise), self=shared_from_this(), this]() mutable
 	{
 		if (m_parent)
 		{
@@ -208,7 +208,7 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 	BrightFuture::promise<QVariant> promise;
 	auto future = promise.get_future();
 	
-	BrightFuture::QtGuiExecutor::Post([path, promise=std::move(promise), self=shared_from_this(), this]() mutable
+	BrightFuture::QtGuiExecutor::PostMain([path, promise=std::move(promise), self=shared_from_this(), this]() mutable
 	{
 		if (m_parent)
 		{
@@ -227,7 +227,7 @@ BrightFuture::future<QVariant> ActivePersona::BrowserTabProxy::InjectScriptFile(
 
 void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, TimerCallback&& callback)
 {
-	BrightFuture::QtGuiExecutor::Post([self=shared_from_this(), duration, cb=std::move(callback)]() mutable
+	BrightFuture::QtGuiExecutor::PostMain([self=shared_from_this(), duration, cb=std::move(callback)]() mutable
 	{
 		if (self->m_parent)
 			self->m_parent->SingleShotTimer(duration, std::move(cb));
@@ -236,7 +236,7 @@ void ActivePersona::BrowserTabProxy::SingleShotTimer(TimeDuration duration, Time
 
 void ActivePersona::BrowserTabProxy::ReportProgress(double percent)
 {
-	BrightFuture::QtGuiExecutor::Post([this, self=shared_from_this(), percent]
+	BrightFuture::QtGuiExecutor::PostMain([this, self=shared_from_this(), percent]
 	{
 		if (m_parent)
 			m_parent->ReportProgress(percent);
