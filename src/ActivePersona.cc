@@ -27,7 +27,7 @@ const std::chrono::hours reseed_interval{1};
 class ActivePersona::BrowserTabProxy : public V1::BrowserTab, public std::enable_shared_from_this<BrowserTabProxy>
 {
 public:
-	explicit BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec);
+	explicit BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor& exec);
 
 	void Load(const QUrl& url) override;
 	QUrl Location() const override;
@@ -42,13 +42,13 @@ public:
 	std::size_t SequenceNumber() const override;
 	std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
 	std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
-	BrightFuture::Executor* Executor() override;
+	BrightFuture::Executor& Executor() override;
 
 	void Update();
 	void Detach();
 
 private:
-	BrightFuture::Executor *const m_exec;
+	BrightFuture::Executor& m_exec;
 
 	mutable std::mutex      m_mux;
 	V1::BrowserTab  *m_parent;
@@ -105,7 +105,7 @@ void ActivePersona::ReseedPersona(boost::system::error_code)
 
 void ActivePersona::OnAttachTab(V1::BrowserTab& tab)
 {
-	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, m_exec.get()));
+	m_proxies.emplace(&tab, std::make_shared<BrowserTabProxy>(&tab, boost::asio::use_service<BrightFuture::BoostAsioExecutor>(m_ios)));
 	Post(tab, [this](V1::BrowserTab& proxy){m_persona->OnAttachTab(proxy);});
 }
 
@@ -154,7 +154,7 @@ std::weak_ptr<const V1::BrowserTab> ActivePersona::Proxy(const V1::BrowserTab& r
 	return {it != m_proxies.end() ? it->second : nullptr};
 }
 
-ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor *exec) :
+ActivePersona::BrowserTabProxy::BrowserTabProxy(V1::BrowserTab *parent, BrightFuture::Executor& exec) :
 	m_exec{exec},
 	m_parent{parent}
 {
@@ -272,7 +272,7 @@ std::weak_ptr<const V1::BrowserTab> ActivePersona::BrowserTabProxy::WeakFromThis
 	return shared_from_this();
 }
 
-BrightFuture::Executor *ActivePersona::BrowserTabProxy::Executor()
+BrightFuture::Executor& ActivePersona::BrowserTabProxy::Executor()
 {
 	return m_exec;
 }

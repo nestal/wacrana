@@ -62,7 +62,7 @@ public :
 	std::size_t SequenceNumber() const override;
 	std::weak_ptr<V1::BrowserTab> WeakFromThis() override;
 	std::weak_ptr<const V1::BrowserTab> WeakFromThis() const override;
-	BrightFuture::Executor* Executor() override;
+	BrightFuture::Executor& Executor() override;
 	
 	void LeftClick(const QPoint& pos) ;
 	

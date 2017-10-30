@@ -85,9 +85,6 @@ private:
 	boost::asio::io_service         m_ios;
 	boost::asio::io_service::work   m_work;
 	boost::asio::steady_timer       m_timer;
-	std::shared_ptr<BrightFuture::BoostAsioExecutor> m_exec{
-		std::make_shared<BrightFuture::BoostAsioExecutor>(m_ios)
-	};
 
 	std::unordered_map<const V1::BrowserTab*, std::shared_ptr<BrowserTabProxy>> m_proxies;
 

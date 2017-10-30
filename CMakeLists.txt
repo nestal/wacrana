@@ -33,7 +33,7 @@ include_directories(
 )
 
 file(GLOB INCLUDE_FILES include/*.hpp)
-file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc BrightFuture/*.hh BrightFuture/executor/*.hh)
+file(GLOB SOURCE_FILES src/*.cc src/*.hh res/*.qrc BrightFuture/*.hh BrightFuture/executor/*.hh BrightFuture/executor/*.cc)
 add_executable(wacrana ${SOURCE_FILES} ${INCLUDE_FILES})
 
 target_link_libraries(

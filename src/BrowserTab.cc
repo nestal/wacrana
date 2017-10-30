@@ -246,7 +246,7 @@ std::weak_ptr<const V1::BrowserTab> BrowserTab::WeakFromThis() const
 	return {};
 }
 
-BrightFuture::Executor *BrowserTab::Executor()
+BrightFuture::Executor& BrowserTab::Executor()
 {
 	// The real BrowserTab runs on the GUI thread (i.e. main thread)
 	return BrightFuture::TheQtGuiExecutor();
